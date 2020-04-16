@@ -1,0 +1,212 @@
+\documentclass[12pt]{beamer}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage[labelfont=bf]{caption}
+\usepackage{graphicx}  %package graphic
+\usepackage{siunitx}
+\usepackage{tikz}
+\usepackage{algorithmicx}
+\usepackage[noend]{algpseudocode}
+\usetikzlibrary{automata, positioning, arrows}
+\usetheme{Boadilla}   
+\usepackage{xeCJK}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{mathtools}
+
+
+\setCJKmainfont{微軟正黑體} 
+\sisetup{
+	group-separator={,},
+	table-number-alignment=right
+}
+
+
+\setbeamerfont{title}{size=\Large,series=\bfseries}  % title size
+
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}  % frametitle size, also can size*=<pt>
+
+% Item include picture
+\setbeamertemplate{itemize item}   % First Level item
+{\includegraphics[height=0.33cm]{Figures/golden-earth-on-white}}
+
+\setbeamertemplate{itemize subitem} % Second level item
+{\includegraphics[height=0.31cm]{Figures/golden-sun-on-white}}
+
+\setbeamertemplate{itemize subsubitem} % Third Level item
+{\includegraphics[height=0.27cm]{Figures/golden-paw-on-white}}
+
+\definecolor{darkgold}{rgb}{0.765 0.64 0.0} % for highlighted text in black-and-white slides
+\newcommand{\highlight}[1]{\structure{#1}}
+\newcommand{\highlightb}[1]{\textcolor{blue}{#1}}
+\newcommand{\highlightg}[1]{\textcolor{darkgold}{#1}}
+\newcommand{\highlightr}[1]{\alert{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%\newtheorem{problem}{Problem}
+\mode<presentation>{\newtheorem{algorithm}{Algorithm}}
+\mode<article>{\newenvironment{algorithm}{}{}}
+%\newtheorem{solution}{Solution}
+
+\newcommand{\hide}[1]{}
+%\renewcommand{\highlightb}{\highlightg}
+
+\newlength{\subtextwidth}
+\setlength{\subtextwidth}{11cm}
+
+\newenvironment{cbox}{
+    \begin{center}
+    \begin{tabular}{|l|}
+    \hline
+    \begin{minipage}[t]{\subtextwidth}}
+    {\vspace{.25ex}
+    \end{minipage}
+    \hline
+    \end{tabular}
+    \end{center} }
+
+\newcommand{\mathdef}[1]{\relax\ifmmode #1\else $#1$\fi}
+\newcommand{\true}{\mathdef{\mathit{true}}}
+\newcommand{\false}{\mathdef{\mathit{false}}}
+\renewcommand{\implies}{\mathdef{\rightarrow}}
+\newcommand{\ifonlyif}{\mathdef{\leftrightarrow}}
+\newcommand{\entails}{\mathdef{\vdash}}
+\newcommand{\PROPS}{\mathdef{\mathit{PROPS}}}
+\newcommand{\BOOL}{\mathdef{\mathit{BOOL}}}
+
+\mode<presentation>{\title{SPIN's CheckEmpty Procedure\\ Code Tracing}}
+\mode<article>{\title{Algorithms 2019: Analysis of Algorithms}}
+%\subtitle{(Based on [Manber 1989])}
+\author{林宏陽}
+%\institute[IM.NTU]{Department of Information Management\\ National Taiwan University}
+%\date[Algorithms 2019]{\null}
+\mode<presentation>{\date[SVVRL]{\null}}
+\mode<article>{\date{\today}}
+
+\begin{document}
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{frame}{Model Checking Using Automata}
+	\begin{itemize}
+	\item The given system is modeled as a Büchi automaton $A$.
+	\item Suppose the desired property is originally given by a linear temporal formula $f$.
+	\item Let $B_{f}$ (resp. $B_{\neg f}$) denote a Büchi automaton equivalent to $f$ (resp. $\neg f$ ).
+	\item The model checking problem $A \models f$ is equivalent to asking whether
+$$L(A) \subseteq L(B_{f}) \quad or \quad L(A) \cap L(B_{\neg f}) = \emptyset.$$
+	\item The well-used model checker SPIN, for example, adopts this automata-theoretic approach.
+	\item So, we are left with two basic problems:
+			\begin{itemize}
+			\item Compute the intersection of two Büchi automata.
+			\item Test the emptiness of the resulting automaton.
+			\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Checking Emptiness}
+	\begin{itemize}
+	\item Checking nonemptiness of $L(B)$ is equivalent to finding a strongly connected component that is reachable from an initial state and contains an accepting state.
+	\item That is, the language $L(B)$ is nonempty iff \textcolor{blue}{there is a reachable accepting state with a cycle back to itself}.
+	\item If we find such a cycle when checking the emptiness of $L(A) \cap L(B_{\neg f})$ , bad news, $A \not\models f$.
+	\item Otherwise, good news, $A \models f$.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Double DFS Algorithm}
+\only<1>{\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+every edge/.style={draw, thick, black},
+node distance=2.7cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}}
+
+\only<2-3>{\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+every edge/.style={draw, thick, cyan},
+node distance=2.7cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}}
+
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+		\begin{tikzpicture}
+			\node[state, initial] (1) {};
+			\node[state, above right of=1] (2) {};
+			\node[state, right of=2] (3) {};
+			\node[state, right of=1] (4) {};
+			\node[state, right of=4] (5) {};
+			\node[state, below right of=1] (6) {};
+			\node[state, right of=6] (7) {};
+			\node[state, accepting, right of=7] (8) {};
+			\node[state, below right of=7] (9) {};
+			\node[state, right of=9] (10) {};
+			\draw (1) edge node{} (2)
+						(2) edge node{} (3)
+						(1) edge node{} (4)
+						(4) edge node{} (5)
+						(1) edge node{} (6)
+						(6) edge node{} (7)
+						(7) edge node{} (8)
+						(8) edge node{} (10)
+						(10) edge node{} (9)
+						(9) edge[black] node{} (7);
+						\only<3>{
+						\draw (8) edge[red] node{} (10)
+						(10) edge[red] node{} (9)
+						(9) edge[red] node{} (7);}
+		\end{tikzpicture}
+		\only<2>{\caption{DFS Tree}}
+		\only<3>{\caption{When returning to an accepting state, it starts the second DFS (post-order)}}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{SPIN's structure}
+\fontsize{6pt}{7.2}\selectfont
+	\begin{figure}[ht]
+	\centering
+	\begin{tikzpicture}
+		\tikzset{every node/.style={draw, rectangle, align=center, minimum height=0.8cm, minimum width=1.6cm, inner sep=2pt},
+		arrow/.style = {thick,>=stealth}}
+
+			\node(n1) {XSPIN\\Front-End\\(Tcl/Tk Code)};
+			\node[below = of n1](n2) {PROMELA\\Parser};
+			\node[right = of n2](n3) {LTL Parser\\and Translator};
+			\node[below = of n2](n4) {2.\\Interactive\\Simulation};
+			\node[left = of n4](n5) {1.\\Syntax Error\\Reports};
+			\node[right = of n4](n6) {3.\\Verifier\\Generator};
+			\node[below = of n6](n7) {Optimized\\Model Checker\\(ANSI C Code)};
+			\node[below = of n7](n8) {Excutable\\On-The-Fly\\Verifier};
+			\node[draw = none, left = 0cm of n8](n9) {Counter-\\Examples};
+		
+			\draw[arrow,<->] (n1) -- (n2);
+			\draw[arrow,<->] (n2) -- (n3);
+			\draw[arrow,->] (n2) -- (n4);
+			\draw[arrow,->] (n2) -- (n5);
+			\draw[arrow,->] (n2) -- (n6);
+			\draw[arrow,->] (n6) -- (n7);
+			\draw[arrow,->] (n7) -- (n8);
+			\draw[arrow,->] (n8) -| (n4);
+		\end{tikzpicture}
+		%\caption{The structure of SPIN simulation and verification. Source: redrawn from [The SPIN Model Checker Figure 11.1 Gerard J. Holzmann]}
+		\end{figure}
+\end{frame}
+
+\begin{frame}{If you want to get the code...}
+	\begin{itemize}
+		\item Download SPIN from the github and set it up.
+		\item Suppose there is a system to verify described in PROMELA named \code{example.pml}.
+		\item \code{\$ spin -a example.pml   \hspace{1cm}\#generate c-verifier}
+		\item \code{\$ gcc -E -DNOREDUCE -DBITSTATE pan.c > ppan.c}
+	\end{itemize}
+\end{frame}
+
+
+\end{document}
