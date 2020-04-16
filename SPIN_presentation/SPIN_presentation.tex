@@ -8,15 +8,16 @@
 \usepackage{graphicx}  %package graphic
 \usepackage{siunitx}
 \usepackage{tikz}
-\usepackage{algorithmicx}
-\usepackage[noend]{algpseudocode}
+%\usepackage{algorithmicx}
+%\usepackage[noend]{algpseudocode}
 \usetikzlibrary{automata, positioning, arrows}
 \usetheme{Boadilla}   
 \usepackage{xeCJK}
 \usepackage{array}
-\usepackage{tabularx}
+%\usepackage{tabularx}
 \usepackage{mathtools}
-
+\usepackage{listings}
+\usepackage{textcomp}
 
 \setCJKmainfont{微軟正黑體} 
 \sisetup{
@@ -67,6 +68,22 @@
     \hline
     \end{tabular}
     \end{center} }
+
+\lstdefinestyle{mystyle}{
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+    keepspaces=true,
+    upquote=true,
+    showstringspaces=false,
+    commentstyle=\color{olive},
+    keywordstyle=\color{blue},
+    identifierstyle=\color{violet},
+    stringstyle=\color{purple},
+    language=c,
+    directivestyle=\color{teal},
+}
+
+\lstset{style=mystyle,}
 
 \newcommand{\mathdef}[1]{\relax\ifmmode #1\else $#1$\fi}
 \newcommand{\true}{\mathdef{\mathit{true}}}
@@ -199,14 +216,31 @@ initial text=$ $, % sets the text that appears on the start arrow
 		\end{figure}
 \end{frame}
 
-\begin{frame}{If you want to get the code...}
+\begin{frame}{If I want to get the code...}
 	\begin{itemize}
 		\item Download SPIN from the github and set it up.
-		\item Suppose there is a system to verify described in PROMELA named \code{example.pml}.
+		\item Suppose there is a system described in PROMELA named \code{example.pml}.
 		\item \code{\$ spin -a example.pml   \hspace{1cm}\#generate c-verifier}
-		\item \code{\$ gcc -E -DNOREDUCE -DBITSTATE pan.c > ppan.c}
+		\item \code{\$ cc -DNOREDUCE -o pan pan.c}
 	\end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{While pan.c is unreadable...}
+
+\begin{lstlisting}[basicstyle=\normalsize]
+/*
+ * new_state() is the main DFS search routine in the verifier
+ * it has a lot of code ifdef-ed together to support
+ * different search modes, which makes it quite unreadable.
+ * if you are studying the code, use the C preprocessor
+ * to generate a specific version from the pan.c source,
+ * e.g. by saying:
+ * gcc -E -DNOREDUCE -DBITSTATE pan.c > ppan.c
+ * and then study the resulting file, instead of this version
+ */\end{lstlisting}
+ 	\begin{itemize}
+ 		\item \code{\$ gcc -E -DNOREDUCE -DBITSTATE pan.c > ppan.c}
+ 	\end{itemize}
+\end{frame}
 
 \end{document}
