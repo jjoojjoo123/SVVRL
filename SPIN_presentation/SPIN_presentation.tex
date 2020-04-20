@@ -34,13 +34,13 @@
 
 % Item include picture
 \setbeamertemplate{itemize item}   % First Level item
-{\includegraphics[height=0.33cm]{Figures/golden-earth-on-white}}
+{\includegraphics[height=0.33cm]{../Figures/golden-earth-on-white}}
 
 \setbeamertemplate{itemize subitem} % Second level item
-{\includegraphics[height=0.31cm]{Figures/golden-sun-on-white}}
+{\includegraphics[height=0.31cm]{../Figures/golden-sun-on-white}}
 
 \setbeamertemplate{itemize subsubitem} % Third Level item
-{\includegraphics[height=0.27cm]{Figures/golden-paw-on-white}}
+{\includegraphics[height=0.27cm]{../Figures/golden-paw-on-white}}
 
 \definecolor{darkgold}{rgb}{0.765 0.64 0.0} % for highlighted text in black-and-white slides
 \newcommand{\highlight}[1]{\structure{#1}}
@@ -271,8 +271,7 @@ while (argc > 1 && argv[1][0] == '-'){
 \begin{frame}[fragile]{Trail}
 \begin{lstlisting}[basicstyle=\normalsize\ttfamily]
 trail = (Trail *) emalloc((maxdepth+3)*sizeof(Trail));
-trail++;
-trpt = &trail[0];
+trail++; /* protect trpt-1 refs at depth 0 */
 \end{lstlisting}
  	\begin{itemize}
  		\item ~
@@ -293,7 +292,374 @@ struct Trail {
   uchar o_pm;  /* 8 more bit-flags */
 }
 \end{lstlisting}
+\begin{itemize}
+	\item There might be millions of states in the constructed automata.
+	\item If we use \code{char}(1bytes) to keep boolean attributes of each state...
+\end{itemize}
 \end{frame}
 
+\begin{frame}{Bitwise operation}
+\begin{itemize}
+	\item Every bit of \code{char} is a boolean variable by using bitwise operations \code{\&}(and), \code{|}(or), \code{$\sim$}(not).
+	\item What do the following operations stand for?
+	\begin{itemize}
+		\item \code{a \& 4}\\	\only<2-4>{\textcolor{red}{value of the third bit is 0 or not}}
+		\item \code{a |= 8}\\	\only<3-4>{\textcolor{red}{set the 4th bit to 1}}
+		\item How to set the first and the sixth bit of \code{a} to 0?\\	\only<4>{\textcolor{red}{\code{a \&= $\sim$(1|32)}}}
+	\end{itemize}
+	\item save lots of memory used.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Meaning of bit-flags}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+#if 0
+   Meaning of bit-flags on tau and o_pm:
+   tau&1   -> timeout enabled
+   tau&2   -> request to enable timeout 1 level up (in claim)
+   tau&4   -> current transition is a  claim move
+   tau&8   -> current transition is an atomic move
+   tau&16  -> last move was truncated on stack
+   tau&32  -> current transition is a preselected move
+   tau&64  -> at least one next state is not on the stack
+   tau&128 -> current transition is a stutter move
+   o_pm&1  -> the current pid moved -- implements else
+   o_pm&2  -> this is an acceptance state
+   o_pm&4  -> this is a  progress state
+   o_pm&8  -> fairness alg rule 1 undo mark
+   o_pm&16  -> fairness alg rule 3 undo mark
+   o_pm&32 -> fairness alg rule 2 undo mark
+   o_pm&64 -> the current proc applied rule2
+   o_pm&128 -> a fairness, dummy move - all procs blocked
+#endif
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{settable()}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void settable(void){ 
+  Trans *T;
+  Trans *settr(int, int, int, int, int, char *, int, int, int);
+  trans = (Trans ***) emalloc(2*sizeof(Trans **));
+  trans[0] = (Trans **) emalloc(13*sizeof(Trans *));
+
+  trans[0][10] = settr(9,0,9,1,0,".(goto)", 0, 2, 0);
+  T = trans[0][9] = settr(8,0,0,0,0,"DO", 0, 2, 0);
+  T->nxt = settr(8,0,1,0,0,"DO", 0, 2, 0);
+  trans[0][1] = settr(0,0,6,3,3,"a = ((a+1)\%3)", 0, 2, 0);
+  /* ... */
+}
+\end{lstlisting}
+\begin{itemize}
+	\item Tool : LTL2BA
+	\item 2 process, at most 13 states.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{set accepting states}
+\begin{lstlisting}[basicstyle=\normalsize\ttfamily]
+accpstate[0] = (unsigned char *) emalloc(13);
+accpstate[1] = (unsigned char *) emalloc(3);
+accpstate[0][5] = 1;
+/* ... */
+do_the_search();
+\end{lstlisting}
+\begin{itemize}
+	\item process 0的5號state是acceptance state
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{do\_the\_search()}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void do_the_search(void){
+  /* ... */
+  for (i = 0; i < (int) now._nr_pr; i++){
+    P0 *ptr = 
+    (P0 *) (((unsigned char *)&now)+(int)proc_offset[i]);
+    if (!(trpt->o_pm&2) && accpstate[ptr->_t][ptr->_p]){
+      trpt->o_pm |= 2;
+      break;
+    }
+  }  /* 檢查initial是不是也是acceptance state */
+  /* ... */
+  new_state();
+}
+\end{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+typedef struct P0 {
+   unsigned _pid;  /* 0..255 */
+   unsigned _t;    /* proctype (process id) */
+   unsigned _p;    /* 目前處在的state */
+} P0;
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state()}
+\begin{itemize}
+	\item 有段程式碼寫到
+\end{itemize}
+\begin{lstlisting}[basicstyle=\normalsize\ttfamily]
+now._a_t |= (1|16|32);
+/* 1 = 2nd DFS; (16|32) to improve hashing */
+\end{lstlisting}
+\begin{itemize}
+	\item Although the first DFS and the second DFS are in the same funciton \textcolor{red}{\code{new\_state()}}, we can distinguish them easily by the value of \textcolor{red}{\code{now.\_a\_t \& 1}}.
+	\item \code{new\_state()}分為許多階段，每個階段有自己的label，用\code{goto label\_name}在階段間轉移。
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state():Down(1st DFS)}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+Down:
+  trpt->tau &= ~(16|32|64);
+  if (depth >= maxdepth){
+    if (!warned){ 
+      warned = 1;
+      printf("error: max search depth too small\n");
+    }
+    if (bounded){ 
+      uerror("depth limit reached");
+    }
+    truncs++;
+    (trpt-1)->tau |= 16;
+    goto Up;
+  }
+\end{lstlisting}
+\begin{itemize}
+	\item Imagine that initial state is on the top of the automata.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state():Allover(1st DFS)}
+\begin{lstlisting}[basicstyle=\normalsize\ttfamily]
+  /* ... */
+for (t = trans[ot][tt]; t; t = t->nxt){
+  (trpt+1)->o_t = t;
+  if (!(_m = do_transit(t, II))){
+    continue;
+  }
+  depth++; trpt++;
+  /* ... */
+\end{lstlisting}
+\begin{itemize}
+	\item Move to next state.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state():Allover(1st DFS)}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+  if (a_cycles){
+    int ii;
+    for (ii = 0; ii < (int) now._nr_pr; ii++){
+      if (accpstate[((P0 *)(((unsigned char *)&now)
+      +(int)proc_offset[ii]))->_t]
+      [((P0 *)(((unsigned char *)&now)
+      +(int)proc_offset[ii]))->_p]){ 
+        trpt->o_pm |= 2;
+        break;
+      }
+    }
+  }
+   goto Down;
+Up:
+  /* ... */
+}
+\end{lstlisting}
+\begin{itemize}
+	\item Check if acceptance state and keep going.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state():Allover(1st DFS)}
+\begin{itemize}
+	\item How about the program flow so far?
+	\item
+	\only <2-3>{\textcolor{red}{\code{Down}$\rightarrow$\code{Allover}$\rightarrow$\code{Down}$\rightarrow$\code{Allover}$\rightarrow\cdots\rightarrow$\code{Down}(Exceed \code{maxdepth})$\rightarrow$\code{Up}$\rightarrow\cdots$}}
+	\item or\\
+	\only<3>{\textcolor{red}{\code{Down}$\rightarrow$\code{Allover}$\rightarrow$\code{Down}$\rightarrow$\code{Allover}$\rightarrow\cdots\rightarrow$\code{Down}$\rightarrow$\code{Allover}(no next state)$\rightarrow$\code{Up}$\rightarrow\cdots$} }
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state():Up(1st DFS)}
+\begin{lstlisting}[basicstyle=\normalsize\ttfamily]
+Up:
+  /* ... */
+  goto R999;
+
+R999:
+  depth--; trpt--;
+  /* ... */
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state():Done(1st DFS)}
+\begin{lstlisting}[basicstyle=\normalsize\ttfamily]
+Done:
+  /* ... */
+   if (a_cycles && (trpt->o_pm&2))
+    checkcycles();
+  /* ... */
+ if (depth > 0){
+   goto Up;
+ }
+\end{lstlisting}
+\begin{itemize}
+	\item o\_pm\&2  -> this is an acceptance state
+	\item Since double DFS algorithm adopts post-order, it checks whether this state is an acceptance state or not after the DFS return. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{checkcycles()}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void checkcycles(void){
+  unsigned char o_a_t = now._a_t;
+  unsigned char o_cnt = now._cnt[1];
+  H_el *sv = trpt->ostate;
+  now._a_t |= (1|16|32);
+  now._cnt[1] = now._cnt[0];
+
+  memcpy((char *)&A_Root, (char *)&now, vsize);
+  A_depth = depthfound = depth; /* Acceptance Depth */
+
+  new_state(); /* start 2nd DFS */
+
+  now._a_t = o_a_t;
+  now._cnt[1] = o_cnt;
+  A_depth = 0; depthfound = -1;
+  trpt->ostate = sv;
+}
+\end{lstlisting}
+\begin{itemize}
+	\item Save parameters and reset after 2nd DFS returns.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state():Allover(2nd DFS)}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+if ((now._a_t&1) && depth > A_depth){
+  int delta = 0 + 2;
+  if (!memcmp((char *)&A_Root + delta,
+    (char *)&now + delta, vsize - delta)){
+    /* ... */
+    depthfound = A_depth;
+    uerror("acceptance cycle");
+    goto Up;
+  }
+}
+\end{lstlisting}
+\begin{itemize}
+	\item now.\_a\_t\&1 : in 2nd DFS.
+	\item Check if the 2nd DFS reaches to the acceptance state which it starts form by comparing memory address. If so, \code{goto Up}. Otherwise, check if we reach the state which we have reached before(in 1st DFS).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state():Allover(2nd DFS)}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+if (!JJ && (now._a_t&1) && depth > A_depth){
+  int oj1 = j1_spin;
+  unsigned char o_a_t = now._a_t;
+  now._a_t &= ~(1|16|32);
+  if (onstack_now()){  /*  check if we have reached in 1st DFS */
+    II = 3;
+  }
+  now._a_t = o_a_t;
+  j1_spin = oj1;
+}
+if (II == 3 && a_cycles && (now._a_t&1)){
+  if (fairness && now._cnt[1] != 1){
+    II = 0;
+  } else {
+same_case: if (Lstate) depthfound = Lstate->D;
+    uerror("acceptance cycle");
+    goto Up;
+  }
+}
+\end{lstlisting}
+\begin{itemize}
+	\item now.\_a\_t\&1 : in the 2nd DFS.
+	\item Check if the 2nd DFS reaches to the acceptance state which it starts form by comparing memory address. If so, \code{goto Up}. Otherwise, check if we reach the state which we have reached before(in 1st DFS).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state():Up(2nd DFS)}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+Up:
+  if ((now._a_t&1) && depth <= A_depth)
+    return;
+\end{lstlisting}
+\begin{itemize}
+	\item now.\_a\_t\&1 : in the 2nd DFS.
+	\item A\_depth : Acceptance Depth.
+	\item While returning to the starting acceptance state, return to \code{checkcycles()}
+	\item Finally, we return to the \code{main} function and \code{wrapup()} those information we collected during the double DFS algorithm.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Double DFS Algorithm}
+\only<1>{\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+every edge/.style={draw, thick, black},
+node distance=2.7cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}}
+
+\only<2-3>{\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+every edge/.style={draw, thick, cyan},
+node distance=2.7cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}}
+
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+		\begin{tikzpicture}
+			\node[state, initial] (1) {};
+			\node[state, above right of=1] (2) {};
+			\node[state, right of=2] (3) {};
+			\node[state, right of=1] (4) {};
+			\node[state, right of=4] (5) {};
+			\node[state, below right of=1] (6) {};
+			\node[state, right of=6] (7) {};
+			\node[state, accepting, right of=7] (8) {};
+			\node[state, below right of=7] (9) {};
+			\node[state, right of=9] (10) {};
+			\draw (1) edge node{} (2)
+						(2) edge node{} (3)
+						(1) edge node{} (4)
+						(4) edge node{} (5)
+						(1) edge node{} (6)
+						(6) edge node{} (7)
+						(7) edge node{} (8)
+						(8) edge node{} (10)
+						(10) edge node{} (9)
+						(9) edge[black] node{} (7);
+						\only<3>{
+						\draw (8) edge[red] node{} (10)
+						(10) edge[red] node{} (9)
+						(9) edge[red] node{} (7);}
+		\end{tikzpicture}
+		\only<2>{\caption{DFS Tree}}
+		\only<3>{\caption{When returning to an accepting state, it starts the second DFS (post-order)}}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Reference}
+\begin{itemize}
+	\item The SPIN Model Checker. Gerard J. Holzmann.
+	\item LTL2BA : fast translation from LTL formulae to B¨uchi automata. Software written by Denis
+Oddoux (v1.0) and modified by Paul Gastin (v1.2).\\
+		\code{http://www.lsv.fr/∼gastin/ltl2ba/}
+	\item SPIN website\\
+		\code{http://spinroot.com/spin/whatispin.html
+}
+	\item Verification Options\\
+		\code{http://spinroot.com/spin/Man/Pan.html
+}
+\end{itemize}
+\end{frame}
 
 \end{document}
