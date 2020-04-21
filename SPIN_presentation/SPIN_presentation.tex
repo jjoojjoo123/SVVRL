@@ -143,7 +143,7 @@ $$L(A) \subseteq L(B_{f}) \quad or \quad L(A) \cap L(B_{\neg f}) = \emptyset.$$
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Double DFS Algorithm}
+\begin{frame}[label=DFS3Figures]{Double DFS Algorithm}
 \only<1>{\tikzset{
 ->, % makes the edges directed
 >=stealth, % makes the arrow heads bold
@@ -595,57 +595,7 @@ Up:
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Double DFS Algorithm}
-\only<1>{\tikzset{
-->, % makes the edges directed
->=stealth, % makes the arrow heads bold
-every edge/.style={draw, thick, black},
-node distance=2.7cm, % specifies the minimum distance between two nodes. Change if necessary.
-every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
-initial text=$ $, % sets the text that appears on the start arrow
-}}
-
-\only<2-3>{\tikzset{
-->, % makes the edges directed
->=stealth, % makes the arrow heads bold
-every edge/.style={draw, thick, cyan},
-node distance=2.7cm, % specifies the minimum distance between two nodes. Change if necessary.
-every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
-initial text=$ $, % sets the text that appears on the start arrow
-}}
-
-	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
-	\centering % centers the figure
-		\begin{tikzpicture}
-			\node[state, initial] (1) {};
-			\node[state, above right of=1] (2) {};
-			\node[state, right of=2] (3) {};
-			\node[state, right of=1] (4) {};
-			\node[state, right of=4] (5) {};
-			\node[state, below right of=1] (6) {};
-			\node[state, right of=6] (7) {};
-			\node[state, accepting, right of=7] (8) {};
-			\node[state, below right of=7] (9) {};
-			\node[state, right of=9] (10) {};
-			\draw (1) edge node{} (2)
-						(2) edge node{} (3)
-						(1) edge node{} (4)
-						(4) edge node{} (5)
-						(1) edge node{} (6)
-						(6) edge node{} (7)
-						(7) edge node{} (8)
-						(8) edge node{} (10)
-						(10) edge node{} (9)
-						(9) edge[black] node{} (7);
-						\only<3>{
-						\draw (8) edge[red] node{} (10)
-						(10) edge[red] node{} (9)
-						(9) edge[red] node{} (7);}
-		\end{tikzpicture}
-		\only<2>{\caption{DFS Tree}}
-		\only<3>{\caption{When returning to an accepting state, it starts the second DFS (post-order)}}
-	\end{figure}
-\end{frame}
+\againframe{DFS3Figures}
 
 \begin{frame}{Reference}
 \begin{itemize}
