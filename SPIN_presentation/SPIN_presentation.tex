@@ -272,9 +272,11 @@ while (argc > 1 && argv[1][0] == '-'){
 \begin{lstlisting}[basicstyle=\normalsize\ttfamily]
 trail = (Trail *) emalloc((maxdepth+3)*sizeof(Trail));
 trail++; /* protect trpt-1 refs at depth 0 */
+trpt = &trail[0];
 \end{lstlisting}
  	\begin{itemize}
- 		\item ~
+		\item Imagine that \code{trail} is a DFS stack.
+ 		\item \code{trpt} corresponds to the stack top.
  	\end{itemize}
 \end{frame}
 
@@ -592,6 +594,14 @@ Up:
 	\item A\_depth : Acceptance Depth.
 	\item While returning to the starting acceptance state, return to \code{checkcycles()}
 	\item Finally, we return to the \code{main} function and \code{wrapup()} those information we collected during the double DFS algorithm.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Program flow}
+\begin{itemize}
+	\item How about the whole program flow?
+	\item 
+	\textcolor{blue}{\code{Down}$\rightarrow$\code{Allover}$\rightarrow$\code{Down}$\rightarrow$\code{Allover}$\rightarrow\cdots\rightarrow$\code{Down}$\rightarrow$\code{Allover}(no next state)$\rightarrow$\code{Up}$\rightarrow$\code{Done}$\rightarrow$\code{Up}$\rightarrow$\code{Done}(This is an accepting state)$\rightarrow$}\code{checkcycles()}\textcolor{red}{$\rightarrow$\code{Down}$\rightarrow$\code{Allover}$\rightarrow$\code{Down}$\rightarrow$\code{Allover}$\rightarrow\cdots\rightarrow$\code{Down}$\rightarrow$\code{Allover}(this state has been reached in 1st DFS)$\rightarrow$\code{Up}$\rightarrow$\code{Done}$\rightarrow$\code{Up}(\code{depth <= A\_depth})$\rightarrow$return}
 \end{itemize}
 \end{frame}
 
