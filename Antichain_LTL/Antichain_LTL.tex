@@ -1,0 +1,238 @@
+\documentclass[12pt]{beamer}
+\usepackage{color}
+\usepackage{xcolor}
+%\usepackage{latexsym}
+%\usepackage{unicode-math}
+\usepackage{amsmath}
+\usepackage[labelfont=bf]{caption}
+\usepackage{graphicx}  %package graphic
+%\usepackage{siunitx}
+\usepackage{tikz}
+%\usepackage{algorithmicx}
+%\usepackage[noend]{algpseudocode}
+\usetikzlibrary{automata, positioning, arrows}
+\usetheme{Boadilla}   
+\usepackage{xeCJK}
+%\usepackage{array}
+%\usepackage{tabularx}
+%\usepackage{mathtools}
+%\usepackage{listings}
+%\usepackage{textcomp}
+%\usepackage[T1]{fontenc}
+%\usepackage{lmodern}
+\usepackage{stmaryrd}
+
+\setCJKmainfont{微軟正黑體} 
+
+
+\setbeamerfont{title}{size=\Large,series=\bfseries}  % title size
+
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}  % frametitle size, also can size*=<pt>
+
+% Item include picture
+\setbeamertemplate{itemize item}   % First Level item
+{\includegraphics[height=0.33cm]{../Figures/golden-earth-on-white}}
+
+\setbeamertemplate{itemize subitem} % Second level item
+{\includegraphics[height=0.31cm]{../Figures/golden-sun-on-white}}
+
+\setbeamertemplate{itemize subsubitem} % Third Level item
+{\includegraphics[height=0.27cm]{../Figures/golden-paw-on-white}}
+
+\definecolor{darkgold}{rgb}{0.765 0.64 0.0} % for highlighted text in black-and-white slides
+\newcommand{\highlight}[1]{\structure{#1}}
+\newcommand{\highlightb}[1]{\textcolor{blue}{#1}}
+\newcommand{\highlightg}[1]{\textcolor{darkgold}{#1}}
+\newcommand{\highlightr}[1]{\alert{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%\newtheorem{problem}{Problem}
+\mode<presentation>{\newtheorem{algorithm}{Algorithm}}
+\mode<article>{\newenvironment{algorithm}{}{}}
+%\newtheorem{solution}{Solution}
+
+\newcommand{\hide}[1]{}
+%\renewcommand{\highlightb}{\highlightg}
+
+\newlength{\subtextwidth}
+\setlength{\subtextwidth}{11cm}
+
+\newenvironment{cbox}{
+    \begin{center}
+    \begin{tabular}{|l|}
+    \hline
+    \begin{minipage}[t]{\subtextwidth}}
+    {\vspace{.25ex}
+    \end{minipage}
+    \hline
+    \end{tabular}
+    \end{center} }
+
+\newcommand{\mathdef}[1]{\relax\ifmmode #1\else $#1$\fi}
+\newcommand{\true}{\mathdef{\mathit{true}}}
+\newcommand{\false}{\mathdef{\mathit{false}}}
+\renewcommand{\implies}{\mathdef{\rightarrow}}
+\newcommand{\ifonlyif}{\mathdef{\leftrightarrow}}
+\newcommand{\entails}{\mathdef{\vdash}}
+\newcommand{\PROPS}{\mathdef{\mathit{PROPS}}}
+\newcommand{\BOOL}{\mathdef{\mathit{BOOL}}}
+
+\mode<presentation>{\title{Antichains: Alternative Algorithms for LTL Satisfiability and Model-Checking}}
+\mode<article>{\title{Algorithms 2019: Analysis of Algorithms}}
+%\subtitle{(Based on [Manber 1989])}
+\author{林宏陽}
+%\institute[IM.NTU]{Department of Information Management\\ National Taiwan University}
+%\date[Algorithms 2019]{\null}
+\mode<presentation>{\date[SVVRL]{\null}}
+\mode<article>{\date{\today}}
+
+\begin{document}
+\begin{frame}
+	\maketitle
+\end{frame}
+
+\begin{frame}{Introduction}
+	\begin{itemize}
+		\item A model for an LTL formula over a set $P$ of propositions : an infinite word $\omega$ over the alphabet $\Sigma = 2^{P}$.
+		\item An LTL formula $\phi$ defines a set of words $\llbracket \phi \rrbracket = \{\omega \in \Sigma^{\omega} \mid \omega \models \phi\}$.
+		\item The satisfiability problem : if $\llbracket \phi \rrbracket$ is empty.
+		\item The model-checking problem : given an omega-regular language $\mathcal{L}$, if $\mathcal{L} \subseteq \llbracket \phi \rrbracket$
+		\item Given a LTL formula $\phi$, we can construct a NBW $\mathcal{A}_{\phi}$ such that $\text{L}_{\text{b}}(\mathcal{A}_{\phi}) = \llbracket \phi \rrbracket$
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Introduction(cont'd)}
+	\begin{itemize}
+		\item Implemented in explicit way : worst-case exponential.
+		\item Implemented in symbolic way : it scales better.
+		\item Efficient algorithms to reason on large LTL formulas are highly desirable.
+		\item A new efficient way to analyze sABW (the number of states and symbolic transitions are linear in the size of the LTL formula).
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Linear Temporal Logic}
+	\begin{itemize}
+		\item $P$ is a finite set of propositions
+		\item a Kripke structure over
+$P$ is a tuple $\mathcal{K} = \langle Q, q_{\iota}, \rightarrow_{\mathcal{K}}, \mathcal{L} \rangle$
+		\begin{itemize}
+			\item $Q$ is a finite set of states	
+			\item $q_{\iota} \in Q$ is the initial state
+			\item $\rightarrow_{\mathcal{K}} \subseteq Q \times Q$ is a transition relation
+			\item $L : Q \to 2^{P}$ is a labeling function
+		\end{itemize}
+		\item A run of $\mathcal{K}$ is an infinite sequence $\rho = q_{0}q_{1}\cdots$ such that $q_{0} = q_{\iota}$ and for all $i \geq 0$, $(q_{i}, q_{i+1}) \in \rightarrow_{\mathcal{K}}$
+		\item Let $\mathcal{L}(\rho) = \mathcal{L}(q_{0})\mathcal{L}(q_{1})$ and define the language of K as $\text{L}(\mathcal{K}) =
+\{\mathcal{L}(\rho) \mid \rho \text{ is a run of } \mathcal{K}\}$
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Linear Temporal Logic(cont'd)}
+	\begin{itemize}
+		\item The LTL formulas over $P$ are defined by $\phi ::= p \mid \neg\phi \mid \phi \lor \phi \mid \mathcal{X}\phi \mid \phi \mathcal{U} \phi$ where $p \in P$.
+		\item Given an infinite word $\omega = \sigma_{0}\sigma_{1}\cdots \in \Sigma^{\omega}$ where $\Sigma = 2^{P}$ , and an LTL formula $\phi$ over $P$, we say that $\omega$ satisfies $\phi$ (written $\omega \models \phi$) if and only if (recursively):
+		\begin{itemize}
+			\item $\phi \equiv p$ and $p \in \sigma_{0}$,
+			\item or $\phi \equiv \neg\phi_{1}$ and $\omega \models \phi_{1}$,
+			\item or $\phi \equiv \phi_{1} \lor \phi_{2}$ and $\omega \models \phi_{1}$ or $\omega \models \phi_{2}$,
+			\item or $\phi \equiv \mathcal{X}\phi_{1}$ and $\sigma_{1}\sigma_{2}\cdots \models \phi_{1}$,
+			\item or $\phi \equiv \phi_{1}\mathcal{U}\phi{2}$ and for some $k \in N$, $\sigma_{k}\sigma_{k+1}\cdots \models \phi_{2}$ and for all $i$, $0 \leq i < k$,
+$\sigma_{i}\sigma_{i+1}\cdots \models \phi_{1}$.
+		\end{itemize}
+		\item $true$, $false$ and $\phi_{1} \land \phi_{2}$ can be derived from the definition.
+		\item let $\Box\phi = true\mathcal{U}\phi$, $\Box\phi =
+\neg\Diamond\neg\phi$, and $\phi_{1}\mathcal{R}\phi_{2} = \neg(\neg\phi_{1}\mathcal{U}\neg\phi_{2})$.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Linear Temporal Logic(cont'd)}
+	\begin{itemize}
+		\item The satisfiability-checking problem : whether $\llbracket \phi \rrbracket = \emptyset$.
+		\begin{itemize}
+			\item we say that $\mathcal{K}$ satisfies $\phi$ ($\mathcal{K} \models \phi$) if and only if $\text{L}(\mathcal{K}) \subseteq \llbracket \phi \rrbracket$
+			\item that is for all runs $\rho$ of $\mathcal{K}$, we have $\mathcal{L}(\rho) \models \phi$
+		\end{itemize}
+		\item The model-checking problem : whether $\mathcal{K} \models \phi$
+		\item Both problems are PSPACE-COMPLETE.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{sABW}
+	\begin{itemize}
+		\item Given a finite set $Q$, let $\text{Lit}(Q) = Q \cup \{\neg q \mid q \in Q\}$ be the set of literals over $Q$.
+		\item $\mathcal{B}^{+}(Q)$ be the set of positive boolean formulas over $Q$ (formulas built from elements in $Q\cup\{true, false\}$ using $\land$ and $\lor$)
+		\item Given $R \subseteq Q$ and $\varphi \in \mathcal{B}^{+}(Q)$, $R \models \varphi$ if and only if we assign $true$ to the
+elements of $R$ and $false$ to the elements of $Q \setminus R$ satisfies $\varphi$.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{sABW(cont'd)}
+	\begin{itemize}
+		\item A symbolic alternating Büchi automaton over the set of propositions $P$ is a tuple $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ where
+		\begin{itemize}
+			\item Loc is a finite set of states (or locations)
+			\item $I \in \mathcal{B}^{+}(\text{Loc})$.
+				\begin{itemize}
+					\item A set $s \subseteq \text{Loc}$ is initial if $s \models I$.
+				\end{itemize}
+			\item $\Sigma = 2^{P}$ is the alphabet.
+			\item $\delta : \text{Loc} \to \mathcal{B}^{+}(\text{Lit}(P)\cup\text{Loc})$ is the transition function.
+			\item $\alpha \subseteq \text{Loc}$ is the set of accepting states.
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{sABW(cont'd)}
+	\begin{itemize}
+		\item A run of $\mathcal{A}$ on an infinite word $\omega = \sigma_{0}\sigma_{1}\cdots \in \Sigma^{\omega}$ is a DAG $T_{\omega} = \langle V, V_{\iota}, \to \rangle$ where:
+		\begin{itemize}
+			\item $V \subseteq \text{Loc} \times N$. A node $(\ell, \mathnormal{i})$ represents the location $\ell$ after the first $\mathnormal{i}$ letters of $\omega$ have been read by $\mathcal{A}$. Nodes of the form $(\ell, \mathnormal{i})$ with 	$\ell \in \alpha$ are called $\alpha$-nodes;
+			\item $V_{\iota} \subseteq \text{Loc} \times \{0\}$ is such that $V_{\iota} \subseteq V$ and $\{\ell \mid (\ell, 0) \in V_{\iota}\} \models I$;
+			\item $\to \subseteq V \times V$ is such that for all $(\ell, \mathnormal{i}) \in V$
+				\begin{itemize}
+					\item if $(\ell, \mathnormal{i}) \to (\ell', \mathnormal{i}')$ then $\mathnormal{i}' = \mathnormal{i} + 1$
+					\item $\sigma_{i} \cup \{\ell' \mid (\ell, \mathnormal{i}) \to (\ell', \mathnormal{i} + 1)\} \models \delta(\ell)$
+				\end{itemize}
+		\end{itemize}
+		\item A run $T_{\omega}$ on an infinite word $\omega$ is accepting if \textcolor{red}{all} its infinite paths visit $\alpha$-nodes infinitely often.
+		\item An infinite word $\omega \in \Sigma^{\omega}$ is accepted by $\mathcal{A}$ if there \textcolor{red}{exists} an accepting run on it.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{sNBW}
+	\begin{itemize}
+		\item A nondeterministic Büchi automaton is an sABW $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ such that
+		\begin{itemize}
+			\item $I$ is a disjunction of locations.
+			\item for all $\ell \in \text{Loc}$, $\delta(\ell)$ is a disjunction of $\varphi \land \ell'$.
+		\end{itemize}
+		\item Define the reverse automaton of $\mathcal{A}$ as $\mathcal{A}^{-1} = \langle \text{Loc}, I, \Sigma, \delta^{-1}, \alpha \rangle$ where $\delta^{-1} = \{(\ell, \sigma, \ell') \mid (\ell', \sigma, \ell) \in \delta\}$.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{example}
+\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+every edge/.style={draw, thick, black},
+node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}
+
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+		\begin{tikzpicture}
+			\node[draw=none] (l) {};
+			\node[state, accepting, above right = 0.8cm and 1.5cm of l] (l4) {$\ell_{4}$};
+			\node[state, right = of l4] (l3) {$\ell_{3}$};
+			\node[state, below right =0.8cm and 1.5cm of l] (l2) {$\ell_{2}$};
+			\node[state, accepting, right = of l2] (l1) {$\ell_{1}$};
+			%\draw (1) edge node{} (2)
+		\end{tikzpicture}
+		\caption{Alternating automaton for $\varphi \equiv \neg(p \to (\neg p \to r))$}
+	\end{figure}
+\end{frame}
+
+\end{document}
