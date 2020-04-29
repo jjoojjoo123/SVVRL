@@ -21,6 +21,7 @@
 %\usepackage[T1]{fontenc}
 %\usepackage{lmodern}
 \usepackage{stmaryrd}
+\usepackage{adjustbox}
 
 \setCJKmainfont{微軟正黑體} 
 
@@ -220,19 +221,36 @@ node distance=0.8cm and 2.3cm, % specifies the minimum distance between two node
 every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
 initial text=$ $, % sets the text that appears on the start arrow
 }
-
 	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
 	\centering % centers the figure
+	\begin{adjustbox}{max width=.45\textwidth, max totalheight=.45\textheight}
 		\begin{tikzpicture}
 			\node[draw=none] (l) {};
-			\node[state, accepting, above right = 0.8cm and 1.5cm of l] (l4) {$\ell_{4}$};
+			\node[state, accepting, above right = 0.6cm and 1.5cm of l] (l4) {$\ell_{4}$};
 			\node[state, right = of l4] (l3) {$\ell_{3}$};
-			\node[state, below right =0.8cm and 1.5cm of l] (l2) {$\ell_{2}$};
+			\node[state, below right =0.6cm and 1.5cm of l] (l2) {$\ell_{2}$};
 			\node[state, accepting, right = of l2] (l1) {$\ell_{1}$};
-			%\draw (1) edge node{} (2)
+			\node[draw=none, below right =0.4cm and 1cm of l3] (ll) {};
+			\draw (l) edge[bend right = 25] node{} (l4);
+			\draw (l) edge[bend left = 25] node{} (l2);
+			\draw (l4) edge[loop above] node{$p$} (l4);
+			\draw (l3) edge[loop above] node{true} (l3);
+			\draw (l2) edge[loop below] node{true} (l2);
+			\draw (l1) edge[loop below] node{$\neg r$} (l1);
+			\draw (l4) edge node[above]{true} (l3);
+			\draw (l4) edge[loop, out=0, in=-50, looseness=6] (l4);
+			\draw (l2) edge node[above]{$\neg p \land \neg r$} (l1);
+			\draw (l3) edge node[above]{$p$} (ll);
 		\end{tikzpicture}
-		\caption{Alternating automaton for $\varphi \equiv \neg(p \to (\neg p \to r))$}
+	\end{adjustbox}
+		\caption{Alternating automaton for $\varphi \equiv \neg(\Box\Diamond p \to \Box(\neg p \to \Diamond r))$}
 	\end{figure}
+	\begin{itemize}
+		\item $\ell_{4}$ and $\ell_{3}$ check that $\phi_{1} \equiv \Box\Diamond p$ holds.
+		\item $\ell_{2}$ and $\ell_{1}$ check that $\phi_{2} \equiv \Diamond(\neg p \land \neg r)$ holds.
+		\item $\delta(\ell_{4}) = (p \land \ell_{4}) \lor (\text{true} \land \ell_{3} \land \ell_{4})$
+		\item $\delta(\ell_{3}) = (\text{true}\land \ell_{3})\lor (p \land \text{true})$
+	\end{itemize}
 \end{frame}
 
 \end{document}
