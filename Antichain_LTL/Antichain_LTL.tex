@@ -206,7 +206,7 @@ elements of $R$ and $false$ to the elements of $Q \setminus R$ satisfies $\varph
 		\item A nondeterministic Büchi automaton is an sABW $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ such that
 		\begin{itemize}
 			\item $I$ is a disjunction of locations.
-			\item for all $\ell \in \text{Loc}$, $\delta(\ell)$ is a disjunction of $\varphi \land \ell'$.
+			\item for all $\ell \in \text{Loc}$, $\delta(\ell)$ is a disjunction of $\varphi \land \ell'$ where $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$ and $ \ell' \in \text{Loc}$.
 		\end{itemize}
 		\item Define the reverse automaton of $\mathcal{A}$ as $\mathcal{A}^{-1} = \langle \text{Loc}, I, \Sigma, \delta^{-1}, \alpha \rangle$ where $\delta^{-1} = \{(\ell, \sigma, \ell') \mid (\ell', \sigma, \ell) \in \delta\}$.
 	\end{itemize}
@@ -251,6 +251,44 @@ initial text=$ $, % sets the text that appears on the start arrow
 		\item $\delta(\ell_{4}) = (p \land \ell_{4}) \lor (\text{true} \land \ell_{3} \land \ell_{4})$
 		\item $\delta(\ell_{3}) = (\text{true}\land \ell_{3})\lor (p \land \text{true})$
 	\end{itemize}
+\end{frame}
+
+\begin{frame}{Miyano-Hayashi construction}
+	\begin{itemize}
+		\item Transform an sABW into a sNBW.
+		\item The state of sNBW is the form $\langle s, o \rangle$.
+		\item $s$ is a set of states that maintains a whole level of a guessed run DAG.
+		\item $o$ is a set of states that ``owe'' a visit to an accepting state.
+		\item  The Büchi condition asks that $o$ gets empty infinitely often in order to ensure that \textcolor{red}{every} path of the run DAG visits accepting states infinitely often.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Miyano-Hayashi construction (cont'd)}
+	
+		Given an sABW $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ over $P$, let MH$(\mathcal{A}) = \langle Q, I^{\text{MH}}, \Sigma, \sigma^{\text{MH}}, \alpha^{\text{MH}} \rangle$ be a sNBW where:
+		\begin{itemize}
+			\item $Q = 2^{\text{Loc}} \times 2^{\text{Loc}}$
+			\item $I^{\text{MH}}$ is the disjunction of all the pairs $s$, $\emptyset$ such that $s \models I$
+		
+		\item $\delta^{\text{MH}}$ is defined for all $\langle s, o \rangle \in Q$:
+		\begin{itemize}
+			\item if $o \neq \emptyset$, then $\delta^{\text{MH}}(\langle s, o \rangle)$ is the disjunction of all the formulas $\varphi \land \langle s', o' \setminus \alpha \rangle$ with $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$ such that
+			\begin{itemize}
+				\item $o' \subseteq s'$
+				\item $\forall \ell \in s \cdot \forall \sigma \subseteq P$ : if $\sigma \models \varphi$ then $\sigma \cup s' \models \delta(\ell)$
+				\item $\forall \ell \in o \cdot \forall \sigma \subseteq P$ : if $\sigma \models \varphi$ then $\sigma \cup o' \models \delta(\ell)$
+			\end{itemize}
+			
+			\item if $o = \emptyset$, then $\delta^{\text{MH}}(\langle s, o \rangle)$ is the disjunction of all the formulas $\varphi \land \langle s', o' \setminus \alpha \rangle$ with $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$ such that
+			\begin{itemize}
+				\item $\forall \ell \in s \cdot \forall \sigma \subseteq P$ : if $\sigma \models \varphi$ then $\sigma \cup s' \models \delta(\ell)$
+			\end{itemize}
+		\end{itemize}
+		\item $\alpha^{\text{MH}} = 2^{\text{Loc}} \times \{\emptyset\}$
+		\end{itemize}
+	\begin{theorem}
+		For all sABW $\mathcal{A}$, we have $\text{L}_{\text{b}}(\text{MH}(\mathcal{A})) = \text{L}_{\text{b}}(\mathcal{A})$.
+	\end{theorem}
 \end{frame}
 
 \end{document}
