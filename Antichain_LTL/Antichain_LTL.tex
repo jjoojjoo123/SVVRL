@@ -23,8 +23,7 @@
 \usepackage{stmaryrd}
 \usepackage{adjustbox}
 
-\setCJKmainfont{微軟正黑體} 
-
+%\setCJKmainfont{微軟正黑體} 
 
 \setbeamerfont{title}{size=\Large,series=\bfseries}  % title size
 
@@ -41,22 +40,16 @@
 {\includegraphics[height=0.27cm]{../Figures/golden-paw-on-white}}
 
 \definecolor{darkgold}{rgb}{0.765 0.64 0.0} % for highlighted text in black-and-white slides
-\newcommand{\highlight}[1]{\structure{#1}}
-\newcommand{\highlightb}[1]{\textcolor{blue}{#1}}
-\newcommand{\highlightg}[1]{\textcolor{darkgold}{#1}}
-\newcommand{\highlightr}[1]{\alert{#1}}
-\newcommand{\code}[1]{\texttt{#1}}
 
 %\newtheorem{problem}{Problem}
 \mode<presentation>{\newtheorem{algorithm}{Algorithm}}
 \mode<article>{\newenvironment{algorithm}{}{}}
 %\newtheorem{solution}{Solution}
 
-\newcommand{\hide}[1]{}
 %\renewcommand{\highlightb}{\highlightg}
 
-\newlength{\subtextwidth}
-\setlength{\subtextwidth}{11cm}
+%\newlength{\subtextwidth}
+%\setlength{\subtextwidth}{11cm}
 
 \newenvironment{cbox}{
     \begin{center}
@@ -69,14 +62,6 @@
     \end{tabular}
     \end{center} }
 
-\newcommand{\mathdef}[1]{\relax\ifmmode #1\else $#1$\fi}
-\newcommand{\true}{\mathdef{\mathit{true}}}
-\newcommand{\false}{\mathdef{\mathit{false}}}
-\renewcommand{\implies}{\mathdef{\rightarrow}}
-\newcommand{\ifonlyif}{\mathdef{\leftrightarrow}}
-\newcommand{\entails}{\mathdef{\vdash}}
-\newcommand{\PROPS}{\mathdef{\mathit{PROPS}}}
-\newcommand{\BOOL}{\mathdef{\mathit{BOOL}}}
 
 \mode<presentation>{\title{Antichains: Alternative Algorithms for LTL Satisfiability and Model-Checking}}
 \mode<article>{\title{Algorithms 2019: Analysis of Algorithms}}
@@ -201,18 +186,7 @@ elements of $R$ and $false$ to the elements of $Q \setminus R$ satisfies $\varph
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{sNBW}
-	\begin{itemize}
-		\item A nondeterministic Büchi automaton is an sABW $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ such that
-		\begin{itemize}
-			\item $I$ is a disjunction of locations.
-			\item for all $\ell \in \text{Loc}$, $\delta(\ell)$ is a disjunction of $\varphi \land \ell'$ where $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$ and $ \ell' \in \text{Loc}$.
-		\end{itemize}
-		\item Define the reverse automaton of $\mathcal{A}$ as $\mathcal{A}^{-1} = \langle \text{Loc}, I, \Sigma, \delta^{-1}, \alpha \rangle$ where $\delta^{-1} = \{(\ell, \sigma, \ell') \mid (\ell', \sigma, \ell) \in \delta\}$.
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{example}
+\newcommand{\ABWExample}[1]{
 \tikzset{
 ->, % makes the edges directed
 >=stealth, % makes the arrow heads bold
@@ -223,7 +197,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 }
 	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
 	\centering % centers the figure
-	\begin{adjustbox}{max width=.45\textwidth, max totalheight=.45\textheight}
+	\begin{adjustbox}{max width=#1\textwidth, max totalheight=#1\textheight}
 		\begin{tikzpicture}
 			\node[draw=none] (l) {};
 			\node[state, accepting, above right = 0.6cm and 1.5cm of l] (l4) {$\ell_{4}$};
@@ -245,11 +219,27 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\end{adjustbox}
 		\caption{Alternating automaton for $\varphi \equiv \neg(\Box\Diamond p \to \Box(\neg p \to \Diamond r))$}
 	\end{figure}
+}
+
+
+\begin{frame}{example}
+	\ABWExample{0.45}
 	\begin{itemize}
 		\item $\ell_{4}$ and $\ell_{3}$ check that $\phi_{1} \equiv \Box\Diamond p$ holds.
 		\item $\ell_{2}$ and $\ell_{1}$ check that $\phi_{2} \equiv \Diamond(\neg p \land \neg r)$ holds.
 		\item $\delta(\ell_{4}) = (p \land \ell_{4}) \lor (\text{true} \land \ell_{3} \land \ell_{4})$
 		\item $\delta(\ell_{3}) = (\text{true}\land \ell_{3})\lor (p \land \text{true})$
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{sNBW}
+	\begin{itemize}
+		\item A nondeterministic Büchi automaton is an sABW $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ such that
+		\begin{itemize}
+			\item $I$ is a disjunction of locations.
+			\item for all $\ell \in \text{Loc}$, $\delta(\ell)$ is a disjunction of $\varphi \land \ell'$ where $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$ and $ \ell' \in \text{Loc}$.
+		\end{itemize}
+		\item Define the reverse automaton of $\mathcal{A}$ as $\mathcal{A}^{-1} = \langle \text{Loc}, I, \Sigma, \delta^{-1}, \alpha \rangle$ where $\delta^{-1} = \{(\ell, \sigma, \ell') \mid (\ell', \sigma, \ell) \in \delta\}$.
 	\end{itemize}
 \end{frame}
 
@@ -265,7 +255,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 \begin{frame}{Miyano-Hayashi construction (cont'd)}
 	
-		Given an sABW $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ over $P$, let MH$(\mathcal{A}) = \langle Q, I^{\text{MH}}, \Sigma, \sigma^{\text{MH}}, \alpha^{\text{MH}} \rangle$ be a sNBW where:
+		Given an sABW $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ over $P$, let MH$(\mathcal{A}) = \langle Q, I^{\text{MH}}, \Sigma, \delta^{\text{MH}}, \alpha^{\text{MH}} \rangle$ be a sNBW where:
 		\begin{itemize}
 			\item $Q = 2^{\text{Loc}} \times 2^{\text{Loc}}$
 			\item $I^{\text{MH}}$ is the disjunction of all the pairs $s$, $\emptyset$ such that $s \models I$
@@ -289,6 +279,47 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\begin{theorem}
 		For all sABW $\mathcal{A}$, we have $\text{L}_{\text{b}}(\text{MH}(\mathcal{A})) = \text{L}_{\text{b}}(\mathcal{A})$.
 	\end{theorem}
+\end{frame}
+
+\begin{frame}{Recall ABW}
+	\ABWExample{1}
+\end{frame}
+
+\begin{frame}{Miyano-Hayashi construction example}
+\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+every edge/.style={draw, thick, black},
+node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+	\begin{adjustbox}{max width=0.8\textwidth, max totalheight=0.8\textheight}
+		\begin{tikzpicture}
+			\node[state, initial] (a) {$\langle \{\ell_{2}, \ell_{4}\}, \{\ell_{2}\}\rangle$};
+			\node[state, above right = and 4.5cm of a] (b) {$\langle \{\ell_{2}, \ell_{3},\ell_{4}\}, \{\ell_{2}\}\rangle$};
+			\node[state, accepting, below right = of a] (c) {$\langle \{\ell_{1}, \ell_{3},\ell_{4}\}, \emptyset\rangle$};
+			\node[state, accepting, right = of c] (d) {$\langle \{\ell_{1}, \ell_{4}\}, \emptyset\rangle$};
+			\node[state, right = of d] (e) {$\langle \{\ell_{1}, \ell_{3},\ell_{4}\}, \{\ell_{3}\}\rangle$};
+
+			\draw (a) edge[loop above] node[left]{$\{p\}, \{p, r\}$} (a);
+			\draw (a) edge[bend left = 15] node[above = 0.5cm]{$\emptyset, \{p\}, \{r\}, \{p, r\}$} (b);
+			\draw (b) edge[bend left = 15] node[below = 0.3cm]{$\{p\}, \{p, r\}$} (a);
+			\draw (b) edge[loop above] node{$\emptyset, \{p\}, \{r\}, \{p, r\}$} (b);
+			\draw (b) edge node[right]{$\emptyset$} (c);
+			\draw (a) edge node[below]{$\emptyset$} (c);
+			\draw (c) edge[loop below] node{$\emptyset, \{p\}$} (c);
+			\draw (c) edge node[below]{$\{p\}$} (d);
+			\draw (d) edge[loop above] node{$\{p\}$} (d);
+			\draw (d) edge[bend left = 15] node[above]{$\emptyset, \{p\}$} (e);
+			\draw (e) edge[bend left = 15] node[below]{$\{p\}$} (d);
+			\draw (e) edge[loop above] node{$\emptyset, \{p\}$} (e);
+		\end{tikzpicture}
+	\end{adjustbox}
+		\caption{After the Miyano-Hayashi construction}
+	\end{figure}
 \end{frame}
 
 \end{document}
