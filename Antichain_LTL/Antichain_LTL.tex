@@ -322,4 +322,32 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\end{figure}
 \end{frame}
 
+\begin{frame}{Satisfiability-Checking of LTL}
+	\begin{itemize}
+		\item Recall : The satisfiability problem for LTL asks, given an LTL formula $\phi$, if $\llbracket \phi \rrbracket$ is empty.
+	\item Equivalent to check the emptiness of $\text{MH}(\mathcal{A}_{\phi})$.
+	\item $\llbracket \phi \rrbracket = \text{L}_\text{b}(\mathcal{A}_{\phi}) = \emptyset$ iff $I^{\text{MH}}\cap\mathcal{F}_{\phi} = \emptyset$ where $\mathcal{F}_{\phi}$ is
+	$$\mathcal{F}_{\phi} \equiv \nu y \cdot \mu x \cdot (\text{Pre}(x) \cup (\text{Pre}(y) \cap \alpha^{\text{MH}})) $$
+	where $\text{Pre}(L) = \{q \in Q \mid \exists \sigma \in \Sigma \cdot \exists q' \in L : \sigma \cup \{q'\} \models \delta^{\text{MH}}(q)\}$.
+	\item We call $\mathcal{F}_{\phi}$ a \textcolor{red}{backward} algorithm.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Satisfiability-Checking of LTL(cont'd)}
+	\begin{itemize}
+		\item The following fixpoint formulas compute the accepting reachable states $R_{\alpha}$ and then the set $\mathcal{F}'_{\phi}$ in a \textcolor{red}{forward} fashion.
+
+		$$R_{\alpha} \equiv \alpha^{\text{MH}} \cap \mu x \cdot (\text{Post}(x) \cup I^{\text{MH}})$$
+		$$\mathcal{F}'_{\phi} \equiv \nu y \cdot \mu x \cdot (\text{Post}(x) \cup (\text{Post}(y) \cap R_{\alpha})) $$
+		
+		where $\text{Post}(L) = \{q \in Q \mid \exists \sigma \in \Sigma \cdot \exists q' \in L : \sigma \cup \{q\} \models \delta^{\text{MH}}(q')\}$.
+	\end{itemize}
+	\begin{theorem}
+		$\text{L}_{\text{b}}(\mathcal{A}_{\phi}) = \emptyset ~ iff ~ \mathcal{F}_{\phi} = \emptyset$.
+	\end{theorem}
+\end{frame}
+
+\begin{frame}{Proof}
+\end{frame}
+
 \end{document}
