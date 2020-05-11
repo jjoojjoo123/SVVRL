@@ -348,6 +348,74 @@ initial text=$ $, % sets the text that appears on the start arrow
 \end{frame}
 
 \begin{frame}{Proof}
+	\begin{itemize}
+		\item Define $\Delta^{\text{MH}} : Q \times \Sigma^{+}$ the extension of the transition relation $\delta^{\text{MH}}$(recursively)
+		\begin{itemize}
+			\item $\Delta^{\text{MH}}(q, \sigma) = \delta^{\text{MH}}(q, \sigma)$
+			\item $\Delta^{\text{MH}}(q, \mathnormal{w}\sigma) = \{q' \in Q \mid \exists q'' \in \Delta^{\text{MH}}(q, \mathnormal{w}) : \sigma \cup \{q'\} \models \delta^{\text{MH}}(q'')\}$ for each $q \in Q$, $\mathnormal{w} \in \Sigma^{+}$ and $\sigma \in \Sigma$.
+		\end{itemize}
+		\item Looping states $\mathcal{C}^{\text{MH}} = \{q \in Q \mid \exists \mathnormal{w} \in \Sigma^{+} : q \in \Delta^{\text{MH}}(q,\mathnormal{w})\}$
+		\item From the definition of Büchi acceptance condition for NBW, we have $\text{L}_{\text{b}}(\mathcal{A}_{\phi}) = \emptyset$ iff $\mathcal{C}^{\text{MH}} \cap R_{\alpha} = \emptyset$.
+	\end{itemize}
 \end{frame}
 
+\begin{frame}{Proof(cont'd)}
+	\begin{itemize}
+		\item Let $\text{HM}(\mathcal{A}_{\phi})$ be the reverse automaton.
+		\item The following equivalences establish the theorem:
+		\begin{itemize}
+				\item $\nu y \cdot \mu x \cdot (\text{Pre}(x) \cup (\text{Pre}(y) \cap R_{\alpha})) = \emptyset$
+				\item iff $\mathcal{C}^{\text{MH}} \cap R_{\alpha} = \emptyset$
+				\item iff $\mathcal{C}^{\text{HM}} \cap R_{\alpha} = \emptyset$
+				\item iff $\nu y \cdot \mu x \cdot (\text{Post}(x) \cup (\text{Post}(y) \cap R_{\alpha})) = \emptyset$
+				\item iff $\mathcal{F}'_{\phi} = \emptyset$
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Closed Sets and Antichains}
+	\begin{itemize}
+		\item Let $\preceq \subseteq Q \times Q$.
+		\item $q_{1} \prec q_{2}$ iff $q_{1} \preceq q_{2}$ and $q_{2} \npreceq q_{1}$
+		\item A set $R \subseteq Q$ is \textcolor{red}{$\preceq$-closed} iff for all $q_{1}, q_{2} \in Q$, if $q_{1} \preceq q_{2}$ and $q_{2} \in R$ then $q_{1} \in R$.
+		\item The \textcolor{red}{$\preceq$-closure} of $R$, is the set $\llbracket R \rrbracket = \{q \in Q \mid \exists q' \in R : q \preceq q'\}$.
+		\item Let $\lceil R \rceil_{\preceq} = \{q \in R \mid \nexists q' \in R : q \prec q'\}$ be the set of \textcolor{red}{$\preceq$-maximal elements} of $R$.
+		\item Let $\lfloor R \rfloor_{\succeq} = \{q \in R \mid \nexists q' \in R : q \succ q'\}$ be the set of \textcolor{red}{$\succeq$-minimal elements} of $R$.
+		\item For all $\preceq$-closed sets $R \subseteq Q$, $R = \llbracket \lceil R \rceil_{\preceq} \rrbracket_{\preceq}$.
+		\item For all $\succeq$-closed sets $R \subseteq Q$, $R = \llbracket \lfloor R \rfloor_{\preceq} \rrbracket_{\succeq}$.
+		\item if $\preceq$ is a partial order, then $\lceil R \rceil_{\preceq}$ is an \textcolor{red}{antichain}.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Closed Sets and Antichains(cont'd)}
+	\begin{itemize}
+		\item Let $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ be a NBW.
+		\item A preorder $\preceq \subseteq \text{Loc} \times \text{Loc}$ is a \textcolor{red}{forward-simulation} for $\mathcal{A}$ if for all $q_{1}, q_{2}, q_{3} \in \text{Loc}$, for all $\sigma \in \Sigma$,
+		\begin{itemize}
+			\item if $q_{1} \preceq q_{2}$ and $q_{2} \xrightarrow{\sigma}_{\delta} q_{3}$ then there exists $q_{4} \in \text{Loc}$ such that $q_{1} \xrightarrow{\sigma}_{\delta} q_{4}$ and $q_{4} \preceq q_{3}$, and
+			\item if $q_{1} \preceq q_{2}$ and $q_{2} \in \alpha$ then $q_{1} \in \alpha$.
+		\end{itemize}
+	\end{itemize}
+
+\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+every edge/.style={draw, thick, black},
+node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+	\begin{adjustbox}{max width=0.4\textwidth, max totalheight=0.4\textheight}
+		\begin{tikzpicture}
+			\node[] (if) {If};
+			\node[state, above right = 1cm and of if] (l1) {$\ell_{1}$};
+			\node[state, right = of l1] (l2) {$\ell_{2}$};
+			\node[state, below right = 1cm and of if] (l3) {$\ell_{3}$};
+		\end{tikzpicture}
+	\end{adjustbox}
+		\caption{Simulation}
+	\end{figure}
+\end{frame}
 \end{document}
