@@ -407,12 +407,17 @@ initial text=$ $, % sets the text that appears on the start arrow
 }
 	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
 	\centering % centers the figure
-	\begin{adjustbox}{max width=0.4\textwidth, max totalheight=0.4\textheight}
+	\begin{adjustbox}{max width=\textwidth, max totalheight=\textheight}
 		\begin{tikzpicture}
-			\node[] (if) {If};
-			\node[state, above right = 1cm and of if] (l1) {$\ell_{1}$};
-			\node[state, right = of l1] (l2) {$\ell_{2}$};
-			\node[state, below right = 1cm and of if] (l3) {$\ell_{3}$};
+			\node[] (then) {then};
+			\node[state, above left = of then] (l2) {$\ell_{2}$};
+			\node[state, left = of l2] (l1) {$\ell_{1}$};
+			\node[state, below = of l1] (l3) {$\ell_{3}$};
+			\node[below left = of l1] (if) {If};
+			
+			\node[state, below right = of then] (l3') {$\ell_{3}$};
+			\node[state, right = of l3'] (l4') {$\ell_{4}$};
+			\node[state, above = of l4'] (l2') {$\ell_{2}$};
 		\end{tikzpicture}
 	\end{adjustbox}
 		\caption{Simulation}
