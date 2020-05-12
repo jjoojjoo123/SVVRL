@@ -23,7 +23,7 @@
 \usepackage{stmaryrd}
 \usepackage{adjustbox}
 
-%\setCJKmainfont{微軟正黑體} 
+\setCJKmainfont{微軟正黑體} 
 
 \setbeamerfont{title}{size=\Large,series=\bfseries}  % title size
 
@@ -51,20 +51,8 @@
 %\newlength{\subtextwidth}
 %\setlength{\subtextwidth}{11cm}
 
-\newenvironment{cbox}{
-    \begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    \begin{minipage}[t]{\subtextwidth}}
-    {\vspace{.25ex}
-    \end{minipage}
-    \hline
-    \end{tabular}
-    \end{center} }
 
-
-\mode<presentation>{\title{Antichains: Alternative Algorithms for LTL Satisfiability and Model-Checking}}
-\mode<article>{\title{Algorithms 2019: Analysis of Algorithms}}
+\title{Antichains: Alternative Algorithms for LTL Satisfiability and Model-Checking}
 %\subtitle{(Based on [Manber 1989])}
 \author{林宏陽}
 %\institute[IM.NTU]{Department of Information Management\\ National Taiwan University}
@@ -375,7 +363,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 \begin{frame}{Closed Sets and Antichains}
 	\begin{itemize}
-		\item Let $\preceq \subseteq Q \times Q$.
+		\item Let $\preceq \subseteq Q \times Q$ be a preorder.
 		\item $q_{1} \prec q_{2}$ iff $q_{1} \preceq q_{2}$ and $q_{2} \npreceq q_{1}$
 		\item A set $R \subseteq Q$ is \textcolor{red}{$\preceq$-closed} iff for all $q_{1}, q_{2} \in Q$, if $q_{1} \preceq q_{2}$ and $q_{2} \in R$ then $q_{1} \in R$.
 		\item The \textcolor{red}{$\preceq$-closure} of $R$, is the set $\llbracket R \rrbracket = \{q \in Q \mid \exists q' \in R : q \preceq q'\}$.
@@ -387,7 +375,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Closed Sets and Antichains(cont'd)}
+\begin{frame}{Simulation}
 	\begin{itemize}
 		\item Let $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ be a NBW.
 		\item A preorder $\preceq \subseteq \text{Loc} \times \text{Loc}$ is a \textcolor{red}{forward-simulation} for $\mathcal{A}$ if for all $q_{1}, q_{2}, q_{3} \in \text{Loc}$, for all $\sigma \in \Sigma$,
@@ -398,7 +386,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\end{itemize}
 
 \tikzset{
-->, % makes the edges directed
+%->, % makes the edges directed
 >=stealth, % makes the arrow heads bold
 every edge/.style={draw, thick, black},
 node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
@@ -407,17 +395,35 @@ initial text=$ $, % sets the text that appears on the start arrow
 }
 	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
 	\centering % centers the figure
-	\begin{adjustbox}{max width=\textwidth, max totalheight=\textheight}
+	\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
 		\begin{tikzpicture}
 			\node[] (then) {then};
-			\node[state, above left = of then] (l2) {$\ell_{2}$};
-			\node[state, left = of l2] (l1) {$\ell_{1}$};
-			\node[state, below = of l1] (l3) {$\ell_{3}$};
+			\node[state, above left = of then] (l2) {$q_{3}$};
+			\node[state, left = of l2] (l1) {$q_{2}$};
+			\node[below = of l1] (mid) {
+			\begin{tikzpicture}
+      		\node [rotate=90] {$\preceq$};    
+    		\end{tikzpicture}
+};
+			\node[state, below = of mid] (l3) {$q_{1}$};
 			\node[below left = of l1] (if) {If};
 			
-			\node[state, below right = of then] (l3') {$\ell_{3}$};
-			\node[state, right = of l3'] (l4') {$\ell_{4}$};
-			\node[state, above = of l4'] (l2') {$\ell_{2}$};
+			\node[state, below right = of then] (l3') {$q_{1}$};
+			\node[state, right = of l3'] (l4') {$q_{4}$};
+			\node[above = of l4'] (mid') {
+			\begin{tikzpicture}
+      		\node [rotate=90] {$\preceq$};    
+    		\end{tikzpicture}
+};
+			\node[state, above = of mid'] (l2') {$q_{3}$};
+
+			\draw (l1) edge[->] node[above] {$\sigma$} (l2);
+			\draw (l3') edge[->] node[above] {$\sigma$} (l4');
+
+			\draw (l1) edge[dashed] (mid);
+			\draw (mid) edge[dashed] (l3);
+			\draw (l4') edge[dashed] (mid');
+			\draw (mid') edge[dashed] (l2');
 		\end{tikzpicture}
 	\end{adjustbox}
 		\caption{Simulation}
