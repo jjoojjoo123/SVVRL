@@ -67,20 +67,23 @@
 
 \begin{frame}{Introduction}
 	\begin{itemize}
-		\item A model for an LTL formula over a set $P$ of propositions : an infinite word $\omega$ over the alphabet $\Sigma = 2^{P}$.
-		\item An LTL formula $\phi$ defines a set of words $\llbracket \phi \rrbracket = \{\omega \in \Sigma^{\omega} \mid \omega \models \phi\}$.
-		\item The satisfiability problem : if $\llbracket \phi \rrbracket$ is empty.
-		\item The model-checking problem : given an omega-regular language $\mathcal{L}$, if $\mathcal{L} \subseteq \llbracket \phi \rrbracket$
+		\item A model for an LTL formula over a set $P$ of propositions is an infinite word $\mathnormal{w}$ over the alphabet $\Sigma = 2^{P}$.
+		\item An LTL formula $\phi$ defines a set of words $\llbracket \phi \rrbracket = \{\mathnormal{w} \in \Sigma^{\omega} \mid \mathnormal{w} \models \phi\}$.
+		\item The satisfiability problem asks, given an LTL formula $\phi$, if $\llbracket \phi \rrbracket$ is empty.
+		\item The model-checking problem asks, given an omega-regular language $\mathcal{L}$(e.g., the set
+of all computations of a reactive system) and a LTL formula $\phi$, if $\mathcal{L} \subseteq \llbracket \phi \rrbracket$
 		\item Given a LTL formula $\phi$, we can construct a NBW $\mathcal{A}_{\phi}$ such that $\text{L}_{\text{b}}(\mathcal{A}_{\phi}) = \llbracket \phi \rrbracket$
+		\item This reduces the satisfiability and model-checking problems to automata-theoretic questions.
 	\end{itemize}
 \end{frame}
 
 \begin{frame}{Introduction(cont'd)}
 	\begin{itemize}
-		\item Implemented in explicit way : worst-case exponential.
-		\item Implemented in symbolic way : it scales better.
+		\item Implemented in explicit way(such as SPIN) : worst-case exponential.
+		\item Implemented in symbolic way(such as NuSMV) : it scales better.
 		\item Efficient algorithms to reason on large LTL formulas are highly desirable.
 		\item A new efficient way to analyze sABW (the number of states and symbolic transitions are linear in the size of the LTL formula).
+		\item This approach avoids the explicit translation to NBW.
 	\end{itemize}
 \end{frame}
 
@@ -93,10 +96,10 @@ $P$ is a tuple $\mathcal{K} = \langle Q, q_{\iota}, \rightarrow_{\mathcal{K}}, \
 			\item $Q$ is a finite set of states	
 			\item $q_{\iota} \in Q$ is the initial state
 			\item $\rightarrow_{\mathcal{K}} \subseteq Q \times Q$ is a transition relation
-			\item $L : Q \to 2^{P}$ is a labeling function
+			\item $\mathcal{L} : Q \to 2^{P}$ is a labeling function
 		\end{itemize}
 		\item A run of $\mathcal{K}$ is an infinite sequence $\rho = q_{0}q_{1}\cdots$ such that $q_{0} = q_{\iota}$ and for all $i \geq 0$, $(q_{i}, q_{i+1}) \in \rightarrow_{\mathcal{K}}$
-		\item Let $\mathcal{L}(\rho) = \mathcal{L}(q_{0})\mathcal{L}(q_{1})$ and define the language of K as $\text{L}(\mathcal{K}) =
+		\item Let $\mathcal{L}(\rho) = \mathcal{L}(q_{0})\mathcal{L}(q_{1})\cdots$ and define the language of K as $\text{L}(\mathcal{K}) =
 \{\mathcal{L}(\rho) \mid \rho \text{ is a run of } \mathcal{K}\}$
 	\end{itemize}
 \end{frame}
@@ -104,17 +107,17 @@ $P$ is a tuple $\mathcal{K} = \langle Q, q_{\iota}, \rightarrow_{\mathcal{K}}, \
 \begin{frame}{Linear Temporal Logic(cont'd)}
 	\begin{itemize}
 		\item The LTL formulas over $P$ are defined by $\phi ::= p \mid \neg\phi \mid \phi \lor \phi \mid \mathcal{X}\phi \mid \phi \mathcal{U} \phi$ where $p \in P$.
-		\item Given an infinite word $\omega = \sigma_{0}\sigma_{1}\cdots \in \Sigma^{\omega}$ where $\Sigma = 2^{P}$ , and an LTL formula $\phi$ over $P$, we say that $\omega$ satisfies $\phi$ (written $\omega \models \phi$) if and only if (recursively):
+		\item Given an infinite word $\mathnormal{w} = \sigma_{0}\sigma_{1}\cdots \in \Sigma^{\omega}$ where $\Sigma = 2^{P}$ , and an LTL formula $\phi$ over $P$, we say that $\mathnormal{w}$ satisfies $\phi$ (written $\mathnormal{w} \models \phi$) if and only if (recursively):
 		\begin{itemize}
 			\item $\phi \equiv p$ and $p \in \sigma_{0}$,
-			\item or $\phi \equiv \neg\phi_{1}$ and $\omega \models \phi_{1}$,
-			\item or $\phi \equiv \phi_{1} \lor \phi_{2}$ and $\omega \models \phi_{1}$ or $\omega \models \phi_{2}$,
+			\item or $\phi \equiv \neg\phi_{1}$ and $\mathnormal{w} \models \phi_{1}$,
+			\item or $\phi \equiv \phi_{1} \lor \phi_{2}$ and $\mathnormal{w} \models \phi_{1}$ or $\mathnormal{w} \models \phi_{2}$,
 			\item or $\phi \equiv \mathcal{X}\phi_{1}$ and $\sigma_{1}\sigma_{2}\cdots \models \phi_{1}$,
 			\item or $\phi \equiv \phi_{1}\mathcal{U}\phi{2}$ and for some $k \in N$, $\sigma_{k}\sigma_{k+1}\cdots \models \phi_{2}$ and for all $i$, $0 \leq i < k$,
 $\sigma_{i}\sigma_{i+1}\cdots \models \phi_{1}$.
 		\end{itemize}
 		\item $true$, $false$ and $\phi_{1} \land \phi_{2}$ can be derived from the definition.
-		\item let $\Box\phi = true\mathcal{U}\phi$, $\Box\phi =
+		\item let $\Diamond\phi = \text{true} \mathcal{U}\phi$, $\Box\phi =
 \neg\Diamond\neg\phi$, and $\phi_{1}\mathcal{R}\phi_{2} = \neg(\neg\phi_{1}\mathcal{U}\neg\phi_{2})$.
 	\end{itemize}
 \end{frame}
@@ -122,11 +125,12 @@ $\sigma_{i}\sigma_{i+1}\cdots \models \phi_{1}$.
 \begin{frame}{Linear Temporal Logic(cont'd)}
 	\begin{itemize}
 		\item The satisfiability-checking problem : whether $\llbracket \phi \rrbracket = \emptyset$.
+		
+		\item The model-checking problem : whether $\mathcal{K} \models \phi$
 		\begin{itemize}
 			\item we say that $\mathcal{K}$ satisfies $\phi$ ($\mathcal{K} \models \phi$) if and only if $\text{L}(\mathcal{K}) \subseteq \llbracket \phi \rrbracket$
 			\item that is for all runs $\rho$ of $\mathcal{K}$, we have $\mathcal{L}(\rho) \models \phi$
 		\end{itemize}
-		\item The model-checking problem : whether $\mathcal{K} \models \phi$
 		\item Both problems are PSPACE-COMPLETE.
 	\end{itemize}
 \end{frame}
@@ -159,9 +163,9 @@ elements of $R$ and $false$ to the elements of $Q \setminus R$ satisfies $\varph
 
 \begin{frame}{sABW(cont'd)}
 	\begin{itemize}
-		\item A run of $\mathcal{A}$ on an infinite word $\omega = \sigma_{0}\sigma_{1}\cdots \in \Sigma^{\omega}$ is a DAG $T_{\omega} = \langle V, V_{\iota}, \to \rangle$ where:
+		\item A run of $\mathcal{A}$ on an infinite word $\mathnormal{w} = \sigma_{0}\sigma_{1}\cdots \in \Sigma^{\omega}$ is a DAG $T_{\mathnormal{w}} = \langle V, V_{\iota}, \to \rangle$ where:
 		\begin{itemize}
-			\item $V \subseteq \text{Loc} \times N$. A node $(\ell, \mathnormal{i})$ represents the location $\ell$ after the first $\mathnormal{i}$ letters of $\omega$ have been read by $\mathcal{A}$. Nodes of the form $(\ell, \mathnormal{i})$ with 	$\ell \in \alpha$ are called $\alpha$-nodes;
+			\item $V \subseteq \text{Loc} \times N$. A node $(\ell, \mathnormal{i})$ represents the location $\ell$ after the first $\mathnormal{i}$ letters of $\mathnormal{w}$ have been read by $\mathcal{A}$. Nodes of the form $(\ell, \mathnormal{i})$ with 	$\ell \in \alpha$ are called $\alpha$-nodes;
 			\item $V_{\iota} \subseteq \text{Loc} \times \{0\}$ is such that $V_{\iota} \subseteq V$ and $\{\ell \mid (\ell, 0) \in V_{\iota}\} \models I$;
 			\item $\to \subseteq V \times V$ is such that for all $(\ell, \mathnormal{i}) \in V$
 				\begin{itemize}
@@ -169,8 +173,8 @@ elements of $R$ and $false$ to the elements of $Q \setminus R$ satisfies $\varph
 					\item $\sigma_{i} \cup \{\ell' \mid (\ell, \mathnormal{i}) \to (\ell', \mathnormal{i} + 1)\} \models \delta(\ell)$
 				\end{itemize}
 		\end{itemize}
-		\item A run $T_{\omega}$ on an infinite word $\omega$ is accepting if \textcolor{red}{all} its infinite paths visit $\alpha$-nodes infinitely often.
-		\item An infinite word $\omega \in \Sigma^{\omega}$ is accepted by $\mathcal{A}$ if there \textcolor{red}{exists} an accepting run on it.
+		\item A run $T_{\mathnormal{w}}$ on an infinite word $\mathnormal{w}$ is accepting if \textcolor{red}{all} its infinite paths visit $\alpha$-nodes infinitely often.
+		\item An infinite word $\mathnormal{w} \in \Sigma^{\omega}$ is accepted by $\mathcal{A}$ if there \textcolor{red}{exists} an accepting run on it.
 	\end{itemize}
 \end{frame}
 
@@ -246,7 +250,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 		Given an sABW $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ over $P$, let MH$(\mathcal{A}) = \langle Q, I^{\text{MH}}, \Sigma, \delta^{\text{MH}}, \alpha^{\text{MH}} \rangle$ be a sNBW where:
 		\begin{itemize}
 			\item $Q = 2^{\text{Loc}} \times 2^{\text{Loc}}$
-			\item $I^{\text{MH}}$ is the disjunction of all the pairs $s$, $\emptyset$ such that $s \models I$
+			\item $I^{\text{MH}}$ is the disjunction of all the pairs $\langle s$, $\emptyset \rangle$ such that $s \models I$
 		
 		\item $\delta^{\text{MH}}$ is defined for all $\langle s, o \rangle \in Q$:
 		\begin{itemize}
@@ -257,7 +261,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 				\item $\forall \ell \in o \cdot \forall \sigma \subseteq P$ : if $\sigma \models \varphi$ then $\sigma \cup o' \models \delta(\ell)$
 			\end{itemize}
 			
-			\item if $o = \emptyset$, then $\delta^{\text{MH}}(\langle s, o \rangle)$ is the disjunction of all the formulas $\varphi \land \langle s', o' \setminus \alpha \rangle$ with $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$ such that
+			\item if $o = \emptyset$, then $\delta^{\text{MH}}(\langle s, o \rangle)$ is the disjunction of all the formulas $\varphi \land \langle s', s' \setminus \alpha \rangle$ with $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$ such that
 			\begin{itemize}
 				\item $\forall \ell \in s \cdot \forall \sigma \subseteq P$ : if $\sigma \models \varphi$ then $\sigma \cup s' \models \delta(\ell)$
 			\end{itemize}
@@ -273,40 +277,53 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\ABWExample{1}
 \end{frame}
 
-\begin{frame}{Miyano-Hayashi construction example}
+\begin{frame}{After Miyano-Hayashi construction}
 \tikzset{
-->, % makes the edges directed
+%->, % makes the edges directed
 >=stealth, % makes the arrow heads bold
 every edge/.style={draw, thick, black},
 node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
 every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
 initial text=$ $, % sets the text that appears on the start arrow
 }
-	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\begin{figure}[t] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
 	\centering % centers the figure
-	\begin{adjustbox}{max width=0.8\textwidth, max totalheight=0.8\textheight}
+	\begin{adjustbox}{max width=.95\textwidth, max totalheight=.95\textheight}
 		\begin{tikzpicture}
-			\node[state, initial] (a) {$\langle \{\ell_{2}, \ell_{4}\}, \{\ell_{2}\}\rangle$};
+			\node[state] (a) {$\langle \{\ell_{2}, \ell_{4}\}, \{\ell_{2}\}\rangle$};
+			\node[state, initial, accepting, left = of a] (1) {$\langle \{\ell_{2}, \ell_{4}\}, \emptyset$};
 			\node[state, above right = and 4.5cm of a] (b) {$\langle \{\ell_{2}, \ell_{3},\ell_{4}\}, \{\ell_{2}\}\rangle$};
+			\node[state, above left = of b] (2) {$\langle \{\ell_{2}, \ell_{3}, \ell_{4}\}, \{\ell_{2}, \ell_{3}\}\rangle$};
+			\node[state, above right = of b] (3) {$\langle \{\ell_{2}, \ell_{3}, \ell_{4}\}, \{\ell_{3}\}\rangle$};
 			\node[state, accepting, below right = of a] (c) {$\langle \{\ell_{1}, \ell_{3},\ell_{4}\}, \emptyset\rangle$};
 			\node[state, accepting, right = of c] (d) {$\langle \{\ell_{1}, \ell_{4}\}, \emptyset\rangle$};
 			\node[state, right = of d] (e) {$\langle \{\ell_{1}, \ell_{3},\ell_{4}\}, \{\ell_{3}\}\rangle$};
 
-			\draw (a) edge[loop above] node[left]{$\{p\}, \{p, r\}$} (a);
-			\draw (a) edge[bend left = 15] node[above = 0.5cm]{$\emptyset, \{p\}, \{r\}, \{p, r\}$} (b);
-			\draw (b) edge[bend left = 15] node[below = 0.3cm]{$\{p\}, \{p, r\}$} (a);
-			\draw (b) edge[loop above] node{$\emptyset, \{p\}, \{r\}, \{p, r\}$} (b);
-			\draw (b) edge node[right]{$\emptyset$} (c);
-			\draw (a) edge node[below]{$\emptyset$} (c);
-			\draw (c) edge[loop below] node{$\emptyset, \{p\}$} (c);
-			\draw (c) edge node[below]{$\{p\}$} (d);
+
+			\draw (3.north west) edge[->, bend right = 100] node[left]{$\{p\}, \{p, r\}$} (1);
+			\draw (1) edge[->] node[above]{$\{p\}, \{p, r\}$} (a);
+			\draw (1) edge[->, bend left = 20] node[above]{$\emptyset, \{p\}, \{r\}, \{p, r\}$} (2);
+			\draw (1) edge[->, bend right = 40] node[below]{$\emptyset$} (e);
+			\draw (2) edge[loop right] node{$\emptyset, \{p\}, \{r\}, \{p, r\}$} (2);
+			\draw (2.south) edge[->, bend right = 15] node[above]{$\{p\}, \{p, r\}$} (b);
+			\draw (2.north east) edge[->, bend left = 10] node[above]{$\emptyset$} (3);
+			\draw (3) edge[loop above] node{$\emptyset, \{p\}, \{r\}, \{p, r\}$} (3);
+			\draw (3) edge[->, bend left = 20] node[right]{$\emptyset$} (e);
+			\draw (a) edge[loop above] node{$\{p\}, \{p, r\}$} (a);
+			\draw (a) edge[->, bend left = 15] node[above = 0.5cm]{$\emptyset, \{p\}, \{r\}, \{p, r\}$} (b);
+			\draw (b) edge[->, bend left = 15] node[below = 0.3cm]{$\{p\}, \{p, r\}$} (a);
+			\draw (b) edge[loop right] node{$\emptyset, \{p\}, \{r\}, \{p, r\}$} (b);
+			\draw (b) edge[->] node[right]{$\emptyset$} (c);
+			\draw (a) edge[->] node[above]{$\emptyset$} (c);
+			\draw (c) edge[loop left] node{$\emptyset, \{p\}$} (c);
+			\draw (c) edge[->] node[below]{$\{p\}$} (d);
 			\draw (d) edge[loop above] node{$\{p\}$} (d);
-			\draw (d) edge[bend left = 15] node[above]{$\emptyset, \{p\}$} (e);
-			\draw (e) edge[bend left = 15] node[below]{$\{p\}$} (d);
-			\draw (e) edge[loop above] node{$\emptyset, \{p\}$} (e);
+			\draw (d) edge[->, bend left = 15] node[above]{$\emptyset, \{p\}$} (e);
+			\draw (e) edge[->, bend left = 15] node[below]{$\{p\}$} (d);
+			\draw (e) edge[loop right] node{$\emptyset, \{p\}$} (e);
 		\end{tikzpicture}
 	\end{adjustbox}
-		\caption{After the Miyano-Hayashi construction}
+		%\caption{After the Miyano-Hayashi construction}
 	\end{figure}
 \end{frame}
 
