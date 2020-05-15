@@ -106,25 +106,25 @@ $P$ is a tuple $\mathcal{K} = \langle Q, q_{\iota}, \rightarrow_{\mathcal{K}}, \
 
 \begin{frame}{Linear Temporal Logic(cont'd)}
 	\begin{itemize}
-		\item The LTL formulas over $P$ are defined by $\phi ::= p \mid \neg\phi \mid \phi \lor \phi \mid \mathcal{X}\phi \mid \phi \mathcal{U} \phi$ where $p \in P$.
+		\item The LTL formulas over $P$ are defined by $\phi ::= p \mid \neg\phi \mid \phi \lor \phi \mid \mathbin{\mathcal{X}}\phi \mid \phi \mathbin{\mathcal{U}} \phi$ where $p \in P$.
 		\item Given an infinite word $\mathnormal{w} = \sigma_{0}\sigma_{1}\cdots \in \Sigma^{\omega}$ where $\Sigma = 2^{P}$ , and an LTL formula $\phi$ over $P$, we say that $\mathnormal{w}$ satisfies $\phi$ (written $\mathnormal{w} \models \phi$) if and only if (recursively):
 		\begin{itemize}
 			\item $\phi \equiv p$ and $p \in \sigma_{0}$,
-			\item or $\phi \equiv \neg\phi_{1}$ and $\mathnormal{w} \models \phi_{1}$,
-			\item or $\phi \equiv \phi_{1} \lor \phi_{2}$ and $\mathnormal{w} \models \phi_{1}$ or $\mathnormal{w} \models \phi_{2}$,
-			\item or $\phi \equiv \mathcal{X}\phi_{1}$ and $\sigma_{1}\sigma_{2}\cdots \models \phi_{1}$,
-			\item or $\phi \equiv \phi_{1}\mathcal{U}\phi{2}$ and for some $k \in N$, $\sigma_{k}\sigma_{k+1}\cdots \models \phi_{2}$ and for all $i$, $0 \leq i < k$,
+			\item $\phi \equiv \neg\phi_{1}$ and $\mathnormal{w} \not\models \phi_{1}$,
+			\item $\phi \equiv \phi_{1} \lor \phi_{2}$ and $\mathnormal{w} \models \phi_{1}$ or $\mathnormal{w} \models \phi_{2}$,
+			\item $\phi \equiv \mathbin{\mathcal{X}}\phi_{1}$ and $\sigma_{1}\sigma_{2}\cdots \models \phi_{1}$, or
+			\item $\phi \equiv \phi_{1}\mathbin{\mathcal{U}}\phi_{2}$ and for some $k \in N$, $\sigma_{k}\sigma_{k+1}\cdots \models \phi_{2}$ and for all $i$, $0 \leq i < k$,
 $\sigma_{i}\sigma_{i+1}\cdots \models \phi_{1}$.
 		\end{itemize}
 		\item $true$, $false$ and $\phi_{1} \land \phi_{2}$ can be derived from the definition.
-		\item let $\Diamond\phi = \text{true} \mathcal{U}\phi$, $\Box\phi =
-\neg\Diamond\neg\phi$, and $\phi_{1}\mathcal{R}\phi_{2} = \neg(\neg\phi_{1}\mathcal{U}\neg\phi_{2})$.
+		\item let $\Diamond\phi = \text{true} \mathbin{\mathcal{U}}\phi$, $\Box\phi =
+\neg\Diamond\neg\phi$, and $\phi_{1}\mathbin{\mathcal{R}}\phi_{2} = \neg(\neg\phi_{1}\mathbin{\mathcal{U}}\neg\phi_{2})$.
 	\end{itemize}
 \end{frame}
 
 \begin{frame}{Linear Temporal Logic(cont'd)}
 	\begin{itemize}
-		\item The satisfiability-checking problem : whether $\llbracket \phi \rrbracket = \emptyset$.
+		\item The satisfiability problem : whether $\llbracket \phi \rrbracket = \emptyset$.
 		
 		\item The model-checking problem : whether $\mathcal{K} \models \phi$
 		\begin{itemize}
@@ -218,7 +218,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\ABWExample{0.45}
 	\begin{itemize}
 		\item $\ell_{4}$ and $\ell_{3}$ check that $\phi_{1} \equiv \Box\Diamond p$ holds.
-		\item $\ell_{2}$ and $\ell_{1}$ check that $\phi_{2} \equiv \Diamond(\neg p \land \neg r)$ holds.
+		\item $\ell_{2}$ and $\ell_{1}$ check that $\phi_{2} \equiv \Diamond(\neg p \land \Box\neg r)$ holds.
 		\item $\delta(\ell_{4}) = (p \land \ell_{4}) \lor (\text{true} \land \ell_{3} \land \ell_{4})$
 		\item $\delta(\ell_{3}) = (\text{true}\land \ell_{3})\lor (p \land \text{true})$
 	\end{itemize}
