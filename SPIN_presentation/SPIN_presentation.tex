@@ -226,12 +226,24 @@ initial text=$ $, % sets the text that appears on the start arrow
 		\end{figure}
 \end{frame}
 
+\begin{frame}{SPIN's source files}
+	\begin{itemize}
+		\item \code{main.c} : main file
+		\item \code{spinlex.c} : PROMELA parser
+		\item \code{tl\_buchi.c, tl\_cache.c, tl\_lex.c, tl\_main.c, tl\_mem.c, tl\_parse.c, tl\_rewrt.c, tl\_trans.c} : LTL2BA
+		\item from \code{pangen1.c} to \code{pangen7.c} : verifier code generator
+		\item other files : other routines in SPIN
+	\end{itemize}
+\end{frame}
+
 \begin{frame}{If I want to get the code...}
 	\begin{itemize}
 		\item Download SPIN from the github and set it up.
 		\item Suppose there is a system described in PROMELA named \code{example.pml}.
 		\item \code{\$ spin -a example.pml   \hspace{1cm}\#generate c-verifier}
-		\item \code{\$ cc -DNOREDUCE -o pan pan.c}
+		\item \code{\$ cc -DNOREDUCE -o pan pan.c} \\ \code{\#compile the c-verifier to an excutable file}
+		\item Option \code{-DNOREDUCE} : disables the partial order reduction algorithm.
+		\item Use this option just for the easy code tracing purpose.
 	\end{itemize}
 \end{frame}
 
@@ -251,6 +263,22 @@ initial text=$ $, % sets the text that appears on the start arrow
  	\begin{itemize}
  		\item \code{\$ gcc -E -DNOREDUCE -DBITSTATE pan.c > ppan.c}
  	\end{itemize}
+\end{frame}
+
+\begin{frame}{How to run SPIN}
+	\begin{itemize}
+		\item reachability check
+		\begin{itemize}
+			\item correspond to the safety properties : something bad does not occur
+			\item \code{\$ ./pan \hspace{1cm} \# default run}
+		\end{itemize}
+		\item search for acceptance cycles
+		\begin{itemize}
+			\item correspond to the liveness properties : something good will eventually occur
+			\item \code{\$ ./pan -a \hspace{1cm} \# search for acceptance cycles}
+			\item or \code{\$ spin -run example.pml}
+		\end{itemize}
+	\end{itemize}
 \end{frame}
 
 
