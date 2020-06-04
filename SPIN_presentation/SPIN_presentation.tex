@@ -314,13 +314,12 @@ trpt = &trail[0];
 struct Trail {
   int   st;  /* current state */
   int   o_tt;
-#ifdef PERMUTED
-  uint  seed;
-  uchar oII;
-#endif
+  
   uchar pr;  /* process id */
   uchar tau;  /* 8 bit-flags */
   uchar o_pm;  /* 8 more bit-flags */
+  
+  /* ... */
 }
 \end{lstlisting}
 \begin{itemize}
@@ -406,6 +405,7 @@ void settable(void){
 \begin{itemize}
 	\item \code{trans[2][5]} : 第2號process第5號state的transitions
 	\item What if that state has many transitions? \only<2>{Linked list can help.}
+	\item Not reduce yet
 \end{itemize}
 \end{frame}
 
@@ -421,6 +421,18 @@ do_the_search();
 \end{lstlisting}
 \begin{itemize}
 	\item process 2的9號state是acceptance state
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{retrans()}
+\begin{lstlisting}[basicstyle=\normalsize\ttfamily]   
+  retrans(0, 7, 3, src_ln0, reached0, loopstate0);
+  retrans(1, 7, 3, src_ln1, reached1, loopstate1);
+  retrans(2, 12, 5, src_ln2, reached2, loopstate2);
+\end{lstlisting}
+\begin{itemize}
+	\item Optimize each autamaton in three separate steps.
+	\item we can use command \code{./pan -d} to print the final state table.
 \end{itemize}
 \end{frame}
 
@@ -476,22 +488,6 @@ initial text=$ $, % sets the text that appears on the start arrow
 			\draw (a2s1) edge[bend right = 25] node[right]{$x=x/2$} (a2s0);
 		\end{tikzpicture}
 		\caption{Finite State Automata of proctype $A_{1}$ and $A_{2}$}
-	\end{figure}
-\end{frame}
-
-\begin{frame}{Example(cont'd)}
-	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
-	\centering % centers the figure
-		\begin{tikzpicture}
-			\node[state, initial] (bs0) {$s_{0}$};
-			\node[state, accepting, below = 2cm of bs0] (bs1) {$s_{1}$};
-			\node[draw=none, below = of a1s1] (N) {B};
-			
-			\draw (bs0) edge node[right]{$x<4$} (bs1);
-			\draw (bs0) edge[loop right] node[right]{true} (bs0);
-			\draw (bs1) edge[loop right] node[right]{$x<4$} (bs1);
-		\end{tikzpicture}
-		\caption{Finite State Automata of $B$}
 	\end{figure}
 \end{frame}
 
@@ -557,6 +553,22 @@ initial text=$ $, % sets the text that appears on the start arrow
 \begin{frame}{Example(cont'd)}
 	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
 	\centering % centers the figure
+		\begin{tikzpicture}
+			\node[state, initial] (bs0) {$s_{0}$};
+			\node[state, accepting, below = 2cm of bs0] (bs1) {$s_{1}$};
+			\node[draw=none, below = of a1s1] (N) {B};
+			
+			\draw (bs0) edge node[right]{$x<4$} (bs1);
+			\draw (bs0) edge[loop right] node[right]{true} (bs0);
+			\draw (bs1) edge[loop right] node[right]{$x<4$} (bs1);
+		\end{tikzpicture}
+		\caption{Finite State Automata of $B$}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Example(cont'd)}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
 	\begin{adjustbox}{max width=\textwidth, max totalheight=\textheight}
 		\begin{tikzpicture}
 			\node[state, initial, align=center] (s0s04) {$s_{0}, s_{0}$\\4, $s_{0}$};
@@ -601,7 +613,7 @@ void do_the_search(void){
       trpt->o_pm |= 2;
       break;
     }
-  }  /* 檢查initial是不是也是acceptance state */
+  }  /* 檢查每個process的initial是不是也是acceptance state */
   /* ... */
   new_state();
 }
@@ -651,8 +663,9 @@ Down:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{new\_state():Allover(1st DFS)}
+\begin{frame}[fragile]{new\_state():Veri0(1st DFS)}
 \begin{lstlisting}[basicstyle=\normalsize\ttfamily]
+Veri0:
   /* ... */
 for (t = trans[ot][tt]; t; t = t->nxt){
   (trpt+1)->o_t = t;
@@ -661,13 +674,15 @@ for (t = trans[ot][tt]; t; t = t->nxt){
   }
   depth++; trpt++;
   /* ... */
+  goto Down;
 \end{lstlisting}
 \begin{itemize}
 	\item Move to next state.
+	\item \code{do\_transit()}檢查自動機上的formula、做PROMELA描述的action
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{new\_state():Allover(1st DFS)}
+\begin{frame}[fragile]{new\_state():Veri0(1st DFS)}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
   if (a_cycles){
     int ii;
@@ -687,17 +702,17 @@ Up:
 }
 \end{lstlisting}
 \begin{itemize}
-	\item Check if acceptance state and keep going.
+	\item Check \textcolor{red}{every} process if it is in acceptance state and keep going.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{new\_state():Allover(1st DFS)}
+\begin{frame}[fragile]{new\_state():Veri0(1st DFS)}
 \begin{itemize}
 	\item How about the program flow so far?
 	\item
-	\only <2-3>{\textcolor{red}{\code{Down}$\rightarrow$\code{Allover}$\rightarrow$\code{Down}$\rightarrow$\code{Allover}$\rightarrow\cdots\rightarrow$\code{Down}(Exceed \code{maxdepth})$\rightarrow$\code{Up}$\rightarrow\cdots$}}
+	\only <2-3>{\textcolor{red}{\code{Down}$\rightarrow$\code{Veri0}$\rightarrow$\code{Down}$\rightarrow$\code{Veri0}$\rightarrow\cdots\rightarrow$\code{Down}(Exceed \code{maxdepth})$\rightarrow$\code{Up}$\rightarrow\cdots$}}
 	\item or\\
-	\only<3>{\textcolor{red}{\code{Down}$\rightarrow$\code{Allover}$\rightarrow$\code{Down}$\rightarrow$\code{Allover}$\rightarrow\cdots\rightarrow$\code{Down}$\rightarrow$\code{Allover}(no next state)$\rightarrow$\code{Up}$\rightarrow\cdots$} }
+	\only<3>{\textcolor{red}{\code{Down}$\rightarrow$\code{Veri0}$\rightarrow$\code{Down}$\rightarrow$\code{Veri0}$\rightarrow\cdots\rightarrow$\code{Down}$\rightarrow$\code{Veri0}(no next state)$\rightarrow$\code{Up}$\rightarrow\cdots$} }
 \end{itemize}
 \end{frame}
 
@@ -755,7 +770,7 @@ void checkcycles(void){
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{new\_state():Allover(2nd DFS)}
+\begin{frame}[fragile]{new\_state():AllOver(2nd DFS)}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 if ((now._a_t&1) && depth > A_depth){
   int delta = 0 + 2;
@@ -820,7 +835,7 @@ Up:
 \begin{itemize}
 	\item How about the whole program flow?
 	\item 
-	\textcolor{blue}{\code{Down}$\rightarrow$\code{Allover}$\rightarrow$\code{Down}$\rightarrow$\code{Allover}$\rightarrow\cdots\rightarrow$\code{Down}$\rightarrow$\code{Allover}(no next state)$\rightarrow$\code{Up}$\rightarrow$\code{Done}$\rightarrow$\code{Up}$\rightarrow$\code{Done}(This is an accepting state)$\rightarrow$}\code{checkcycles()}\textcolor{red}{$\rightarrow$\code{Down}$\rightarrow$\code{Allover}$\rightarrow$\code{Down}$\rightarrow$\code{Allover}$\rightarrow\cdots\rightarrow$\code{Down}$\rightarrow$\code{Allover}(this state has been reached in 1st DFS)$\rightarrow$\code{Up}$\rightarrow$\code{Done}$\rightarrow$\code{Up}(\code{depth <= A\_depth})$\rightarrow$return}
+	\textcolor{blue}{\code{Down}$\rightarrow$\code{Veri0}$\rightarrow$\code{Down}$\rightarrow$\code{Veri0}$\rightarrow\cdots\rightarrow$\code{Down}$\rightarrow$\code{Veri0}(no next state)$\rightarrow$\code{Up}$\rightarrow$\code{Done}$\rightarrow$\code{Up}$\rightarrow$\code{Done}(This is an accepting state)$\rightarrow$}\code{checkcycles()}\textcolor{red}{$\rightarrow$\code{Down}$\rightarrow$\code{AllOver}$\rightarrow$\code{Down}$\rightarrow$\code{AllOver}$\rightarrow\cdots\rightarrow$\code{Down}$\rightarrow$\code{AllOver}(this state has been reached in 1st DFS)$\rightarrow$\code{Up}$\rightarrow$\code{Done}$\rightarrow$\code{Up}(\code{depth <= A\_depth})$\rightarrow$return}
 \end{itemize}
 \end{frame}
 
