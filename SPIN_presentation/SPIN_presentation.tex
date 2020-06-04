@@ -2,7 +2,7 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{xcolor}
-\usepackage{latexsym}
+%\usepackage{latexsym}
 \usepackage{amsmath}
 \usepackage[labelfont=bf]{caption}
 \usepackage{graphicx}  %package graphic
@@ -13,13 +13,14 @@
 \usetikzlibrary{automata, positioning, arrows}
 \usetheme{Boadilla}   
 \usepackage{xeCJK}
-\usepackage{array}
+%\usepackage{array}
 %\usepackage{tabularx}
-\usepackage{mathtools}
+%\usepackage{mathtools}
 \usepackage{listings}
-\usepackage{textcomp}
+%\usepackage{textcomp}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
+\usepackage{adjustbox}
 
 \setCJKmainfont{微軟正黑體} 
 \sisetup{
@@ -303,8 +304,8 @@ trail++; /* protect trpt-1 refs at depth 0 */
 trpt = &trail[0];
 \end{lstlisting}
  	\begin{itemize}
-		\item Imagine that \code{trail} is a DFS stack.
- 		\item \code{trpt} corresponds to the stack top.
+		\item \code{trail} corresponds to the search path starting from initial state.
+ 		\item \code{trail} keeps the information while searching for acceptance cycle.
  	\end{itemize}
 \end{frame}
 
@@ -365,38 +366,228 @@ struct Trail {
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}[fragile]{Each process is an automaton}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+typedef struct P0 { /* A */
+  unsigned _pid ;  /* 0..255 */
+  unsigned _t   ;  /* proctype (process id) */
+  unsigned _p   ;  /* 目前處在的state */
+  short year;
+  short days;
+} P0;
+typedef struct P1 { /* B */
+  /* ... */
+  short days;
+} P1;
+typedef struct P2 { /* never_0 */
+  /* ... */
+} P2;
+typedef struct P3 { /* np_ (non progress) */
+  /* ... */
+} P3;
+\end{lstlisting}
+\end{frame}
+
 \begin{frame}[fragile]{settable()}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 void settable(void){ 
   Trans *T;
   Trans *settr(int, int, int, int, int, char *, int, int, int);
-  trans = (Trans ***) emalloc(2*sizeof(Trans **));
-  trans[0] = (Trans **) emalloc(13*sizeof(Trans *));
-
-  trans[0][10] = settr(9,0,9,1,0,".(goto)", 0, 2, 0);
-  T = trans[0][9] = settr(8,0,0,0,0,"DO", 0, 2, 0);
-  T->nxt = settr(8,0,1,0,0,"DO", 0, 2, 0);
-  trans[0][1] = settr(0,0,6,3,3,"a = ((a+1)\%3)", 0, 2, 0);
+  trans = (Trans ***) emalloc(4*sizeof(Trans **));
+  trans[2] = (Trans **) emalloc(12*sizeof(Trans *));
+  T = trans[2][5] = settr(16,0,0,0,0,"IF", 0, 2, 0);
+  T = T->nxt = settr(16,0,1,0,0,"IF", 0, 2, 0);
+    T->nxt = settr(16,0,3,0,0,"IF", 0, 2, 0);
+  trans[2][1] = settr(12,0,9,3,0,"((x<4))", 1, 2, 0);
+  trans[2][2] = settr(13,0,9,1,0,"goto accept_S4", 0, 2, 0);
   /* ... */
 }
 \end{lstlisting}
 \begin{itemize}
-	\item Tool : LTL2BA
-	\item 2 process, at most 13 states.
+	\item \code{trans[2][5]} : 第2號process第5號state的transitions
+	\item What if that state has many transitions? \only<2>{Linked list can help.}
 \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{set accepting states}
-\begin{lstlisting}[basicstyle=\normalsize\ttfamily]
-accpstate[0] = (unsigned char *) emalloc(13);
-accpstate[1] = (unsigned char *) emalloc(3);
-accpstate[0][5] = 1;
+\begin{lstlisting}[basicstyle=\normalsize\ttfamily]   
+ accpstate[0] = (unsigned char *) emalloc(7);
+ accpstate[1] = (unsigned char *) emalloc(7);
+ accpstate[2] = (unsigned char *) emalloc(12);
+ accpstate[3] = (unsigned char *) emalloc(3);
+ accpstate[2][9] = 1;
 /* ... */
 do_the_search();
 \end{lstlisting}
 \begin{itemize}
-	\item process 0的5號state是acceptance state
+	\item process 2的9號state是acceptance state
 \end{itemize}
+\end{frame}
+
+\begin{frame}{How SPIN do automaton intersection?}
+\begin{itemize}
+	\item A system $A$ of $n$ processes, each process given in automaton form, say: $A_{1}, A_{2}, \cdots, A_{n}$.
+	\item An LTL formula $f$ and the Büchi automaton $B$ that corresponds to its negation $\neg f$.
+	\item We can check if $A$ satisfies $f$ by computing the global system automaton $S$
+	$$S = B \otimes \Pi_{i=1}^{n}A_{i}$$
+	\item We use the operator $\Pi$ here to represents an \textcolor{red}{asynchronous product} of multiple component automata, and $\otimes$ to represent the \textcolor{red}{synchronous product} of two automata.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Asynchronous Product}
+	The asynchronous product of a finite set of finite state automata $A_{1}, \cdots, A_{n}$ is another finite state automaton $A = (S, s_{0}, L, T, F)$, where 
+\begin{itemize}
+	\item $A.S$ is the Cartesian product $A_{1}.S\times \cdots \times A_{n}.S$,
+	\item $A.s_{0}$ is the n-tuple ($A_{1}.s_{0}, \cdots , A_{n}.s_{0}$),
+	\item $A.L$ is the union set $A_{1}.L \cup \cdots \cup A_{n}.L$,
+	\item $A.T$ is the set of tuples $((x_{1}, \cdots, x_{n}), l, (y_{1}, \cdots, y_{n}))$ such that 
+	\begin{itemize}
+		\item $\exists i, 1 \leq i \leq n, (x_{i}, l, y_{i})\in A_{i}.T$
+		\item $\forall j, 1 \leq j \leq n, j \neq i \rightarrow (x_{j} \equiv y_{j})$
+	\end{itemize}
+	\item $A.F$ is the subset of those elements of $A.S$ that satisfy the condition $\forall(A_{1}.s, \cdots, A_{n}.s)\in A.F, \exists i, A_{i}.s \in A_{i}.F$.
+\end{itemize}
+\end{frame}
+
+\tikzset{
+->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+every edge/.style={draw, thick, black},
+node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\begin{frame}{Example}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+		\begin{tikzpicture}
+			\node[state, initial] (a1s0) {$s_{0}$};
+			\node[state, below = 2cm of a1s0] (a1s1) {$s_{1}$};
+			\node[state, initial, right = 4.5cm of a1s0] (a2s0) {$s_{0}$};
+			\node[state, below = 2cm of a2s0] (a2s1) {$s_{1}$};
+			\node[draw=none, below = of a1s1] (A) {$A_{1}$};
+			\node[draw=none, below = of a2s1] (B) {$A_{2}$};
+			
+			
+			\draw (a1s0) edge[bend right = 25] node[left]{$(x\%2)$} (a1s1);
+			\draw (a1s1) edge[bend right = 25] node[right]{$x=3x+1$} (a1s0);
+			\draw (a2s0) edge[bend right = 25] node[left]{$!(x\%2)$} (a2s1);
+			\draw (a2s1) edge[bend right = 25] node[right]{$x=x/2$} (a2s0);
+		\end{tikzpicture}
+		\caption{Finite State Automata of proctype $A_{1}$ and $A_{2}$}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Example(cont'd)}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+		\begin{tikzpicture}
+			\node[state, initial] (bs0) {$s_{0}$};
+			\node[state, accepting, below = 2cm of bs0] (bs1) {$s_{1}$};
+			\node[draw=none, below = of a1s1] (N) {B};
+			
+			\draw (bs0) edge node[right]{$x<4$} (bs1);
+			\draw (bs0) edge[loop right] node[right]{true} (bs0);
+			\draw (bs1) edge[loop right] node[right]{$x<4$} (bs1);
+		\end{tikzpicture}
+		\caption{Finite State Automata of $B$}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Example(cont'd)}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+		\begin{tikzpicture}
+			\node[state, initial] (s0s0) {$s_{0}, s_{0}$};
+			\node[state, below = 2.7cm of s0s0] (s1s0) {$s_{1}, s_{0}$};
+			\node[state, right = 2.7cm of s0s0] (s0s1) {$s_{0}, s_{1}$};
+			\node[state, right = 2.7cm of s1s0] (s1s1) {$s_{1}, s_{1}$};
+			
+			\draw (s0s0) edge[bend right = 25] node[left]{$(x\%2)$} (s1s0);
+			\draw (s1s0) edge[bend right = 25] node[below]{$!(x\%2)$} (s1s1);
+			\draw (s1s1) edge[bend right = 25] node[right]{$x=3x+1$} (s0s1);
+			\draw (s0s1) edge[bend right = 25] node[above]{$x=x/2$} (s0s0);
+			
+			\draw (s0s0) edge[bend right = 25] node[above]{$!(x\%2)$} (s0s1);
+			\draw (s0s1) edge[bend right = 25] node[below left]{$(x\%2)$} (s1s1);
+			\draw (s1s1) edge[bend right = 25] node[below]{$x=x/2$} (s1s0);
+			\draw (s1s0) edge[bend right = 25] node[above right]{$x=3x+1$} (s0s0);
+		\end{tikzpicture}
+		\caption{Asynchronous Product of $A_{1}$ and $A_{2}$}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Example(cont'd)}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+	\begin{adjustbox}{max width=\textwidth, max totalheight=\textheight}
+		\begin{tikzpicture}
+			\node[state, initial, align=center] (s0s04) {$s_{0}, s_{0}$\\4};
+			\node[state, align=center, right = of s0s04](s0s14) {$s_{0}, s_{1}$\\4};
+			\node[state, align=center, right = of s0s14](s0s02) {$s_{0}, s_{0}$\\2};
+			\node[state, align=center, right = of s0s02](s0s12) {$s_{0}, s_{1}$\\2};
+			\node[state, align=center, right = of s0s12](s0s01) {$s_{0}, s_{0}$\\1};
+			\node[state, align=center, right = of s0s01](s1s01) {$s_{1}, s_{0}$\\1};
+			
+			\draw (s0s04) edge node[below]{$!(x\%2)$} (s0s14);
+			\draw (s0s14) edge node[below]{$x=x/2$} (s0s02);
+			\draw (s0s02) edge node[below]{$!(x\%2)$} (s0s12);
+			\draw (s0s12) edge node[below]{$x=x/2$} (s0s01);
+			\draw (s0s01) edge node[below]{$(x\%2)$} (s1s01);
+			\draw (s1s01) edge[bend right = 20] node[above]{$$x=3x+1$$} (s0s04);
+		\end{tikzpicture}
+		\end{adjustbox}
+		\caption{Expanded Asynchronous Product for Initial Value $x=4$}
+		
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Synchronous Product}
+	The synchronous product of finite state automata $P$ and $B$ is a finite state automaton $A = (S, s_{0}, L, T, F)$, where 
+\begin{itemize}
+	\item $A.S$ is the Cartesian product $P'.S \times B.S$, where $P'$ is the stutter-closure of $P$ in which a nil self-loop is attached to every state in $P$ that has no successor,
+	\item $A.s_{0}$ is the tuple ($P.s_{0}, B.s_{0}$),
+	\item $A.L$ is $P'.L \times B.L$,
+	\item $A.T$ is the set of pairs $(t_{1}, t_{2})$ such that $t_{1}\in P'.T$ and $t_{2} \in B.T$, 
+	\item $A.F$ is the set of pairs $(s_{1}, 2_{2})\in A.S$ where $s_{1}\in P.F \lor s_{2} \in B.F$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Example(cont'd)}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+	\begin{adjustbox}{max width=\textwidth, max totalheight=\textheight}
+		\begin{tikzpicture}
+			\node[state, initial, align=center] (s0s04) {$s_{0}, s_{0}$\\4, $s_{0}$};
+			\node[state, align=center, right = of s0s04](s0s14) {$s_{0}, s_{1}$\\4, $s_{0}$};
+			\node[state, align=center, right = of s0s14](s0s02) {$s_{0}, s_{0}$\\2, $s_{0}$};
+			\node[state, align=center, right = of s0s02](s0s12) {$s_{0}, s_{1}$\\2, $s_{0}$};
+			\node[state, align=center, right = of s0s12](s0s01) {$s_{0}, s_{0}$\\1, $s_{0}$};
+			\node[state, align=center, right = of s0s01](s1s01) {$s_{1}, s_{0}$\\1, $s_{0}$};
+			
+			\node[state, accepting, align=center, below = of s0s04](s0s04s1) {$s_{0}, s_{0}$\\4, $s_{1}$};
+			\node[state, accepting, align=center, below = of s0s12](s0s12s1) {$s_{0}, s_{1}$\\2, $s_{1}$};
+			\node[state, accepting, align=center, below = of s0s01](s0s01s1) {$s_{0}, s_{0}$\\1, $s_{1}$};
+			\node[state, accepting, align=center, below = of s1s01](s1s01s1) {$s_{1}, s_{0}$\\1, $s_{1}$};
+			
+			\draw (s0s04) edge node[below]{$!(x\%2)$} (s0s14);
+			\draw (s0s14) edge node[below]{$x=x/2$} (s0s02);
+			\draw (s0s02) edge node[below]{$!(x\%2)$} (s0s12);
+			\draw (s0s12) edge node[below]{$x=x/2$} (s0s01);
+			\draw (s0s01) edge node[below]{$(x\%2)$} (s1s01);
+			\draw (s1s01) edge[bend right = 25] node[above]{$x=3x+1$} (s0s04);
+			
+			\draw (s0s02) edge node[left]{$!(x\%2)$} (s0s12s1);
+			\draw (s0s12) edge node[left]{$x=x/2$} (s0s01s1);
+			\draw (s0s01) edge node[left]{$(x\%2)$} (s1s01s1);
+			\draw (s0s12s1) edge node[below]{$x=x/2$} (s0s01s1);
+			\draw (s0s01s1) edge node[below]{$(x\%2)$} (s1s01s1);
+			\draw (s1s01s1) edge[bend left = 25] node[below]{$x=3x+1$} (s0s04s1);
+		\end{tikzpicture}
+		\end{adjustbox}
+		\caption{Expanded Asynchronous Product of last figure and $B$}
+	\end{figure}
 \end{frame}
 
 \begin{frame}[fragile]{do\_the\_search()}
