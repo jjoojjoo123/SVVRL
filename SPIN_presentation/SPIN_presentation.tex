@@ -663,23 +663,43 @@ Down:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{new\_state():Veri0(1st DFS)}
+\begin{frame}[fragile]{new\_state():Stutter(1st DFS)}
 \begin{lstlisting}[basicstyle=\normalsize\ttfamily]
-Veri0:
-  /* ... */
-for (t = trans[ot][tt]; t; t = t->nxt){
-  (trpt+1)->o_t = t;
-  if (!(_m = do_transit(t, II))){
-    continue;
+Stutter:
+  if (trpt->tau&4)
+  {
+    /* ... */
+    II = 0;
+    goto Veri0;
   }
-  depth++; trpt++;
-  /* ... */
-  goto Down;
 \end{lstlisting}
 \begin{itemize}
+	\item II is a process offset index.
+	\item II = 0 means current move is on the claim automaton.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{new\_state():Veri0(1st DFS)}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+for (II = From; II >= To; II--) {
+Veri0:
+  /* ... */
+  _this = (((unsigned char *)&now)+(int)proc_offset[II]);
+  tt = (int) ((P0 *)_this)->_p;
+  ot = (unsigned char) ((P0 *)_this)->_t;
+  for (t = trans[ot][tt]; t; t = t->nxt){
+    (trpt+1)->o_t = t;
+    if (!(_m = do_transit(t, II))){
+      continue;
+    }
+    depth++; trpt++;
+    /* ... */ goto Down; /* ... */
+}
+\end{lstlisting}
+	\begin{enumerate}
 	\item Move to next state.
 	\item \code{do\_transit()}檢查自動機上的formula、做PROMELA描述的action
-\end{itemize}
+	\end{enumerate}
 \end{frame}
 
 \begin{frame}[fragile]{new\_state():Veri0(1st DFS)}
@@ -699,7 +719,6 @@ for (t = trans[ot][tt]; t; t = t->nxt){
    goto Down;
 Up:
   /* ... */
-}
 \end{lstlisting}
 \begin{itemize}
 	\item Check \textcolor{red}{every} process if it is in acceptance state and keep going.
