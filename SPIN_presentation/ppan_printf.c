@@ -6391,7 +6391,7 @@ do_transit(Trans *t, short II)
 # 5965 "pan.c"
 # 1 "pan.m" 1
 # 10 "pan.m"
- printf("----------------------------------\n");
+ 
  //printf("x = %d\n", now.x);
  switch (t->forw) {
  default: Uerror("bad forward move");
@@ -6519,6 +6519,7 @@ do_transit(Trans *t, short II)
  }
 # 5966 "pan.c" 2
 P999:
+printf("Move success.\n");
 printf("x = %d\n", now.x);
 printf("----------------------------------\n");
 
@@ -6937,10 +6938,16 @@ Veri0:
 
 
 
+   printf("----------------------------------\n");
+   printf("proctype: %d\n", ot);
+   printf("state: %d\n", tt);
+   printf("t->forw: %d\n", t->forw);
+   printf("II: %d, From: %d, To: %d\n", II, From,To);
 
-   //printf("II: %d, From: %d, To: %d\n", II, From,To);
    if (!(_m = do_transit(t, II)))
-   { continue;
+   {
+   printf("Move failed.\n"); 
+    continue;
    }
 # 7216 "pan.c"
    if (boq == -1)
