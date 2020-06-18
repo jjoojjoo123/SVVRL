@@ -6423,7 +6423,7 @@ do_transit(Trans *t, short II)
 
   reached[2][1] = 1;
   if (!((now.x<4)))
-   {printf("x = %d\n", now.x);
+   {
     return 0;}
   _m = 3; goto P999;
  case 4: printf("CLAIM never_0, STATE 7 - example.pml:28 - [((x<4))]\n");
@@ -6519,9 +6519,7 @@ do_transit(Trans *t, short II)
  }
 # 5966 "pan.c" 2
 P999:
-printf("Move success.\n");
-printf("x = %d\n", now.x);
-printf("----------------------------------\n");
+
 
  return _m;
 
@@ -6938,23 +6936,24 @@ Veri0:
 
 
 
-   printf("----------------------------------\n");
-   printf("proctype: %d\n", ot);
-   printf("state: %d\n", tt);
-   printf("t->forw: %d\n", t->forw);
-   printf("II: %d, From: %d, To: %d\n", II, From,To);
-
+   printf("--------------------------------------------------------------\n");
+   printf("depth= %d\n", depth);
    if (!(_m = do_transit(t, II)))
    {
    printf("Move failed.\n"); 
+   printf("x = %d\n", now.x);
     continue;
    }
+   printf("Move success.\n");
+  printf("x = %d\n", now.x);
+  printf("--------------------------------------------------------------\n");
+
 # 7216 "pan.c"
    if (boq == -1)
 # 7225 "pan.c"
     trpt->o_pm |= 1;
 # 7267 "pan.c"
-  printf("trpt++\n");
+  
    depth++; trpt++;
    trpt->pr = (unsigned char) II;
    trpt->st = tt;
@@ -7011,7 +7010,7 @@ Veri0:
    }
 # 7361 "pan.c"
    goto Down;
-Up: //printf("Up\n");
+Up: //printf("Here is Up\n");
 # 7409 "pan.c"
    if ((now._a_t&1) && depth <= A_depth)
     return;
@@ -7021,7 +7020,6 @@ Up: //printf("Up\n");
    { now._cnt[now._a_t&1] = trpt->bup.oval;
     _n = 1; trpt->o_pm &= ~128;
     depth--; trpt--;
-    printf("trpt--\n");
 
 
     goto Q999;
@@ -7087,7 +7085,7 @@ Up: //printf("Up\n");
 # 7457 "pan.c" 2
 R999: //printf("R999\n");
 # 7481 "pan.c"
-   depth--; trpt--;printf("trpt--\n");
+   depth--; trpt--;printf("trpt--, depth= %d\n", depth);
 # 7490 "pan.c"
    if (_m)
    { reached[ot][t->st] = 1;
@@ -7122,12 +7120,14 @@ R999: //printf("R999\n");
      II = (From+1);
   } } }
 
-
+  //printf("R999:II=%d\n", II);
   if (II == 0)
-  { break;
+  { //printf("break\n");
+    break;
   }
 
-  { continue; };
+  { //printf("continue\n");
+    continue; };
  }
 # 7586 "pan.c"
  if (trpt->o_pm&32)
@@ -7279,7 +7279,7 @@ Done: //printf("Done\n");
  if (depth > 0)
  {
 
-
+  //printf("Done goto Up\n");
 
 
 
@@ -8856,8 +8856,8 @@ checkcycles(void)
 { unsigned char o_a_t = now._a_t;
 
   unsigned char o_cnt = now._cnt[1];
-  printf("checkcycles start\n");
-  printf("-----------------------------------------\n");
+
+  
 
    H_el *sv = trpt->ostate;
 # 10724 "pan.c"
@@ -8869,7 +8869,8 @@ checkcycles(void)
  memcpy((char *)&A_Root, (char *)&now, vsize);
  A_depth = depthfound = depth;
 
-
+ printf("--------------------------------------------------------------\n");
+  printf("checkcycles(2nd DFS) start, A_depth= %d\n", A_depth);
 
   new_state();
 
@@ -8886,7 +8887,6 @@ checkcycles(void)
  trpt->ostate = sv;
 
   printf("checkcycles return\n");
-  printf("-----------------------------------------\n");
 
 
 }
