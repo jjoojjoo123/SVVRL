@@ -4526,38 +4526,26 @@ extern int posix_fallocate (int __fd, off_t __offset, off_t __len);
 int Printf(const char *fmt, ...);
 
 # 1 "pan.h" 1
-# 135 "pan.h"
+# 129 "pan.h"
 typedef struct S_F_MAP {
  char *fnm;
  int from;
  int upto;
 } S_F_MAP;
-# 156 "pan.h"
-extern short src_ln2[];
+# 145 "pan.h"
 extern short src_ln1[];
 extern short src_ln0[];
-extern S_F_MAP src_file2[];
 extern S_F_MAP src_file1[];
 extern S_F_MAP src_file0[];
-# 180 "pan.h"
-typedef struct P2 {
- unsigned _pid : 8;
- unsigned _t : 3;
- unsigned _p : 5;
-
-
-
-} P2;
-
-
-
+# 168 "pan.h"
 typedef struct P1 {
  unsigned _pid : 8;
  unsigned _t : 3;
- unsigned _p : 5;
+ unsigned _p : 4;
 
 
 
+ unsigned i : 1;
 } P1;
 
 
@@ -4565,22 +4553,23 @@ typedef struct P1 {
 typedef struct P0 {
  unsigned _pid : 8;
  unsigned _t : 3;
- unsigned _p : 5;
+ unsigned _p : 4;
 
 
 
+ unsigned i : 1;
 } P0;
 
 
-typedef struct P3 {
+typedef struct P2 {
  unsigned _pid : 8;
  unsigned _t : 3;
- unsigned _p : 5;
+ unsigned _p : 4;
 
 
 
-} P3;
-# 234 "pan.h"
+} P2;
+# 213 "pan.h"
 typedef struct Trans {
  short atom;
 
@@ -4600,12 +4589,12 @@ typedef struct Trans {
  int back;
  struct Trans *nxt;
 } Trans;
-# 261 "pan.h"
+# 240 "pan.h"
 extern unsigned char *Pptr(int);
 extern unsigned char *Qptr(int);
-# 334 "pan.h"
+# 313 "pan.h"
 typedef struct _Stack {
-# 343 "pan.h"
+# 322 "pan.h"
  short o_delta;
 
   short o_offset;
@@ -4654,16 +4643,11 @@ typedef struct State {
 
 
  unsigned short _vsz;
-# 412 "pan.h"
- int x;
-
-
-
-
+# 395 "pan.h"
  unsigned char sv[1024];
 
 } State;
-# 478 "pan.h"
+# 455 "pan.h"
 typedef struct Q0 {
  unsigned char Qlen;
  unsigned char _t;
@@ -4742,7 +4726,7 @@ void wrap_stats(void);
  void onstack_init(void);
  void onstack_put(void);
  void onstack_zap(void);
-# 572 "pan.h"
+# 549 "pan.h"
 typedef struct Trail Trail;
 typedef struct H_el H_el;
 
@@ -4750,12 +4734,12 @@ struct H_el {
  H_el *nxt;
 
   unsigned int tagged;
-# 587 "pan.h"
+# 564 "pan.h"
   unsigned int D;
-# 617 "pan.h"
+# 594 "pan.h"
  unsigned long state;
 };
-# 642 "pan.h"
+# 619 "pan.h"
 struct Trail {
  int st;
  int o_tt;
@@ -4766,13 +4750,13 @@ struct Trail {
  unsigned char pr;
  unsigned char tau;
  unsigned char o_pm;
-# 680 "pan.h"
+# 657 "pan.h"
   unsigned char o_n, o_ot;
 
  unsigned char o_m;
-# 691 "pan.h"
+# 668 "pan.h"
   short o_To;
-# 700 "pan.h"
+# 677 "pan.h"
   H_el *ostate;
 
 
@@ -4782,16 +4766,16 @@ struct Trail {
 
   char *p_bup;
   char *q_bup;
-# 725 "pan.h"
+# 702 "pan.h"
  union {
   int oval;
   int *ovals;
  } bup;
 };
-# 792 "pan.h"
+# 769 "pan.h"
 void qsend(int, int, int);
 # 32 "pan.c" 2
-char *TrailFile = "example.pml";
+char *TrailFile = "fairness.pml";
 char *trailfilename;
 
 
@@ -4810,10 +4794,6 @@ globinit(void)
 
  *proc_offset, *q_offset;
 void
-locinit2(int h)
-{
-}
-void
 locinit1(int h)
 {
 }
@@ -4821,7 +4801,7 @@ void
 locinit0(int h)
 {
 }
-# 120 "pan.c"
+# 116 "pan.c"
 H_el **H_tab, **S_Tab;
 
  H_el *Lstate;
@@ -4831,7 +4811,7 @@ FILE *efd;
 unsigned char *_this;
 long maxdepth=10000;
 long omaxdepth=10000;
-# 137 "pan.c"
+# 133 "pan.c"
 double quota;
 
 
@@ -4994,7 +4974,7 @@ int c_init_done=0;
 char *c_stack_start = (char *) 0;
 double nstates=0, nlinks=0, truncs=0, truncs2=0;
 double nlost=0, nShadow=0, hcmp=0, ngrabs=0;
-# 315 "pan.c"
+# 311 "pan.c"
  int t_reverse = 0;
 
 
@@ -5010,12 +4990,11 @@ int gui = 0, coltrace = 0, readtrail = 0;
 int whichtrail = 0, whichclaim = -1, onlyproc = -1, silent = 0;
 char *claimname;
 
-int DFSdetail = 0;
 int state_tables=0, fairness=0, no_rck=0, Nr_Trails=0, dodot=0;
 char simvals[256];
 
 int TstOnly=0;
-
+int DFSdetail = 0;
 unsigned long mask, nmask;
 
 int ssize=27;
@@ -5025,7 +5004,7 @@ int ssize=27;
 int hmax=0, svmax=0, smax=0;
 int Maxbody=0, XX;
 unsigned char *noptr, *noqptr;
-# 361 "pan.c"
+# 357 "pan.c"
  State comp_now;
 
 
@@ -5063,7 +5042,7 @@ long depthfound = -1;
 unsigned char warned = 0, iterative = 0, exclusive = 0, like_java = 0, every_error = 0;
 unsigned char noasserts = 0, noends = 0, bounded = 0;
 unsigned int s_rand = 12345;
-# 411 "pan.c"
+# 407 "pan.c"
 int (*b_store)(char *, int);
 int bstore_reg(char *, int);
 int bstore_mod(char *, int);
@@ -5102,7 +5081,7 @@ void ungrab_ints(int *, int);
 
 
 Trans ***trans;
-# 458 "pan.c"
+# 454 "pan.c"
  short P_o[255], P_o_tmp[255 +1];
  short Q_o[255], Q_o_tmp[255 +1];
 
@@ -5113,7 +5092,7 @@ unsigned char P_s[255 +1], P_s_tmp[255 +1];
 unsigned char Q_s[255 +1], Q_s_tmp[255 +1];
 unsigned char *proc_skip = (unsigned char *) P_s;
 unsigned char *q_skip = (unsigned char *) Q_s;
-# 477 "pan.c"
+# 473 "pan.c"
 unsigned long vsize;
 
 
@@ -5121,54 +5100,38 @@ unsigned long vsize;
 char *tprefix = "trail";
 short boq = -1;
 int _;
-# 493 "pan.c"
-short src_ln2 [] = {
-   0, 23, 23, 24, 24, 22, 26, 28,
-  28, 27, 30, 30, 0, };
-S_F_MAP src_file2 [] = {
- { "-", 0, 0 },
- { "example.pml", 1, 11 },
- { "-", 12, 13 }
-};
-short *src_claim;
-unsigned char reached2 [] = {
-   0, 1, 1, 1, 1, 0, 1, 1,
-   1, 0, 1, 0, 0, };
-unsigned char *loopstate2;
-
+# 489 "pan.c"
 short src_ln1 [] = {
-   0, 16, 16, 15, 18, 15, 18, 0, };
+   0, 16, 15, 18, 15, 18, 0, };
 S_F_MAP src_file1 [] = {
  { "-", 0, 0 },
- { "example.pml", 1, 6 },
- { "-", 7, 8 }
+ { "fairness.pml", 1, 5 },
+ { "-", 6, 7 }
 };
 unsigned char reached1 [] = {
-   0, 1, 0, 0, 1, 1, 0, 0, };
+   0, 1, 0, 1, 1, 0, 0, };
 unsigned char *loopstate1;
 
 short src_ln0 [] = {
-   0, 9, 9, 8, 11, 8, 11, 0, };
+   0, 7, 6, 9, 6, 9, 0, };
 S_F_MAP src_file0 [] = {
  { "-", 0, 0 },
- { "example.pml", 1, 6 },
- { "-", 7, 8 }
+ { "fairness.pml", 1, 5 },
+ { "-", 6, 7 }
 };
 unsigned char reached0 [] = {
-   0, 1, 0, 0, 1, 1, 0, 0, };
+   0, 1, 0, 1, 1, 0, 0, };
 unsigned char *loopstate0;
-unsigned char reached3[3];
-unsigned char *loopstate3;
+unsigned char reached2[3];
+unsigned char *loopstate2;
 struct {
  int tp; short *src;
 } src_all[] = {
- { 2, &src_ln2[0] },
  { 1, &src_ln1[0] },
  { 0, &src_ln0[0] },
  { 0, (short *) 0 }
 };
 S_F_MAP *flref[] = {
- src_file2,
  src_file1,
  src_file0
 };
@@ -5179,11 +5142,10 @@ struct {
  { (char *) 0, "" }
 };
 
-short Air[] = { (short) (sizeof(P0) - 2), (short) (sizeof(P1) - 2), (short) (sizeof(P2) - 2), (short) (sizeof(P3) - 2) };
+short Air[] = { (short) (sizeof(P0) - 2), (short) (sizeof(P1) - 2), (short) (sizeof(P2) - 2) };
 char *procname[] = {
    "A",
    "B",
-   "never_0",
    ":np_:",
  0
 };
@@ -5193,21 +5155,20 @@ enum btypes { NONE=0, N_CLAIM=1, I_PROC=2, A_PROC=3, P_PROC=4, E_TRACE=5, N_TRAC
 int Btypes[] = {
    3,
    3,
-   1,
    0
 };
 
 unsigned char spin_c_typ[1];
-unsigned char *accpstate[4];
-unsigned char *progstate[4];
-unsigned char *loopstate[4];
-unsigned char *reached[4];
-unsigned char *stopstate[4];
-unsigned char *visstate[4];
-short *mapstate[4];
+unsigned char *accpstate[3];
+unsigned char *progstate[3];
+unsigned char *loopstate[3];
+unsigned char *reached[3];
+unsigned char *stopstate[3];
+unsigned char *visstate[3];
+short *mapstate[3];
 
- int NrStates[4];
-# 710 "pan.c"
+ int NrStates[3];
+# 688 "pan.c"
 int
 addproc(int calling_pid, int priority, int n)
 { int j = 0, h = now._nr_pr;
@@ -5233,7 +5194,6 @@ addproc(int calling_pid, int priority, int n)
  case 0: j = sizeof(P0); break;
  case 1: j = sizeof(P1); break;
  case 2: j = sizeof(P2); break;
- case 3: j = sizeof(P3); break;
  default: Uerror("bad proc - addproc");
  }
 
@@ -5253,7 +5213,7 @@ addproc(int calling_pid, int priority, int n)
  vsize += (int) proc_skip[h];
  proc_offset[h] = vsize;
  vsize += j;
-# 771 "pan.c"
+# 748 "pan.c"
  now._nr_pr += 1;
 
 
@@ -5274,7 +5234,7 @@ addproc(int calling_pid, int priority, int n)
  now._vsz = vsize;
 
  hmax = (((hmax)<(vsize)) ? (vsize) : (hmax));
-# 814 "pan.c"
+# 791 "pan.c"
  if (vsize >= 1024)
  { printf("pan: error, VECTORSZ too small, recompile pan.c");
   printf(" with -DVECTORSZ=N with N>%d\n", (int) vsize);
@@ -5283,45 +5243,31 @@ addproc(int calling_pid, int priority, int n)
 
  memset((char *)(((unsigned char *)&now)+(int)proc_offset[h]), 0, j);
  _this = (((unsigned char *)&now)+(int)proc_offset[h]);
- if (1 > 0 && h > 0)
- { ((P0 *)_this)->_pid = h-1;
+ if (0 > 0 && h > 0)
+ { ((P0 *)_this)->_pid = h-0;
  } else
  { ((P0 *)_this)->_pid = h;
  }
  switch (n) {
- case 3:
-  ((P3 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_t = 3;
-  ((P3 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_p = 0;
-
-
-
-  reached3[0] = 1;
-  accpstate[3][1] = 1;
-  break;
  case 2:
   ((P2 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_t = 2;
-  ((P2 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_p = 5;
+  ((P2 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_p = 0;
 
 
 
-  reached2[5]=1;
-  src_claim = src_ln2;
-
-
-
-
-
-  locinit2(h);
-
+  reached2[0] = 1;
+  accpstate[2][1] = 1;
   break;
  case 1:
   ((P1 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_t = 1;
-  ((P1 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_p = 3;
+  ((P1 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_p = 2;
 
 
 
-  reached1[3]=1;
+  reached1[2]=1;
 
+
+  ((P1 *)(((unsigned char *)&now)+(int)proc_offset[h]))->i = 0;
 
 
 
@@ -5331,12 +5277,14 @@ addproc(int calling_pid, int priority, int n)
   break;
  case 0:
   ((P0 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_t = 0;
-  ((P0 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_p = 3;
+  ((P0 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_p = 2;
 
 
 
-  reached0[3]=1;
+  reached0[2]=1;
 
+
+  ((P0 *)(((unsigned char *)&now)+(int)proc_offset[h]))->i = 0;
 
 
 
@@ -5349,13 +5297,13 @@ addproc(int calling_pid, int priority, int n)
 
 
 
- return h-1;
+ return h-0;
 
 
 
 
 }
-# 964 "pan.c"
+# 928 "pan.c"
 void
 run(void)
 {
@@ -5367,59 +5315,48 @@ run(void)
  vsize = (unsigned long) (sizeof(State) - 1024);
 
  now._vsz = vsize;
-# 988 "pan.c"
+# 952 "pan.c"
  settable();
  Maxbody = (((Maxbody)<(((int) sizeof(P0)))) ? (((int) sizeof(P0))) : (Maxbody));
  Maxbody = (((Maxbody)<(((int) sizeof(P1)))) ? (((int) sizeof(P1))) : (Maxbody));
  Maxbody = (((Maxbody)<(((int) sizeof(P2)))) ? (((int) sizeof(P2))) : (Maxbody));
- Maxbody = (((Maxbody)<(((int) sizeof(P3)))) ? (((int) sizeof(P3))) : (Maxbody));
  reached[0] = reached0;
  reached[1] = reached1;
  reached[2] = reached2;
- reached[3] = reached3;
- accpstate[0] = (unsigned char *) emalloc(7);
- accpstate[1] = (unsigned char *) emalloc(7);
- accpstate[2] = (unsigned char *) emalloc(12);
- accpstate[3] = (unsigned char *) emalloc(3);
- progstate[0] = (unsigned char *) emalloc(7);
- progstate[1] = (unsigned char *) emalloc(7);
- progstate[2] = (unsigned char *) emalloc(12);
- progstate[3] = (unsigned char *) emalloc(3);
- loopstate0 = loopstate[0] = (unsigned char *) emalloc(7);
- loopstate1 = loopstate[1] = (unsigned char *) emalloc(7);
- loopstate2 = loopstate[2] = (unsigned char *) emalloc(12);
- loopstate3 = loopstate[3] = (unsigned char *) emalloc(3);
- stopstate[0] = (unsigned char *) emalloc(7);
- stopstate[1] = (unsigned char *) emalloc(7);
- stopstate[2] = (unsigned char *) emalloc(12);
- stopstate[3] = (unsigned char *) emalloc(3);
- visstate[0] = (unsigned char *) emalloc(7);
- visstate[1] = (unsigned char *) emalloc(7);
- visstate[2] = (unsigned char *) emalloc(12);
- visstate[3] = (unsigned char *) emalloc(3);
- mapstate[0] = (short *) emalloc(7 * sizeof(short));
- mapstate[1] = (short *) emalloc(7 * sizeof(short));
- mapstate[2] = (short *) emalloc(12 * sizeof(short));
- mapstate[3] = (short *) emalloc(3 * sizeof(short));
- stopstate[0][6] = 1;
- stopstate[1][6] = 1;
- stopstate[2][11] = 1;
- stopstate[3][2] = 1;
+ accpstate[0] = (unsigned char *) emalloc(6);
+ accpstate[1] = (unsigned char *) emalloc(6);
+ accpstate[2] = (unsigned char *) emalloc(3);
+ progstate[0] = (unsigned char *) emalloc(6);
+ progstate[1] = (unsigned char *) emalloc(6);
+ progstate[2] = (unsigned char *) emalloc(3);
+ loopstate0 = loopstate[0] = (unsigned char *) emalloc(6);
+ loopstate1 = loopstate[1] = (unsigned char *) emalloc(6);
+ loopstate2 = loopstate[2] = (unsigned char *) emalloc(3);
+ stopstate[0] = (unsigned char *) emalloc(6);
+ stopstate[1] = (unsigned char *) emalloc(6);
+ stopstate[2] = (unsigned char *) emalloc(3);
+ visstate[0] = (unsigned char *) emalloc(6);
+ visstate[1] = (unsigned char *) emalloc(6);
+ visstate[2] = (unsigned char *) emalloc(3);
+ mapstate[0] = (short *) emalloc(6 * sizeof(short));
+ mapstate[1] = (short *) emalloc(6 * sizeof(short));
+ mapstate[2] = (short *) emalloc(3 * sizeof(short));
+ stopstate[0][5] = 1;
+ stopstate[1][5] = 1;
+ stopstate[2][2] = 1;
 
- NrStates[0] = 7;
- NrStates[1] = 7;
- NrStates[2] = 12;
- NrStates[3] = 3;
+ NrStates[0] = 6;
+ NrStates[1] = 6;
+ NrStates[2] = 3;
 
 
  Maxbody = (((Maxbody)<(sizeof(State)-1024)) ? (sizeof(State)-1024) : (Maxbody));
  if ((Maxbody % 8) != 0)
   Maxbody += 8 - (Maxbody % 8);
 
- accpstate[2][9] = 1;
- retrans(0, 7, 3, src_ln0, reached0, loopstate0);
- retrans(1, 7, 3, src_ln1, reached1, loopstate1);
- retrans(2, 12, 5, src_ln2, reached2, loopstate2);
+ accpstate[0][2] = 1;
+ retrans(0, 6, 2, src_ln0, reached0, loopstate0);
+ retrans(1, 6, 2, src_ln1, reached1, loopstate1);
  if (state_tables)
  { if (dodot) exit(0);
    printf("\nTransition Type: ");
@@ -5433,9 +5370,9 @@ run(void)
 
    pan_exit(0);
  }
-# 1075 "pan.c"
+# 1028 "pan.c"
  iniglobals(258);
-# 1091 "pan.c"
+# 1044 "pan.c"
  ;
 
  sinit();
@@ -5452,19 +5389,7 @@ run(void)
  svtack = (Svtack *) emalloc(sizeof(Svtack));
 
  noqptr = noptr = (unsigned char *) emalloc(Maxbody * sizeof(char));
-
-
-
-
-
- addproc(256, 1, 2);
-
-
-
-
-
-
-
+# 1073 "pan.c"
  active_procs();
 
 
@@ -5502,7 +5427,7 @@ go_again:
  }
 
 }
-# 1177 "pan.c"
+# 1130 "pan.c"
 int
 spin_join(int p, void **unused)
 {
@@ -5566,32 +5491,32 @@ spin_cond_signal(int *cond)
  { *cond |= 1;
  }
 }
-# 1299 "pan.c"
+# 1252 "pan.c"
  int
  cpu_printf(const char *fmt, ...)
  { va_list args;
   
-# 1302 "pan.c" 3 4
+# 1255 "pan.c" 3 4
  __builtin_va_start(
-# 1302 "pan.c"
+# 1255 "pan.c"
  args
-# 1302 "pan.c" 3 4
+# 1255 "pan.c" 3 4
  ,
-# 1302 "pan.c"
+# 1255 "pan.c"
  fmt
-# 1302 "pan.c" 3 4
+# 1255 "pan.c" 3 4
  )
-# 1302 "pan.c"
+# 1255 "pan.c"
                     ;
   vprintf(fmt, args);
   
-# 1304 "pan.c" 3 4
+# 1257 "pan.c" 3 4
  __builtin_va_end(
-# 1304 "pan.c"
+# 1257 "pan.c"
  args
-# 1304 "pan.c" 3 4
+# 1257 "pan.c" 3 4
  )
-# 1304 "pan.c"
+# 1257 "pan.c"
              ;
   return 1;
  }
@@ -5599,31 +5524,31 @@ spin_cond_signal(int *cond)
 int
 Printf(const char *fmt, ...)
 {
-# 1321 "pan.c"
+# 1274 "pan.c"
  if (readtrail)
  { va_list args;
   
-# 1323 "pan.c" 3 4
+# 1276 "pan.c" 3 4
  __builtin_va_start(
-# 1323 "pan.c"
+# 1276 "pan.c"
  args
-# 1323 "pan.c" 3 4
+# 1276 "pan.c" 3 4
  ,
-# 1323 "pan.c"
+# 1276 "pan.c"
  fmt
-# 1323 "pan.c" 3 4
+# 1276 "pan.c" 3 4
  )
-# 1323 "pan.c"
+# 1276 "pan.c"
                     ;
   vprintf(fmt, args);
   
-# 1325 "pan.c" 3 4
+# 1278 "pan.c" 3 4
  __builtin_va_end(
-# 1325 "pan.c"
+# 1278 "pan.c"
  args
-# 1325 "pan.c" 3 4
+# 1278 "pan.c" 3 4
  )
-# 1325 "pan.c"
+# 1278 "pan.c"
              ;
   return 1;
  }
@@ -5637,7 +5562,7 @@ Printf(const char *fmt, ...)
  return 1;
 }
 extern void printm(int, char *);
-# 1372 "pan.c"
+# 1325 "pan.c"
 void
 pan_exit(int val)
 { void stop_timer(int);
@@ -5648,7 +5573,7 @@ pan_exit(int val)
  if (signoff)
  { printf("--end of output--\n");
  }
-# 1401 "pan.c"
+# 1354 "pan.c"
  if (val == 2)
  { val = 0;
  }
@@ -5725,7 +5650,7 @@ find_source(int tp, int s)
  && s <= flref[tp]->upto)
  { return flref[tp]->fnm;
  }
- return "example.pml";
+ return "fairness.pml";
 }
 
 void
@@ -5796,15 +5721,15 @@ findtrail(void)
  int candidate_files;
 
  if (trailfilename != 
-# 1547 "pan.c" 3 4
+# 1500 "pan.c" 3 4
                      ((void *)0)
-# 1547 "pan.c"
+# 1500 "pan.c"
                          )
  { fd = fopen(trailfilename, "r");
   if (fd == 
-# 1549 "pan.c" 3 4
+# 1502 "pan.c" 3 4
            ((void *)0)
-# 1549 "pan.c"
+# 1502 "pan.c"
                )
   { printf("pan: cannot find %s\n", trailfilename);
    pan_exit(1);
@@ -5822,9 +5747,9 @@ talk:
     MyFile, whichtrail, tprefix);
    fd = fopen(fnm, "r");
    if (fd != 
-# 1565 "pan.c" 3 4
+# 1518 "pan.c" 3 4
             ((void *)0)
-# 1565 "pan.c"
+# 1518 "pan.c"
                 )
    { candidate_files++;
     if (verbose==100)
@@ -5833,9 +5758,9 @@ talk:
     fclose(fd);
    }
    if ((q = strchr(MyFile, '.')) != 
-# 1572 "pan.c" 3 4
+# 1525 "pan.c" 3 4
                                    ((void *)0)
-# 1572 "pan.c"
+# 1525 "pan.c"
                                        )
    { *q = '\0';
     sprintf(fnm, "%s%d.%s",
@@ -5843,9 +5768,9 @@ talk:
     *q = '.';
     fd = fopen(fnm, "r");
     if (fd != 
-# 1578 "pan.c" 3 4
+# 1531 "pan.c" 3 4
              ((void *)0)
-# 1578 "pan.c"
+# 1531 "pan.c"
                  )
     { candidate_files++;
      if (verbose==100)
@@ -5857,9 +5782,9 @@ talk:
   { sprintf(fnm, "%s.%s", MyFile, tprefix);
    fd = fopen(fnm, "r");
    if (fd != 
-# 1588 "pan.c" 3 4
+# 1541 "pan.c" 3 4
             ((void *)0)
-# 1588 "pan.c"
+# 1541 "pan.c"
                 )
    { candidate_files++;
     if (verbose==100)
@@ -5868,18 +5793,18 @@ talk:
     fclose(fd);
    }
    if ((q = strchr(MyFile, '.')) != 
-# 1595 "pan.c" 3 4
+# 1548 "pan.c" 3 4
                                    ((void *)0)
-# 1595 "pan.c"
+# 1548 "pan.c"
                                        )
    { *q = '\0';
     sprintf(fnm, "%s.%s", MyFile, tprefix);
     *q = '.';
     fd = fopen(fnm, "r");
     if (fd != 
-# 1600 "pan.c" 3 4
+# 1553 "pan.c" 3 4
              ((void *)0)
-# 1600 "pan.c"
+# 1553 "pan.c"
                  )
     { candidate_files++;
      if (verbose==100)
@@ -5909,9 +5834,9 @@ try_again:
  { sprintf(fnm, "%s%d.%s", MyFile, whichtrail, tprefix);
   fd = fopen(fnm, "r");
   if (fd == 
-# 1628 "pan.c" 3 4
+# 1581 "pan.c" 3 4
            ((void *)0) 
-# 1628 "pan.c"
+# 1581 "pan.c"
                 && (q = strchr(MyFile, '.')))
   { *q = '\0';
    sprintf(fnm, "%s%d.%s",
@@ -5923,9 +5848,9 @@ try_again:
  { sprintf(fnm, "%s.%s", MyFile, tprefix);
   fd = fopen(fnm, "r");
   if (fd == 
-# 1638 "pan.c" 3 4
+# 1591 "pan.c" 3 4
            ((void *)0) 
-# 1638 "pan.c"
+# 1591 "pan.c"
                 && (q = strchr(MyFile, '.')))
   { *q = '\0';
    sprintf(fnm, "%s.%s", MyFile, tprefix);
@@ -5933,9 +5858,9 @@ try_again:
    fd = fopen(fnm, "r");
  } }
  if (fd == 
-# 1644 "pan.c" 3 4
+# 1597 "pan.c" 3 4
           ((void *)0)
-# 1644 "pan.c"
+# 1597 "pan.c"
               )
  { if (try_core < 1)
   { tprefix = MySuffix;
@@ -5955,7 +5880,7 @@ success:
 }
 
 unsigned char do_transit(Trans *, short);
-# 1672 "pan.c"
+# 1625 "pan.c"
 void
 getrail(void)
 { FILE *fd;
@@ -5972,11 +5897,11 @@ getrail(void)
  { if (depth == -1)
   { printf("<<<<<START OF CYCLE>>>>>\n");
   }
-# 1727 "pan.c"
+# 1680 "pan.c"
   if (depth < 0)
   { continue;
   }
-# 1743 "pan.c"
+# 1696 "pan.c"
   if (i > now._nr_pr)
   { printf("pan: Error, proc %d invalid pid ", i);
    printf("transition %d\n", t_id);
@@ -5999,7 +5924,7 @@ getrail(void)
     II, z->_t, z->_p);
    printf("transition %d not found\n", t_id);
    printf("pan: list of possible transitions in this process:\n");
-   if (z->_t >= 0 && z->_t <= 3)
+   if (z->_t >= 0 && z->_t <= 2)
    for (t = trans[z->_t][z->_p]; t; t = t->nxt)
     printf("	t_id %d -- case %d, [%s]\n",
      t->t_id, t->forw, t->tp);
@@ -6099,7 +6024,7 @@ f_pid(int pt)
  for (i = 0; i < now._nr_pr; i++)
  { z = (P0 *)(((unsigned char *)&now)+(int)proc_offset[i]);
   if (z->_t == (unsigned) pt)
-   return 1 +z->_pid;
+   return 0 +z->_pid;
  }
  return -1;
 }
@@ -6201,32 +6126,32 @@ make_trail(void)
  char *q;
  char MyFile[512];
  int w_flags = 
-# 1966 "pan.c" 3 4
+# 1919 "pan.c" 3 4
               0100
-# 1966 "pan.c"
+# 1919 "pan.c"
                      |
-# 1966 "pan.c" 3 4
+# 1919 "pan.c" 3 4
                       01
-# 1966 "pan.c"
+# 1919 "pan.c"
                               |
-# 1966 "pan.c" 3 4
+# 1919 "pan.c" 3 4
                                01000
-# 1966 "pan.c"
+# 1919 "pan.c"
                                       ;
 
  if (exclusive == 1 && iterative == 0)
  { w_flags |= 
-# 1969 "pan.c" 3 4
+# 1922 "pan.c" 3 4
              0200
-# 1969 "pan.c"
+# 1922 "pan.c"
                    ;
  }
 
  q = strrchr(TrailFile, '/');
  if (q == 
-# 1973 "pan.c" 3 4
+# 1926 "pan.c" 3 4
          ((void *)0)
-# 1973 "pan.c"
+# 1926 "pan.c"
              ) q = TrailFile; else q++;
  strcpy(MyFile, q);
 
@@ -6277,7 +6202,7 @@ make_trail(void)
 
 
 double freq = (double) (1000000);
-# 5704 "pan.c"
+# 5657 "pan.c"
 clock_t start_time;
 
 
@@ -6322,29 +6247,29 @@ stop_timer(int report)
  struct tms stop_tm;
  stop_time = times(&stop_tm);
  delta_time = ((double) (stop_time - start_time)) / ((double) sysconf(
-# 5747 "pan.c" 3 4
+# 5700 "pan.c" 3 4
                                                                      _SC_CLK_TCK
-# 5747 "pan.c"
+# 5700 "pan.c"
                                                                                 ));
 
 
 
 
  if (readtrail || delta_time < 0.00) return;
-# 5764 "pan.c"
+# 5717 "pan.c"
  if (report)
  { report_time();
  }
 
 }
-# 5837 "pan.c"
+# 5790 "pan.c"
 void
 do_the_search(void)
 { int i;
  depth = mreached = 0;
  trpt = &trail[0];
 
- trpt->tau |= 4;
+
 
  for (i = 0; i < (int) now._nr_pr; i++)
  { P0 *ptr = (P0 *) (((unsigned char *)&now)+(int)proc_offset[i]);
@@ -6362,176 +6287,105 @@ do_the_search(void)
 
 
  }
-# 5888 "pan.c"
+# 5841 "pan.c"
  if (fairness
  && (a_cycles && (trpt->o_pm&2)))
  { now._a_t = 2;
   now._cnt[0] = now._nr_pr + 1;
 
-
+if (DFSdetail)
+      printf("Initial accepting State ! Start from copy : %d\n", now._cnt[now._a_t&1]);
 
 
  }
 
  c_stack_start = (char *) &i;
-# 5908 "pan.c"
+# 5861 "pan.c"
  if (readtrail) getrail();
 
 
  start_timer();
-# 5930 "pan.c"
+# 5883 "pan.c"
   new_state();
 
 
 }
-# 5947 "pan.c"
+# 5900 "pan.c"
 unsigned char
 do_transit(Trans *t, short II)
 { unsigned char _m = 0;
  int tt = (int) ((P0 *)_this)->_p;
-# 5965 "pan.c"
+# 5918 "pan.c"
 # 1 "pan.m" 1
 # 10 "pan.m"
- 
- 
  switch (t->forw) {
  default: Uerror("bad forward move");
  case 0:
   return 0;
  case 1: if(DFSdetail) printf("generic 'goto' or 'skip'\n");
-  
+ 
   _m = 3; goto P999;
  case 2: if(DFSdetail) printf("generic 'else'\n");
-  
+ 
   if (trpt->o_pm&1) return 0;
   _m = 3; goto P999;
 
 
- case 3: if(DFSdetail) printf("CLAIM never_0, STATE 1 - example.pml:23 - [((x<4))]\n");
-# 36 "pan.m"
-  { static int reported1 = 0;
-   if (verbose && !reported1)
-   { printf("depth %d: Claim, state %d (line %d)\n",
-     (int) depth, (int) ((P0 *)(((unsigned char *)&now)+(int)proc_offset[0]))->_p, src_claim[ (int) ((P0 *)(((unsigned char *)&now)+(int)proc_offset[0]))->_p ]);
-    reported1 = 1;
-    fflush(
-# 41 "pan.m" 3 4
-          stdout
-# 41 "pan.m"
-                );
-  } }
-
-
-  reached[2][1] = 1;
-  if (!((now.x<4)))
-   {
-    return 0;}
-  _m = 3; goto P999;
- case 4: if(DFSdetail) printf("CLAIM never_0, STATE 7 - example.pml:28 - [((x<4))]\n");
-# 62 "pan.m"
-  { static int reported7 = 0;
-   if (verbose && !reported7)
-   { printf("depth %d: Claim, state %d (line %d)\n",
-     (int) depth, (int) ((P0 *)(((unsigned char *)&now)+(int)proc_offset[0]))->_p, src_claim[ (int) ((P0 *)(((unsigned char *)&now)+(int)proc_offset[0]))->_p ]);
-    reported7 = 1;
-    fflush(
-# 67 "pan.m" 3 4
-          stdout
-# 67 "pan.m"
-                );
-  } }
-
-
-  reached[2][7] = 1;
-  if (!((now.x<4)))
-   return 0;
-  _m = 3; goto P999;
- case 5: if(DFSdetail) printf("CLAIM never_0, STATE 11 - example.pml:30 - [-end-]\n");
-# 88 "pan.m"
-  { static int reported11 = 0;
-   if (verbose && !reported11)
-   { printf("depth %d: Claim, state %d (line %d)\n",
-     (int) depth, (int) ((P0 *)(((unsigned char *)&now)+(int)proc_offset[0]))->_p, src_claim[ (int) ((P0 *)(((unsigned char *)&now)+(int)proc_offset[0]))->_p ]);
-    reported11 = 1;
-    fflush(
-# 93 "pan.m" 3 4
-          stdout
-# 93 "pan.m"
-                );
-  } }
-
-
-  reached[2][11] = 1;
-  if (!delproc(1, II)) return 0;
-  _m = 3; goto P999;
-
-
- case 6: if(DFSdetail) printf("PROC B, STATE 1 - example.pml:16 - [(!((x%%2)))]\n");
+ case 3: if(DFSdetail) printf(" PROC B: STATE 1 - fairness.pml:16 - [i = (1-i)]\n");
  
   reached[1][1] = 1;
-  if (!( !((now.x%2))))
-   return 0;
-  _m = 3; goto P999;
- case 7: if(DFSdetail) printf("PROC B, STATE 2 - example.pml:16 - [x = (x/2)]\n");
- 
-  reached[1][2] = 1;
-  (trpt+1)->bup.oval = now.x;
-  now.x = (now.x/2);
+  (trpt+1)->bup.oval = ((int)((P1 *)_this)->i);
+  ((P1 *)_this)->i = (1-((int)((P1 *)_this)->i));
 
 
 
   ;
   _m = 3; goto P999;
- case 8: if(DFSdetail) printf("PROC B, STATE 6 - example.pml:18 - [-end-]\n");
+ case 4: if(DFSdetail) printf(" PROC B: STATE 5 - fairness.pml:18 - [-end-] \n");
  
-  reached[1][6] = 1;
+  reached[1][5] = 1;
   if (!delproc(1, II)) return 0;
   _m = 3; goto P999;
 
 
- case 9: if(DFSdetail) printf("PROC A, STATE 1 - example.pml:9 - [((x%%2))]\n");
+ case 5: if(DFSdetail) printf(" PROC A: STATE 1 - fairness.pml:7 - [i = (1-i)] \n");
  
   reached[0][1] = 1;
-  if (!((now.x%2)))
-   return 0;
-  _m = 3; goto P999;
- case 10: if(DFSdetail) printf("PROC A, STATE 2 - example.pml:9 - [x = ((3*x)+1)]\n");
- 
-  reached[0][2] = 1;
-  (trpt+1)->bup.oval = now.x;
-  now.x = ((3*now.x)+1);
+  (trpt+1)->bup.oval = ((int)((P0 *)_this)->i);
+  ((P0 *)_this)->i = (1-((int)((P0 *)_this)->i));
 
 
 
   ;
   _m = 3; goto P999;
- case 11: if(DFSdetail) printf("PROC A, STATE 2 - example.pml:9 - [x = ((3*x)+1)]\n");
+ case 6: if(DFSdetail) printf(" PROC A: STATE 5 - fairness.pml:9 - [-end-] ");
  
-  reached[0][6] = 1;
+  reached[0][5] = 1;
   if (!delproc(1, II)) return 0;
   _m = 3; goto P999;
- case 12: if(DFSdetail) printf("np_ \n");
+ case 7: if(DFSdetail) printf(" np_ ");
   if (!((!(trpt->o_pm&4) && !(trpt->tau&128))))
    return 0;
 
- case 13: if(DFSdetail) printf("true \n");
+ case 8: if(DFSdetail) printf(" true ");
   _m = 3; goto P999;
 
  }
-# 5966 "pan.c" 2
+# 5919 "pan.c" 2
 P999:
+
 
 
  return _m;
 
 }
-# 6034 "pan.c"
+# 5987 "pan.c"
 int
 enabled(int iam, int pid)
 { Trans *t; unsigned char *othis = _this;
  int res = 0; int tt; unsigned char ot;
 
- pid += 1;
+ pid += 0;
  if (pid == iam)
   Uerror("used: enabled(pid=thisproc)");
  if (pid < 0 || pid >= (int) now._nr_pr)
@@ -6549,7 +6403,7 @@ enabled(int iam, int pid)
  _this = othis;
  return res;
 }
-# 6124 "pan.c"
+# 6077 "pan.c"
 void
 snap_time(void)
 { clock_t stop_time;
@@ -6558,9 +6412,9 @@ snap_time(void)
  struct tms stop_tm;
  stop_time = times(&stop_tm);
  delta_time = ((double) (stop_time - start_time)) / ((double) sysconf(
-# 6131 "pan.c" 3 4
+# 6084 "pan.c" 3 4
                                                                      _SC_CLK_TCK
-# 6131 "pan.c"
+# 6084 "pan.c"
                                                                                 ));
 
 
@@ -6585,7 +6439,7 @@ snap_time(void)
 void
 snapshot(void)
 {
-# 6163 "pan.c"
+# 6116 "pan.c"
  printf("Depth= %7ld States= %8.3g ",
 
 
@@ -6598,9 +6452,9 @@ snapshot(void)
  printf("Memory= %9.3f\t", memcnt/1048576.);
  snap_time();
  fflush(
-# 6174 "pan.c" 3 4
+# 6127 "pan.c" 3 4
        stdout
-# 6174 "pan.c"
+# 6127 "pan.c"
              );
 
 
@@ -6609,7 +6463,7 @@ snapshot(void)
 
 
 }
-# 6221 "pan.c"
+# 6174 "pan.c"
 unsigned char *
 Pptr(int x)
 { if (x < 0 || x >= 255
@@ -6635,30 +6489,36 @@ Qptr(int x)
  else
   return (unsigned char *) (((unsigned char *)&now)+(int)q_offset[x]);
 }
-# 6278 "pan.c"
+# 6231 "pan.c"
 void
 select_claim(int n)
 { if (n != 0) uerror("non-existing claim");
 }
 
 int qs_empty(void);
-# 6432 "pan.c"
+# 6385 "pan.c"
 void
 new_state(void)
 { Trans *t;
  unsigned char _n, _m, ot;
-# 6445 "pan.c"
+# 6398 "pan.c"
  short II, JJ = 0, kk;
  int tt;
- short From = (now._nr_pr-1), To = (1);
+ short From = (now._nr_pr-1), To = (0);
 
+if (DFSdetail)
+   {
+      unsigned char * _A = (((unsigned char *)&now)+(int)proc_offset[0]);
+      unsigned char * _B = (((unsigned char *)&now)+(int)proc_offset[1]);
+      printf("(A.i, B.i) = (%d, %d)\n", ((P0 *)_A)->i, ((P0 *)_B)->i);
+      printf("--------------------------------------------------------------\n");
+   }
 
 
 Down:
-
-# 6472 "pan.c"
+# 6424 "pan.c"
  trpt->tau &= ~(16|32|64);
-# 6496 "pan.c"
+# 6448 "pan.c"
  if (depth >= maxdepth)
  { if (!warned)
   { warned = 1;
@@ -6687,7 +6547,7 @@ AllOver:
  trpt->ostate = (trpt-1)->ostate;
 
 
- if ((trpt->tau&4) || ((trpt-1)->tau&128))
+
 
  if (boq == -1) {
 
@@ -6731,10 +6591,10 @@ AllOver:
 
   if (!(trpt->tau&8))
   {
-# 6604 "pan.c"
+# 6556 "pan.c"
    JJ = onstack_now();
    II = b_store((char *)&now, vsize);
-# 6640 "pan.c"
+# 6592 "pan.c"
    kk = (II == 1 || II == 2);
 
 
@@ -6798,10 +6658,9 @@ same_case: if (Lstate) depthfound = Lstate->D;
     goto Up;
       }
    }
-# 6739 "pan.c"
+# 6691 "pan.c"
    if (II)
    { truncs++;
-
 
 
 
@@ -6820,63 +6679,39 @@ same_case: if (Lstate) depthfound = Lstate->D;
     if (ndone != sdone)
     { snapshot();
      sdone = ndone;
-# 6774 "pan.c"
+# 6726 "pan.c"
     }
-# 6799 "pan.c"
+# 6751 "pan.c"
    }
 
    onstack_put();
-# 6816 "pan.c"
+# 6768 "pan.c"
  } }
  if (depth > mreached)
   mreached = depth;
 
- if (trpt->tau&4)
+
 
  trpt->tau &= ~(1|2);
  _n = 0;
-
-
-
-
- if (now._nr_pr == 0)
- { uerror("end state in claim reached");
- }
- if (stopstate[((P0 *)(((unsigned char *)&now)+(int)proc_offset[0]))->_t][((P0 *)(((unsigned char *)&now)+(int)proc_offset[0]))->_p])
- { uerror("end state in claim reached");
- }
-Stutter:
- if (trpt->tau&4)
- {
-
-  if ((now._a_t&2)
-  && now._cnt[now._a_t&1] == 1)
-  { now._a_t &= ~2;
-   now._cnt[now._a_t&1] = 0;
-   trpt->o_pm |= 16;
-
-
-
-  }
-  II = 0;
-  goto Veri0;
- }
-# 6938 "pan.c"
+# 6890 "pan.c"
  trpt->o_pm &= ~(8|16|32|64);
 
  if (fairness && boq == -1
 
- && (!(trpt->tau&4) && !((trpt-1)->tau&128))
+
 
  && !(trpt->tau&8))
  {
   if (!(now._a_t&2))
   { if (a_cycles && (trpt->o_pm&2))
    {
+
     now._a_t |= 2;
     now._cnt[now._a_t&1] = now._nr_pr + 1;
     trpt->o_pm |= 8;
-
+    if (DFSdetail)
+      printf("Accepting State ! Go to copy : %d\n", now._cnt[now._a_t&1]);
 
 
 
@@ -6887,19 +6722,19 @@ Stutter:
    { now._a_t &= ~2;
     now._cnt[now._a_t&1] = 0;
     trpt->o_pm |= 16;
-
+    if (DFSdetail)
+      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
 
 
 
  } } }
-# 7000 "pan.c"
+# 6952 "pan.c"
  for (II = From; II >= To; II--) {
-# 7071 "pan.c"
-Veri0:
+# 7025 "pan.c"
   _this = (((unsigned char *)&now)+(int)proc_offset[II]);
   tt = (int) ((P0 *)_this)->_p;
   ot = (unsigned char) ((P0 *)_this)->_t;
-# 7095 "pan.c"
+# 7047 "pan.c"
   trpt->o_pm &= ~1;
 
 
@@ -6913,59 +6748,55 @@ Veri0:
   && (now._a_t&2)
   && now._cnt[now._a_t&1] == II+2)
   { now._cnt[now._a_t&1] -= 1;
-
-
-   if (II == 1)
-    now._cnt[now._a_t&1] = 1;
-
-
-
-
-
-
+# 7070 "pan.c"
+    if (DFSdetail)
+      printf("_pid matches ! Go to copy : %d\n", now._cnt[now._a_t&1]);
    trpt->o_pm |= (32|64);
   }
-# 7136 "pan.c"
+# 7088 "pan.c"
   (trpt+1)->pr = (unsigned char) II;
   (trpt+1)->st = tt;
-# 7163 "pan.c"
+# 7115 "pan.c"
   for (t = trans[ot][tt]; t; t = t->nxt)
 
   {
-# 7183 "pan.c"
+# 7135 "pan.c"
    (trpt+1)->o_t = t;
-
 
    if (DFSdetail)
    {
       printf("--------------------------------------------------------------\n");
-      printf("depth= %ld\n", depth);
+      printf("depth= %ld,  ", depth);
    }
-   
+
+
    if (!(_m = do_transit(t, II)))
-   {
+   { 
     if (DFSdetail)
     {
+      unsigned char * _A = (((unsigned char *)&now)+(int)proc_offset[0]);
+      unsigned char * _B = (((unsigned char *)&now)+(int)proc_offset[1]);
       printf("Move failed.\n"); 
-      printf("x = %d\n", now.x);
+      printf("(A.i, B.i) = (%d, %d)\n", ((P0 *)_A)->i, ((P0 *)_B)->i);
     }
     continue;
    }
 
    if (DFSdetail)
    {
+      unsigned char * _A = (((unsigned char *)&now)+(int)proc_offset[0]);
+      unsigned char * _B = (((unsigned char *)&now)+(int)proc_offset[1]);
       printf("Move success.\n");
-      printf("x = %d\n", now.x);
+      // if(fairness)
+      //   printf("copy : %d\n", now._cnt[now._a_t&1]);
+      printf("(A.i, B.i) = (%d, %d)\n", ((P0 *)_A)->i, ((P0 *)_B)->i);
       printf("--------------------------------------------------------------\n");
    }
-   
-
-# 7216 "pan.c"
+# 7167 "pan.c"
    if (boq == -1)
-# 7225 "pan.c"
+# 7176 "pan.c"
     trpt->o_pm |= 1;
-# 7267 "pan.c"
-  
+# 7218 "pan.c"
    depth++; trpt++;
    trpt->pr = (unsigned char) II;
    trpt->st = tt;
@@ -6979,128 +6810,103 @@ Veri0:
    {
 
     int ii;
-# 7288 "pan.c"
+# 7239 "pan.c"
     for (ii = 0; ii < (int) now._nr_pr; ii++)
     { if (accpstate[((P0 *)(((unsigned char *)&now)+(int)proc_offset[ii]))->_t][((P0 *)(((unsigned char *)&now)+(int)proc_offset[ii]))->_p])
       { trpt->o_pm |= 2;
      break;
        } }
-# 7303 "pan.c"
+# 7254 "pan.c"
    }
 
    trpt->o_t = t; trpt->o_n = _n;
    trpt->o_ot = ot; trpt->o_tt = tt;
    trpt->o_To = To; trpt->o_m = _m;
    trpt->tau = 0;
-# 7318 "pan.c"
+# 7269 "pan.c"
    if (boq != -1 || (t->atom&2))
    { trpt->tau |= 8;
-
-
-    if((trpt-1)->tau&4)
-     trpt->tau |= 4;
-    else
-     trpt->tau &= ~4;
+# 7288 "pan.c"
    } else
-   { if ((trpt-1)->tau&4)
-     trpt->tau &= ~4;
-    else
-     trpt->tau |= 4;
-   }
-
-
-   if (((trpt-1)->tau&1) && !(trpt->tau&4))
-    trpt->tau |= 1;
-
-
-
+    trpt->tau &= ~8;
 
    if (boq == -1 && (t->atom&2))
    { From = To = II; nlinks++;
    } else
-   { From = (now._nr_pr-1); To = (1);
+   { From = (now._nr_pr-1); To = (0);
    }
-# 7361 "pan.c"
+# 7312 "pan.c"
    goto Down;
 Up:
-# 7409 "pan.c"
+# 7360 "pan.c"
    if ((now._a_t&1) && depth <= A_depth)
     return;
 
 
    if (trpt->o_pm&128)
    { now._cnt[now._a_t&1] = trpt->bup.oval;
+    if (DFSdetail)
+      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
     _n = 1; trpt->o_pm &= ~128;
     depth--; trpt--;
+    if(DFSdetail)
+      printf("Up: trpt--, depth= %ld\n", depth);
 
 
     goto Q999;
    }
-# 7440 "pan.c"
+# 7391 "pan.c"
    t = trpt->o_t; _n = trpt->o_n;
    ot = trpt->o_ot; II = trpt->pr;
    tt = trpt->o_tt; _this = Pptr(II);
    To = trpt->o_To; _m = trpt->o_m;
-# 7456 "pan.c"
+# 7407 "pan.c"
 # 1 "pan.b" 1
  switch (t->back) {
  default: Uerror("bad return move");
  case 0: goto R999;
 
 
-;
+
+ case 3:
+  ;
+  ((P1 *)_this)->i = trpt->bup.oval;
+  ;
+  goto R999;
+
+ case 4:
+  ;
+  p_restor(II);
   ;
   ;
-  ;
+  goto R999;
+
+
 
  case 5:
   ;
-  p_restor(II);
-  ;
-  ;
-  goto R999;
-
-
-;
-  ;
-
- case 7:
-  ;
-  now.x = trpt->bup.oval;
+  ((P0 *)_this)->i = trpt->bup.oval;
   ;
   goto R999;
 
- case 8:
-  ;
-  p_restor(II);
-  ;
-  ;
-  goto R999;
-
-
-;
-  ;
-
- case 10:
-  ;
-  now.x = trpt->bup.oval;
-  ;
-  goto R999;
-
- case 11:
+ case 6:
   ;
   p_restor(II);
   ;
   ;
   goto R999;
  }
-# 7457 "pan.c" 2
+# 7408 "pan.c" 2
 R999:
-# 7481 "pan.c"
+# 7432 "pan.c"
    depth--; trpt--;
    if(DFSdetail)
-    printf("trpt--, depth= %ld\n", depth);
-# 7490 "pan.c"
+    {unsigned char * _A = (((unsigned char *)&now)+(int)proc_offset[0]);
+        unsigned char * _B = (((unsigned char *)&now)+(int)proc_offset[1]);
+        printf("R999: trpt--, depth= %ld\n", depth);
+        printf("(A.i, B.i) = (%d, %d)\n", ((P0 *)_A)->i, ((P0 *)_B)->i);}
+    
+# 7441 "pan.c"
    if (_m)
    { reached[ot][t->st] = 1;
     reached[ot][tt] = 1;
@@ -7111,18 +6917,19 @@ R999:
    if (_m>_n||(_n>3&&_m!=0)) _n=_m;
    ((P0 *)_this)->_p = tt;
   }
-# 7515 "pan.c"
+# 7466 "pan.c"
   if ((trpt->o_pm&32)
   && (trpt->o_pm&64))
   { if (trpt->o_pm&1)
    {
 
-    if (now._cnt[now._a_t&1] == 1)
-     now._cnt[now._a_t&1] = 2;
+
+
 
     now._cnt[now._a_t&1] += 1;
 
-
+    if (DFSdetail)
+      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
 
 
 
@@ -7134,25 +6941,25 @@ R999:
      II = (From+1);
   } } }
 
-  if (II == 0)
-  { 
-    break;
-  }
 
-  { 
-    continue; };
+
+
+
+
+  { continue; };
  }
-# 7586 "pan.c"
+# 7537 "pan.c"
  if (trpt->o_pm&32)
  {
 
-  if (now._cnt[now._a_t&1] == 1)
-   now._cnt[now._a_t&1] = 2;
+
+
 
   now._cnt[now._a_t&1] += 1;
 
 
-
+  if (DFSdetail)
+      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
 
 
   trpt->o_pm &= ~32;
@@ -7161,7 +6968,7 @@ R999:
  if (fairness
  && _n == 0
 
- && !(trpt->tau&4)
+
 
  && !(trpt->tau&8)
 
@@ -7177,11 +6984,12 @@ R999:
   trpt->bup.oval = now._cnt[now._a_t&1];
   now._cnt[now._a_t&1] = 1;
 
-  trpt->tau = 4;
+  if (DFSdetail)
+      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
 
+  trpt->tau = 0;
 
-
-  From = (now._nr_pr-1); To = (1);
+  From = (now._nr_pr-1); To = (0);
 
 
 
@@ -7195,7 +7003,8 @@ Q999: ;
   now._cnt[now._a_t&1] = 0;
   trpt->o_pm &= ~8;
 
-
+  if (DFSdetail)
+      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
 
 
  }
@@ -7204,51 +7013,55 @@ Q999: ;
   now._cnt[now._a_t&1] = 1;
   trpt->o_pm &= ~16;
 
-
+  if (DFSdetail)
+      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
 
 
  }
-# 7725 "pan.c"
+# 7676 "pan.c"
  if (_n == 0 || ((trpt->tau&4) && (trpt->tau&2)))
  {
-# 7736 "pan.c"
+# 7687 "pan.c"
   if ((now._nr_pr == 0 && (!strict || qs_empty()))
   || depth >= maxdepth-1) goto Done;
   if ((trpt->tau&8) && !(trpt->tau&4))
   { trpt->tau &= ~(1|8);
 
-   From = (now._nr_pr-1); To = (1);
+   From = (now._nr_pr-1); To = (0);
 
 
 
 
-   trpt->tau |= 4;
+
 
    goto AllOver;
   }
-# 7793 "pan.c"
-BreakOut:
-  if (!(trpt->tau&4))
-  { trpt->tau |= 4;
-   trpt->tau |= 128;
-
-
-
-   goto Stutter;
+# 7758 "pan.c"
+  if (!noends && !a_cycles && !endstate())
+  { depth--; trpt--;
+   uerror("invalid end state");
+   depth++; trpt++;
   }
-# 7820 "pan.c"
+
+  else if (a_cycles && (trpt->o_pm&2))
+  { depth--; trpt--;
+   uerror("accept stutter");
+   depth++; trpt++;
+  }
+
+
  }
-Done: 
+Done:
  if (!(trpt->tau&8))
  {
 
 
 
-  if (boq == -1
-  && (((trpt->tau&4) && !(trpt->tau&128))
-  || ( (trpt-1)->tau&128)))
 
 
+
+
+  if (boq == -1)
 
   {
 
@@ -7260,16 +7073,9 @@ Done:
 
    onstack_zap();
   }
-# 7864 "pan.c"
+# 7815 "pan.c"
   if (_n != 0
-
-
-
-  && (trpt->tau&4)
-
-
-  && ((now._nr_pr > 1) || (trpt->o_pm&2))
-
+# 7824 "pan.c"
   && !(now._a_t&1))
   {
 
@@ -7291,6 +7097,7 @@ Done:
  }
  if (depth > 0)
  {
+
 
 
 
@@ -7335,7 +7142,7 @@ wrap_stats(void)
    nstates - nShadow, nstates);
  else
    printf("%9.8g states, stored\n", nstates);
-# 7956 "pan.c"
+# 7907 "pan.c"
  printf("%9.8g states, matched\n", truncs);
 
 
@@ -7348,7 +7155,7 @@ wrap_stats(void)
   nstates+truncs);
  printf("%9.8g atomic steps\n", nlinks);
  if (nlost) printf("%g lost messages\n", (double) nlost);
-# 7996 "pan.c"
+# 7947 "pan.c"
  if (udmem)
  printf("\nhash factor: %4g (best if > 100.)\n\n",
   (double)(((double) udmem) * 8.0) / (double) nstates);
@@ -7360,58 +7167,55 @@ wrap_stats(void)
  printf("hash polynomial used: 0x%.8x\n", HASH_CONST[HASH_NR]);
  if (s_rand != 12345)
  printf("random seed used: %u\n", (unsigned int) (s_rand-1));
-# 8015 "pan.c"
+# 7966 "pan.c"
 }
 
 void
 wrapup(void)
 { double nr1, nr2, nr3 = 0.0, nr4, nr5 = 0.0;
-# 8040 "pan.c"
+# 7991 "pan.c"
  signal(
-# 8040 "pan.c" 3 4
+# 7991 "pan.c" 3 4
        2
-# 8040 "pan.c"
+# 7991 "pan.c"
              , 
-# 8040 "pan.c" 3 4
+# 7991 "pan.c" 3 4
                ((__sighandler_t) 0)
-# 8040 "pan.c"
+# 7991 "pan.c"
                       );
 
  printf("\n(%s)\n", "Spin Version 6.5.1 -- 20 December 2019");
  if (!done) printf("Warning: Search not completed\n");
-# 8078 "pan.c"
+# 8029 "pan.c"
  if (t_reverse)
  printf("	+ Reverse Transition Ordering\n");
-# 8125 "pan.c"
+# 8076 "pan.c"
  printf("\nBit statespace search for:\n");
-# 8141 "pan.c"
- printf("	never claim         	+");
- printf(" (%s)\n", procname[((P0 *)(((unsigned char *)&now)+(int)proc_offset[0]))->_t]);
+# 8103 "pan.c"
+ printf("	never claim         	- (none specified)\n");
+
  printf("	assertion violations	");
  if (noasserts)
   printf("- (disabled by -A flag)\n");
  else
-  printf("+ (if within scope of claim)\n");
-# 8164 "pan.c"
+  printf("+\n");
+
+
+
+
+
  printf("	acceptance   cycles 	");
 
  if (a_cycles)
   printf("+ (fairness %sabled)\n",
    fairness?"en":"dis");
  else printf("- (not selected)\n");
-# 8178 "pan.c"
- printf("	invalid end states	- ");
- printf("(disabled by ");
+# 8136 "pan.c"
+ printf("	invalid end states	");
  if (noends)
-  printf("-E flag)\n\n");
+  printf("- (disabled by -E flag)\n\n");
  else
-  printf("never claim)\n\n");
-
-
-
-
-
-
+  printf("+\n\n");
 
  printf("State-vector %d byte, depth reached %ld", hmax,
 
@@ -7420,13 +7224,13 @@ wrapup(void)
      mreached);
  printf(", errors: %lu\n", errors);
  fflush(
-# 8197 "pan.c" 3 4
+# 8148 "pan.c" 3 4
        stdout
-# 8197 "pan.c"
+# 8148 "pan.c"
              );
-# 8207 "pan.c"
+# 8158 "pan.c"
  wrap_stats();
-# 8216 "pan.c"
+# 8167 "pan.c"
  printf("\n");
 
 
@@ -7474,7 +7278,7 @@ wrapup(void)
   printf("%9.3f	equivalent memory usage for states",
    nr1/1048576.);
   printf(" (stored*(State-vector + overhead))\n");
-# 8273 "pan.c"
+# 8224 "pan.c"
   if (udmem)
    printf("%9.3f	memory used for hash array (-M%ld)\n",
    nr3/1048576., udmem/(1024L*1024L));
@@ -7485,11 +7289,11 @@ wrapup(void)
   printf("%9.3f	memory used for bit stack\n",
    nr5/1048576.);
   remainder = remainder - nr3 - nr5;
-# 8320 "pan.c"
+# 8271 "pan.c"
   printf("%9.3f	memory used for DFS stack (-m%ld)\n",
    nr2/1048576., maxdepth);
   remainder -= nr2;
-# 8337 "pan.c"
+# 8288 "pan.c"
   if (remainder - fragment > 1048576.)
   { printf("%9.3f	other (proc and chan stacks)\n",
    (remainder-fragment)/1048576.);
@@ -7521,9 +7325,9 @@ wrapup(void)
 
 
  printf("\n");
-# 8397 "pan.c"
+# 8348 "pan.c"
  if ((done || verbose) && !no_rck) do_reach();
-# 8421 "pan.c"
+# 8372 "pan.c"
  pan_exit(0);
 
 }
@@ -7612,10 +7416,10 @@ typedef unsigned long int uintptr_t;
 typedef __intmax_t intmax_t;
 typedef __uintmax_t uintmax_t;
 # 10 "/usr/lib/gcc/x86_64-linux-gnu/7/include/stdint.h" 2 3 4
-# 8444 "pan.c" 2
-# 8452 "pan.c"
+# 8395 "pan.c" 2
+# 8403 "pan.c"
 
-# 8452 "pan.c"
+# 8403 "pan.c"
 void
 d_sfh(unsigned char *s, int len)
 { uint32_t h = len, tmp;
@@ -7655,7 +7459,7 @@ d_sfh(unsigned char *s, int len)
 
  K1 = h;
 }
-# 8536 "pan.c"
+# 8487 "pan.c"
 void
 d_hash(unsigned char *kb, int nbytes)
 { uint8_t *bp;
@@ -7702,12 +7506,12 @@ d_hash(unsigned char *kb, int nbytes)
  case 0: break;
  }
  { a -= b; a -= c; a ^= (c>>43); b -= c; b -= a; b ^= (a<<9); c -= a; c -= b; c ^= (b>>8); a -= b; a -= c; a ^= (c>>38); b -= c; b -= a; b ^= (a<<23); c -= a; c -= b; c ^= (b>>5); a -= b; a -= c; a ^= (c>>35); b -= c; b -= a; b ^= (a<<49); c -= a; c -= b; c ^= (b>>11); a -= b; a -= c; a ^= (c>>12); b -= c; b -= a; b ^= (a<<18); c -= a; c -= b; c ^= (b>>22); };
-# 8601 "pan.c"
+# 8552 "pan.c"
  j1_spin = c&nmask; j3_spin = a&7;
  j2_spin = b&nmask; j4_spin = (a>>3)&7;
  K1 = c; K2 = b;
 }
-# 8722 "pan.c"
+# 8673 "pan.c"
 void
 s_hash(unsigned char *cp, int om)
 {
@@ -7763,9 +7567,9 @@ set_masks(void)
 
  } else if (8 != 4)
  { fprintf(
-# 8776 "pan.c" 3 4
+# 8727 "pan.c" 3 4
           stderr
-# 8776 "pan.c"
+# 8727 "pan.c"
                 , "pan: wordsize %ld not supported\n", (long int) 8);
   exit(1);
  } else
@@ -7773,7 +7577,7 @@ set_masks(void)
   nmask = (mask>>3);
  }
 }
-# 8871 "pan.c"
+# 8822 "pan.c"
 unsigned int pp[33];
 
 unsigned int
@@ -7847,9 +7651,9 @@ main(int argc, char *argv[])
 { void to_compile(void);
 
  efd = 
-# 8943 "pan.c" 3 4
+# 8894 "pan.c" 3 4
       stderr
-# 8943 "pan.c"
+# 8894 "pan.c"
             ;
 
 
@@ -7861,7 +7665,7 @@ main(int argc, char *argv[])
   printf("wordsize (%d iso %d)\n", 8, (int) sizeof(long));
   exit(1);
  }
-# 8975 "pan.c"
+# 8926 "pan.c"
  b_store = bstore_reg;
 
  { int j;
@@ -7885,7 +7689,7 @@ main(int argc, char *argv[])
 
 
   case 'a': a_cycles = 1; break;
-# 9010 "pan.c"
+# 8961 "pan.c"
   case 'A': noasserts = 1; break;
   case 'b': bounded = 1; break;
 
@@ -7917,13 +7721,13 @@ main(int argc, char *argv[])
     break;
      }
      if (!argv[1][2] || !
-# 9040 "pan.c" 3 4
+# 8991 "pan.c" 3 4
                         ((*__ctype_b_loc ())[(int) ((
-# 9040 "pan.c"
+# 8991 "pan.c"
                         (int) argv[1][2]
-# 9040 "pan.c" 3 4
+# 8991 "pan.c" 3 4
                         ))] & (unsigned short int) _ISdigit)
-# 9040 "pan.c"
+# 8991 "pan.c"
                                                  )
      { usage(efd);
      }
@@ -7941,7 +7745,7 @@ main(int argc, char *argv[])
   case 'J': like_java = 1; break;
 
   case 'k': hfns = atoi(&argv[1][2]); break;
-# 9077 "pan.c"
+# 9028 "pan.c"
   case 'l': fprintf(efd, "error: -l not available (compile with -DNP)");
      usage(efd); break;
 
@@ -7957,23 +7761,23 @@ main(int argc, char *argv[])
   case 'm': maxdepth = atoi(&argv[1][2]); break;
 
   case 'N':
-# 9103 "pan.c"
+# 9054 "pan.c"
      fprintf(
-# 9103 "pan.c" 3 4
+# 9054 "pan.c" 3 4
             stderr
-# 9103 "pan.c"
+# 9054 "pan.c"
                   , "warning: only one claim defined, -N ignored\n");
 
 
 
      if (!
-# 9107 "pan.c" 3 4
+# 9058 "pan.c" 3 4
          ((*__ctype_b_loc ())[(int) ((
-# 9107 "pan.c"
+# 9058 "pan.c"
          (int)argv[1][2]
-# 9107 "pan.c" 3 4
+# 9058 "pan.c" 3 4
          ))] & (unsigned short int) _ISdigit) 
-# 9107 "pan.c"
+# 9058 "pan.c"
                                   && argc > 2 && argv[2][0] != '-')
      { argc--; argv++;
      }
@@ -7986,13 +7790,13 @@ main(int argc, char *argv[])
   case 'P':
      if (!readtrail
      && 
-# 9118 "pan.c" 3 4
+# 9069 "pan.c" 3 4
         ((*__ctype_b_loc ())[(int) ((
-# 9118 "pan.c"
+# 9069 "pan.c"
         (int) argv[1][2]
-# 9118 "pan.c" 3 4
+# 9069 "pan.c" 3 4
         ))] & (unsigned short int) _ISdigit)
-# 9118 "pan.c"
+# 9069 "pan.c"
                                  )
      { int x = atoi(&argv[1][2]);
     if (x != 0 && x != 1)
@@ -8027,7 +7831,7 @@ main(int argc, char *argv[])
      break;
 
   case 'p':
-# 9181 "pan.c"
+# 9132 "pan.c"
      if (strncmp(&argv[1][1], "p_permute", strlen("p_permute")) == 0
      || strncmp(&argv[1][1], "p_rotate", strlen("p_rotate")) == 0
      || strncmp(&argv[1][1], "p_randrot", strlen("p_randrot")) == 0
@@ -8080,7 +7884,7 @@ main(int argc, char *argv[])
 
     }
     srand(s_rand++);
-# 9258 "pan.c"
+# 9209 "pan.c"
     fprintf(efd, "option -rhash requires compilation with -DPERMUTED\n");
     exit(1);
 
@@ -8088,13 +7892,13 @@ main(int argc, char *argv[])
 
 samething: readtrail = 1;
      if (
-# 9264 "pan.c" 3 4
+# 9215 "pan.c" 3 4
         ((*__ctype_b_loc ())[(int) ((
-# 9264 "pan.c"
+# 9215 "pan.c"
         (int)argv[1][2]
-# 9264 "pan.c" 3 4
+# 9215 "pan.c" 3 4
         ))] & (unsigned short int) _ISdigit)
-# 9264 "pan.c"
+# 9215 "pan.c"
                                 )
     whichtrail = atoi(&argv[1][2]);
      else if (argc > 2 && argv[2][0] != '-')
@@ -8109,13 +7913,13 @@ samething: readtrail = 1;
 
   case 'T':
      if (
-# 9277 "pan.c" 3 4
+# 9228 "pan.c" 3 4
         ((*__ctype_b_loc ())[(int) ((
-# 9277 "pan.c"
+# 9228 "pan.c"
         (int) argv[1][2]
-# 9277 "pan.c" 3 4
+# 9228 "pan.c" 3 4
         ))] & (unsigned short int) _ISdigit)
-# 9277 "pan.c"
+# 9228 "pan.c"
                                  )
      { t_reverse = atoi(&argv[1][2]);
     if (verbose)
@@ -8149,14 +7953,13 @@ samething: readtrail = 1;
      break;
   case 'Y': signoff = 1; break;
   case 'X': efd = 
-# 9309 "pan.c" 3 4
+# 9260 "pan.c" 3 4
                  stdout
-# 9309 "pan.c"
+# 9260 "pan.c"
                        ; break;
   case 'x': exclusive = 1; break;
-# 9328 "pan.c"
+# 9279 "pan.c"
   case 'z': break;
-
   case 'Z':DFSdetail = 1; break;
 
   default : fprintf(efd, "saw option -%c\n",
@@ -8164,7 +7967,7 @@ samething: readtrail = 1;
   }
   argc--; argv++;
  }
-# 9343 "pan.c"
+# 9294 "pan.c"
  if (do_hashgen)
  { hashgen();
  }
@@ -8173,7 +7976,7 @@ samething: readtrail = 1;
  { fprintf(efd, "error: -f requires the use of -a or -l\n");
   usage(efd);
  }
-# 9364 "pan.c"
+# 9315 "pan.c"
  uerror = dfs_uerror;
  Uerror = dfs_Uerror;
 
@@ -8192,7 +7995,7 @@ samething: readtrail = 1;
  { TMODE = 0666;
   fprintf(efd, "warning: -T ignored when -i or -I is used\n");
  }
-# 9427 "pan.c"
+# 9378 "pan.c"
  if (hfns <= 0)
  { hfns = 1;
   fprintf(efd, "warning: using -k%d as minimal usable value\n", hfns);
@@ -8208,33 +8011,16 @@ samething: readtrail = 1;
 
 
  }
-# 9468 "pan.c"
+# 9419 "pan.c"
  if (iterative && a_cycles)
  fprintf(efd, "warning: -i or -I work for safety properties only\n");
-# 9557 "pan.c"
+# 9508 "pan.c"
  if (maxdepth <= 0 || ssize <= 1) usage(efd);
-# 9633 "pan.c"
-   if (!a_cycles
-
-   && !readtrail
-
-
-
-
-   && !state_tables)
-
-
-
-
-   { fprintf(efd, "warning: never claim + accept labels ");
-     fprintf(efd, "requires -a flag to fully verify\n");
-
-   }
-# 9689 "pan.c"
+# 9640 "pan.c"
  signal(
-# 9689 "pan.c" 3 4
+# 9640 "pan.c" 3 4
        2
-# 9689 "pan.c"
+# 9640 "pan.c"
              , stopped);
  set_masks();
 
@@ -8245,7 +8031,7 @@ samething: readtrail = 1;
  trail++;
 
  trpt = &trail[0];
-# 9717 "pan.c"
+# 9668 "pan.c"
  run();
  done = 1;
  wrapup();
@@ -8289,7 +8075,7 @@ usage(FILE *fd)
  fprintf(fd, "	-J  reverse eval order of nested unlesses\n");
 
  fprintf(fd, "	-kN set N bits per state (defaults to 3)\n");
-# 9768 "pan.c"
+# 9719 "pan.c"
  fprintf(fd, "	-l  find non-progress cycles -> ");
  fprintf(fd, "disabled, requires ");
  fprintf(fd, "compilation with -DNP\n");
@@ -8305,7 +8091,7 @@ usage(FILE *fd)
 
 
  fprintf(fd, "	-n  no listing of unreached states\n");
-# 9791 "pan.c"
+# 9742 "pan.c"
  fprintf(fd, "	-QN set time-limit on execution of N minutes\n");
  fprintf(fd, "	-q  require empty chans in valid end states\n");
 
@@ -8360,7 +8146,7 @@ Malloc(unsigned long n)
 
 
   printf("pan: out of memory\n");
-# 9879 "pan.c"
+# 9830 "pan.c"
   wrapup();
  }
  memcnt += (double) n;
@@ -8374,9 +8160,9 @@ emalloc(unsigned long n)
 { char *tmp;
  if (n == 0)
          return (char *) 
-# 9891 "pan.c" 3 4
+# 9842 "pan.c" 3 4
                         ((void *)0)
-# 9891 "pan.c"
+# 9842 "pan.c"
                             ;
  if (n&(sizeof(void *)-1))
          n += sizeof(void *)-(n&(sizeof(void *)-1));
@@ -8404,7 +8190,7 @@ dfs_Uerror(char *str)
 
  wrapup();
 }
-# 10025 "pan.c"
+# 9976 "pan.c"
 static char unwinding;
 void
 dfs_uerror(char *str)
@@ -8434,9 +8220,9 @@ dfs_uerror(char *str)
  if ((every_error != 0)
  || errors == upto)
  {
-# 10071 "pan.c"
+# 10022 "pan.c"
   putrail();
-# 10086 "pan.c"
+# 10037 "pan.c"
  }
  if (!is_cycle)
  { depth--; trpt--;
@@ -8479,7 +8265,7 @@ xrefsrc(int lno, S_F_MAP *mp, int M, int i)
     break;
    }
   if (j >= sizeof(mp))
-  { printf("\t%s:%d", "example.pml", lno);
+  { printf("\t%s:%d", "fairness.pml", lno);
   }
   printf(", state %d", i);
   if (strcmp(T->tp, "") != 0)
@@ -8500,9 +8286,9 @@ r_ck(unsigned char *which, int N, int M, short *src, S_F_MAP *mp)
 
  if ((enum btypes) Btypes[M] == N_CLAIM
  && claimname != 
-# 10148 "pan.c" 3 4
+# 10099 "pan.c" 3 4
                 ((void *)0) 
-# 10148 "pan.c"
+# 10099 "pan.c"
                      && strcmp(claimname, procname[M]) != 0)
  { return;
  }
@@ -8532,7 +8318,7 @@ r_ck(unsigned char *which, int N, int M, short *src, S_F_MAP *mp)
  } }
  printf("	(%d of %d states)\n", N-1-m, N-1);
 }
-# 10211 "pan.c"
+# 10162 "pan.c"
 void
 putrail(void)
 { int fd;
@@ -8546,13 +8332,13 @@ putrail(void)
  fd = make_trail();
  if (fd < 0) return;
 
- sprintf(snap, "-2:%d:-2\n", (unsigned char) ((P0 *)(((unsigned char *)&now)+(int)proc_offset[0]))->_t);
- if (write(fd, snap, strlen(snap)) < 0) return;
+
+
 
 
  sprintf(snap, "-4:-4:-4\n");
  if (write(fd, snap, strlen(snap)) < 0) return;
-# 10250 "pan.c"
+# 10201 "pan.c"
  i = 1;
 
 
@@ -8616,7 +8402,7 @@ void
 sv_restor(void)
 {
  memcpy((char *)&now, svtack->body, svtack->o_delta);
-# 10325 "pan.c"
+# 10276 "pan.c"
  if (vsize != svtack->o_delta)
   Uerror("sv_restor");
  if (!svtack->lst)
@@ -8639,7 +8425,7 @@ p_restor(int h)
 
  proc_offset[h] = stack->o_offset;
  proc_skip[h] = (unsigned char) stack->o_skip;
-# 10376 "pan.c"
+# 10327 "pan.c"
  vsize += stack->o_skip;
  memcpy(z+vsize, stack->body, stack->o_delta);
  vsize += stack->o_delta;
@@ -8648,8 +8434,8 @@ p_restor(int h)
 
 
 
- if (1 > 0 && h > 0)
-  ((P0 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_pid = h-1;
+ if (0 > 0 && h > 0)
+  ((P0 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_pid = h-0;
  else
   ((P0 *)(((unsigned char *)&now)+(int)proc_offset[h]))->_pid = h;
 
@@ -8676,7 +8462,7 @@ p_restor(int h)
 void
 q_restor(void)
 { int h = now._nr_qs;
-# 10431 "pan.c"
+# 10382 "pan.c"
  char *z = (char *) &now;
 
 
@@ -8697,7 +8483,7 @@ q_restor(void)
  now._vsz = vsize;
 
  now._nr_qs += 1;
-# 10467 "pan.c"
+# 10418 "pan.c"
  if (!stack->lst)
   Uerror("error: q_restor");
  stack = stack->lst;
@@ -8742,7 +8528,7 @@ delproc(int sav, int h)
  if (h+1 != (int) now._nr_pr)
  { return 0;
  }
-# 10548 "pan.c"
+# 10499 "pan.c"
  while (now._nr_qs
  && q_offset[now._nr_qs-1] > proc_offset[h])
  { delq(sav);
@@ -8774,7 +8560,7 @@ delproc(int sav, int h)
  now._nr_pr -= 1;
  memset((char *)(((unsigned char *)&now)+(int)proc_offset[h]), 0, d);
  vsize -= (int) proc_skip[h];
-# 10591 "pan.c"
+# 10542 "pan.c"
  now._vsz = vsize;
 
  return 1;
@@ -8828,10 +8614,10 @@ delq(int sav)
 
  vsize = q_offset[h];
  vsize -= (int) q_skip[h];
-# 10655 "pan.c"
+# 10606 "pan.c"
  now._nr_qs -= 1;
  memset((char *)(((unsigned char *)&now)+(int)q_offset[h]), 0, d);
-# 10665 "pan.c"
+# 10616 "pan.c"
  now._vsz = vsize;
 
 }
@@ -8849,7 +8635,7 @@ qs_empty(void)
 int
 endstate(void)
 { int i; P0 *ptr;
- for (i = 1; i < (int) now._nr_pr; i++)
+ for (i = 0; i < (int) now._nr_pr; i++)
  { ptr = (P0 *) (((unsigned char *)&now)+(int)proc_offset[i]);
   if (!stopstate[ptr->_t][ptr->_p])
    return 0;
@@ -8871,10 +8657,10 @@ checkcycles(void)
 
   unsigned char o_cnt = now._cnt[1];
 
-  
+
 
    H_el *sv = trpt->ostate;
-# 10724 "pan.c"
+# 10675 "pan.c"
  now._a_t |= (1|16|32);
 
 
@@ -8888,7 +8674,6 @@ if (DFSdetail)
   printf("--------------------------------------------------------------\n");
   printf("checkcycles(2nd DFS) start, A_depth= %ld\n", A_depth);
 }
- 
 
   new_state();
 
@@ -8907,7 +8692,7 @@ if (DFSdetail)
  {
    printf("checkcycles return\n");
  }
-  
+
 
 
 }
@@ -8949,7 +8734,7 @@ gotcha: Free_list = v->nxt;
  }
  return (H_el *) emalloc(sizeof(H_el)+n-sizeof(unsigned));
 }
-# 11170 "pan.c"
+# 11121 "pan.c"
 int compact_stack(char *, int);
 void
 onstack_zap(void)
@@ -8963,7 +8748,7 @@ onstack_zap(void)
 
 
  H_tab = S_Tab;
-# 11191 "pan.c"
+# 11142 "pan.c"
  nv = (char *) &now;
  n = vsize;
 
@@ -9097,7 +8882,7 @@ sinit(void)
 {
  if (udmem)
  { udmem *= 1024L*1024L;
-# 11332 "pan.c"
+# 11283 "pan.c"
   SS = (unsigned char *) emalloc(udmem);
 
   b_store = bstore_mod;
@@ -9114,21 +8899,21 @@ sinit(void)
 
  }
 }
-# 11628 "pan.c"
+# 11579 "pan.c"
 int
 h_store(char *vin, int nin)
 { H_el *ntmp;
  H_el *tmp, *olst = (H_el *) 0;
  char *v; int n, m=0;
-# 11648 "pan.c"
+# 11599 "pan.c"
  v = vin; n = nin;
-# 11673 "pan.c"
+# 11624 "pan.c"
  s_hash((unsigned char *)v, n);
-# 11683 "pan.c"
+# 11634 "pan.c"
  tmp = H_tab[j1_spin];
  if (!tmp)
  { tmp = grab_state(n);
-# 11697 "pan.c"
+# 11648 "pan.c"
     H_tab[j1_spin] = tmp;
  } else
  { for (;; hcmp++, olst = tmp, tmp = tmp->nxt)
@@ -9146,7 +8931,7 @@ h_store(char *vin, int nin)
 
 
   int wasnew = 0;
-# 11750 "pan.c"
+# 11701 "pan.c"
   if (wasnew)
   { Lstate = (H_el *) tmp;
    tmp->tagged |= 0;
@@ -9155,10 +8940,10 @@ h_store(char *vin, int nin)
    && depth > A_depth)
    {
 intersect:
-# 11771 "pan.c"
+# 11722 "pan.c"
     return 3;
    }
-# 11788 "pan.c"
+# 11739 "pan.c"
    return 0;
   } else
 
@@ -9175,15 +8960,15 @@ intersect:
 
    )
     goto intersect;
-# 11820 "pan.c"
+# 11771 "pan.c"
    return 2;
   }
-# 11919 "pan.c"
+# 11870 "pan.c"
   return 1;
         } else if (m < 0)
         {
    ntmp = grab_state(n);
-# 11932 "pan.c"
+# 11883 "pan.c"
    ntmp->nxt = tmp;
    if (!olst)
     H_tab[j1_spin] = ntmp;
@@ -9197,14 +8982,14 @@ intersect:
 
 
    tmp->nxt = grab_state(n);
-# 11954 "pan.c"
+# 11905 "pan.c"
    tmp = tmp->nxt;
    break;
     } }
  }
-# 11976 "pan.c"
+# 11927 "pan.c"
  tmp->D = depth;
-# 11998 "pan.c"
+# 11949 "pan.c"
  memcpy(((char *)&(tmp->state)), v, n);
 
  tmp->tagged = (0)?0:(depth+1);
@@ -9212,7 +8997,7 @@ intersect:
 
 
  Lstate = (H_el *) tmp;
-# 12024 "pan.c"
+# 11975 "pan.c"
  return 0;
 }
 
@@ -9298,7 +9083,7 @@ o_hash64(unsigned char *kb, int nbytes, int seed)
 
  K1 = a;
 }
-# 12377 "pan.c"
+# 12328 "pan.c"
 # 1 "pan.t" 1
 # 20 "pan.t"
 void
@@ -9306,55 +9091,34 @@ settable(void)
 { Trans *T;
  Trans *settr(int, int, int, int, int, char *, int, int, int);
 
- trans = (Trans ***) emalloc(4*sizeof(Trans **));
+ trans = (Trans ***) emalloc(3*sizeof(Trans **));
 
 
 
- trans[2] = (Trans **) emalloc(12*sizeof(Trans *));
+ trans[1] = (Trans **) emalloc(6*sizeof(Trans *));
 
- T = trans[2][5] = settr(16,0,0,0,0,"IF", 0, 2, 0);
- T = T->nxt = settr(16,0,1,0,0,"IF", 0, 2, 0);
-     T->nxt = settr(16,0,3,0,0,"IF", 0, 2, 0);
- trans[2][1] = settr(12,0,9,3,0,"((x<4))", 1, 2, 0);
- trans[2][2] = settr(13,0,9,1,0,"goto accept_S4", 0, 2, 0);
- trans[2][6] = settr(17,0,9,1,0,".(goto)", 0, 2, 0);
- trans[2][3] = settr(14,0,5,1,0,"(1)", 0, 2, 0);
- trans[2][4] = settr(15,0,5,1,0,"goto T0_init", 0, 2, 0);
- T = trans[2][9] = settr(20,0,0,0,0,"IF", 0, 2, 0);
-     T->nxt = settr(20,0,7,0,0,"IF", 0, 2, 0);
- trans[2][7] = settr(18,0,9,4,0,"((x<4))", 1, 2, 0);
- trans[2][8] = settr(19,0,9,1,0,"goto accept_S4", 0, 2, 0);
- trans[2][10] = settr(21,0,11,1,0,".(goto)", 0, 2, 0);
- trans[2][11] = settr(22,0,0,5,5,"-end-", 0, 3500, 0);
+ trans[1][3] = settr(7,0,2,1,0,".(goto)", 0, 2, 0);
+ T = trans[1][2] = settr(6,0,0,0,0,"DO", 0, 2, 0);
+     T->nxt = settr(6,0,1,0,0,"DO", 0, 2, 0);
+ trans[1][1] = settr(5,0,2,3,3,"i = (1-i)", 0, 2, 0);
+ trans[1][4] = settr(8,0,5,1,0,"break", 0, 2, 0);
+ trans[1][5] = settr(9,0,0,4,4,"-end-", 0, 3500, 0);
 
 
 
- trans[1] = (Trans **) emalloc(7*sizeof(Trans *));
+ trans[0] = (Trans **) emalloc(6*sizeof(Trans *));
 
- trans[1][4] = settr(9,0,3,1,0,".(goto)", 0, 2, 0);
- T = trans[1][3] = settr(8,0,0,0,0,"DO", 0, 2, 0);
-     T->nxt = settr(8,0,1,0,0,"DO", 0, 2, 0);
- trans[1][1] = settr(6,0,2,6,0,"(!((x%2)))", 1, 2, 0);
- trans[1][2] = settr(7,0,3,7,7,"x = (x/2)", 1, 2, 0);
- trans[1][5] = settr(10,0,6,1,0,"break", 0, 2, 0);
- trans[1][6] = settr(11,0,0,8,8,"-end-", 0, 3500, 0);
+ trans[0][3] = settr(2,0,2,1,0,".(goto)", 0, 2, 0);
+ T = trans[0][2] = settr(1,0,0,0,0,"DO", 0, 2, 0);
+     T->nxt = settr(1,0,1,0,0,"DO", 0, 2, 0);
+ trans[0][1] = settr(0,0,2,5,5,"i = (1-i)", 0, 2, 0);
+ trans[0][4] = settr(3,0,5,1,0,"break", 0, 2, 0);
+ trans[0][5] = settr(4,0,0,6,6,"-end-", 0, 3500, 0);
 
-
-
- trans[0] = (Trans **) emalloc(7*sizeof(Trans *));
-
- trans[0][4] = settr(3,0,3,1,0,".(goto)", 0, 2, 0);
- T = trans[0][3] = settr(2,0,0,0,0,"DO", 0, 2, 0);
-     T->nxt = settr(2,0,1,0,0,"DO", 0, 2, 0);
- trans[0][1] = settr(0,0,2,9,0,"((x%2))", 1, 2, 0);
- trans[0][2] = settr(1,0,3,10,10,"x = ((3*x)+1)", 1, 2, 0);
- trans[0][5] = settr(4,0,6,1,0,"break", 0, 2, 0);
- trans[0][6] = settr(5,0,0,11,11,"-end-", 0, 3500, 0);
-
- trans[3] = (Trans **) emalloc(3*sizeof(Trans *));
- T = trans[3][0] = settr(9997,0,1,12,0,"(np_)", 1,2,0);
-     T->nxt = settr(9998,0,0,13,0,"(1)", 0,2,0);
- T = trans[3][1] = settr(9999,0,1,12,0,"(np_)", 1,2,0);
+ trans[2] = (Trans **) emalloc(3*sizeof(Trans *));
+ T = trans[2][0] = settr(9997,0,1,7,0,"(np_)", 1,2,0);
+     T->nxt = settr(9998,0,0,8,0,"(1)", 0,2,0);
+ T = trans[2][1] = settr(9999,0,1,7,0,"(np_)", 1,2,0);
 }
 
 Trans *
@@ -9399,16 +9163,16 @@ cpytr(Trans *a)
  tmp->back = a->back;
  return tmp;
 }
-# 147 "pan.t"
+# 126 "pan.t"
 int cnt;
-# 183 "pan.t"
+# 162 "pan.t"
 void
 retrans(int n, int m, int is, short srcln[], unsigned char reach[], unsigned char lpstate[])
 
 { Trans *T0, *T1, *T2, *T3;
  Trans *T4, *T5;
  int i;
-# 198 "pan.t"
+# 177 "pan.t"
  if (state_tables >= 4)
  { printf("STEP 1 %s\n",
    procname[n]);
@@ -9492,7 +9256,7 @@ retrans(int n, int m, int is, short srcln[], unsigned char reach[], unsigned cha
    crack(n, i, T0, srcln);
   return;
  }
-# 418 "pan.t"
+# 397 "pan.t"
  for (i = 1; i < m; i++)
  { T2 = trans[n][i];
   if (!T2
@@ -9731,7 +9495,7 @@ crack(int n, int j, Trans *z, short srcln[])
   j, z->forw, z->st);
  printf("[id %3d tp %3d", z->t_id, z->tpe[0]);
  if (z->tpe[1]) printf(",%d", z->tpe[1]);
-# 665 "pan.t"
+# 644 "pan.t"
  printf("]");
  printf(" [%s%s%s%s%s] %s:%d => ",
   z->atom&6?"A":z->atom&32?"D":"-",
@@ -9739,7 +9503,7 @@ crack(int n, int j, Trans *z, short srcln[])
   stopstate[n][j]?"e" : "-",
   progstate[n][j]?"p" : "-",
   z->atom & 8 ?"L":"G",
-  "example.pml", srcln[j]);
+  "fairness.pml", srcln[j]);
  for (i = 0; z->tp[i]; i++)
   if (z->tp[i] == '\n')
    printf("\\n");
@@ -9755,9 +9519,9 @@ crack(int n, int j, Trans *z, short srcln[])
  }
  printf("\n");
  fflush(
-# 687 "pan.t" 3 4
+# 666 "pan.t" 3 4
        stdout
-# 687 "pan.t"
+# 666 "pan.t"
              );
 }
 
@@ -9786,22 +9550,17 @@ dot_crack(int n, int j, Trans *z)
  else if (progstate[n][j]) printf("  S%d [color=green,style=bold];\n", j);
  if (stopstate[n][j]) printf("  S%d [color=blue,style=bold,shape=box];\n", j);
 }
-# 12378 "pan.c" 2
+# 12329 "pan.c" 2
 void
 do_reach(void)
 {
- r_ck(reached0, 7, 0, src_ln0, src_file0);
- r_ck(reached1, 7, 1, src_ln1, src_file1);
- r_ck(reached2, 12, 2, src_ln2, src_file2);
+ r_ck(reached0, 6, 0, src_ln0, src_file0);
+ r_ck(reached1, 6, 1, src_ln1, src_file1);
 }
 
 void
 iniglobals(int calling_pid)
 {
-  now.x = 4;
-
-
-
 }
 
 
@@ -9829,7 +9588,7 @@ addqueue(int calling_pid, int n, int is_rv)
   q_skip[i] = 8 -(vsize%8);
  else
   q_skip[i] = 0;
-# 12428 "pan.c"
+# 12374 "pan.c"
  vsize += (int) q_skip[i];
  q_offset[i] = vsize;
  vsize += j;
@@ -9842,7 +9601,7 @@ addqueue(int calling_pid, int n, int is_rv)
  now._vsz = vsize;
 
  hmax = (((hmax)<(vsize)) ? (vsize) : (hmax));
-# 12455 "pan.c"
+# 12401 "pan.c"
  if (vsize >= 1024)
   Uerror("VECTORSZ is too small, edit pan.h");
 
@@ -9852,7 +9611,7 @@ addqueue(int calling_pid, int n, int is_rv)
  ((Q0 *)(((unsigned char *)&now)+(int)q_offset[i]))->_t = n;
  return i+1;
 }
-# 12625 "pan.c"
+# 12570 "pan.c"
 int
 q_len(int x)
 { if (!x--)
@@ -9870,7 +9629,7 @@ q_full(int from)
  Uerror("bad queue - q_full");
  return 0;
 }
-# 12718 "pan.c"
+# 12663 "pan.c"
 int
 unsend(int into)
 { int _m=0, j; unsigned char *z;
@@ -9880,7 +9639,7 @@ unsend(int into)
 
  if (!into--)
   uerror("ref to uninitialized chan (unsend)");
-# 12741 "pan.c"
+# 12686 "pan.c"
  z = (((unsigned char *)&now)+(int)q_offset[into]);
  j = ((Q0 *)z)->Qlen;
  ((Q0 *)z)->Qlen = --j;
@@ -9896,7 +9655,7 @@ unrecv(int from, int slot, int fld, int fldvar, int strt)
 
  if (!from--)
   uerror("ref to uninitialized chan (unrecv)");
-# 12770 "pan.c"
+# 12715 "pan.c"
  z = (((unsigned char *)&now)+(int)q_offset[from]);
  j = ((Q0 *)z)->Qlen;
  if (strt) ((Q0 *)z)->Qlen = j+1;
@@ -9928,7 +9687,7 @@ to_compile(void)
 { char ctd[2048], carg[128];
 
  strcpy(ctd, "-DBITSTATE ");
-# 12865 "pan.c"
+# 12810 "pan.c"
  if (2 != 2)
  { sprintf(carg, "-DNFAIR=%d ", 2);
   strcat(ctd, carg);
@@ -9938,12 +9697,12 @@ to_compile(void)
 
 
  strcat(ctd, "-DNOREDUCE ");
-# 12926 "pan.c"
+# 12871 "pan.c"
  if (1024 != 1024)
  { sprintf(carg, "-DVECTORSZ=%d ", 1024);
   strcat(ctd, carg);
  }
-# 12966 "pan.c"
+# 12911 "pan.c"
  printf("Compiled as: cc -o pan %span.c\n", ctd);
 }
 void
@@ -9957,25 +9716,23 @@ active_procs(void)
   addproc(256, 1, 0);
  }
 }
-# 14087 "pan.c"
+# 14032 "pan.c"
 void
 c_globals(void)
 {
  printf("global vars:\n");
- printf("	int    x:	%d\n", now.x);
 }
 void
 c_locals(int pid, int tp)
 {
  switch(tp) {
- case 2:
-
-  break;
  case 1:
-
+  printf("local vars proc %d (B):\n", pid);
+ printf("	bit    i:	%d\n", ((P1 *)(((unsigned char *)&now)+(int)proc_offset[pid]))->i);
   break;
  case 0:
-
+  printf("local vars proc %d (A):\n", pid);
+ printf("	bit    i:	%d\n", ((P0 *)(((unsigned char *)&now)+(int)proc_offset[pid]))->i);
   break;
  }
 }
@@ -9989,4 +9746,4 @@ c_chandump(int unused)
 { unused++;
 }
 
-Trans *t_id_lkup[23];
+Trans *t_id_lkup[10];
