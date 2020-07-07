@@ -6287,14 +6287,23 @@ do_the_search(void)
 
 
  }
+// A == 0, C == 0
+if (DFSdetail){
+    printf("copy : %d\n", now._cnt[now._a_t&1]);
+    printf("--------------------------------------------------------------\n");
+}
+    
+// If initial state is also an accepting state
 # 5841 "pan.c"
  if (fairness
  && (a_cycles && (trpt->o_pm&2)))
- { now._a_t = 2;
-  now._cnt[0] = now._nr_pr + 1;
+ { now._a_t = 2;    //A = 1
+  now._cnt[0] = now._nr_pr + 1;   //C = N+1
 
-if (DFSdetail)
-      printf("Initial accepting State ! Start from copy : %d\n", now._cnt[now._a_t&1]);
+if (DFSdetail){
+  printf("Rule 1\n");
+  printf("Move to copy : %d\n", now._cnt[now._a_t&1]);
+}
 
 
  }
@@ -6703,27 +6712,33 @@ same_case: if (Lstate) depthfound = Lstate->D;
 
  && !(trpt->tau&8))
  {
-  if (!(now._a_t&2))
+  if (!(now._a_t&2))  // if A==0
   { if (a_cycles && (trpt->o_pm&2))
    {
 
-    now._a_t |= 2;
-    now._cnt[now._a_t&1] = now._nr_pr + 1;
-    trpt->o_pm |= 8;
+    now._a_t |= 2;  //A = 1
+    now._cnt[now._a_t&1] = now._nr_pr + 1;  //C = N + 1
+    trpt->o_pm |= 8;  //Rule 1 done
     if (DFSdetail)
-      printf("Accepting State ! Go to copy : %d\n", now._cnt[now._a_t&1]);
+      {
+        printf("Rule 1\n");
+        printf("Accepting State ! Move to copy : %d\n", now._cnt[now._a_t&1]);
+      }
 
 
 
    }
   } else
   {
-   if (now._cnt[now._a_t&1] == 1)
-   { now._a_t &= ~2;
-    now._cnt[now._a_t&1] = 0;
-    trpt->o_pm |= 16;
+   if (now._cnt[now._a_t&1] == 1) // if C == 1
+   { now._a_t &= ~2;    // A = 0
+    now._cnt[now._a_t&1] = 0;   // C = 0
+    trpt->o_pm |= 16;   // Rule 3 done
     if (DFSdetail)
-      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
+    {
+      printf("Rule 3\n");
+      printf("Move to copy : %d\n", now._cnt[now._a_t&1]);
+    }
 
 
 
@@ -6745,13 +6760,18 @@ same_case: if (Lstate) depthfound = Lstate->D;
   if (fairness
   && boq == -1
   && !(trpt->o_pm&32)
-  && (now._a_t&2)
-  && now._cnt[now._a_t&1] == II+2)
-  { now._cnt[now._a_t&1] -= 1;
+  && (now._a_t&2) // if A == 1
+  && now._cnt[now._a_t&1] == II+2)  // if C == i + 2
+  { now._cnt[now._a_t&1] -= 1;  //C = C - 1
 # 7070 "pan.c"
-    if (DFSdetail)
-      printf("_pid matches ! Go to copy : %d\n", now._cnt[now._a_t&1]);
-   trpt->o_pm |= (32|64);
+    
+   trpt->o_pm |= (32|64);   // Rule 2 done
+   if (DFSdetail)
+   {
+      printf("--------------------------------------------------------------\n");
+      printf("Rule 2\n");
+      printf("_pid matches ! Move to copy : %d\n", now._cnt[now._a_t&1]);
+   }
   }
 # 7088 "pan.c"
   (trpt+1)->pr = (unsigned char) II;
@@ -6765,7 +6785,7 @@ same_case: if (Lstate) depthfound = Lstate->D;
 
    if (DFSdetail)
    {
-      printf("--------------------------------------------------------------\n");
+      //printf("--------------------------------------------------------------\n");
       printf("depth= %ld,  ", depth);
    }
 
@@ -6787,8 +6807,6 @@ same_case: if (Lstate) depthfound = Lstate->D;
       unsigned char * _A = (((unsigned char *)&now)+(int)proc_offset[0]);
       unsigned char * _B = (((unsigned char *)&now)+(int)proc_offset[1]);
       printf("Move success.\n");
-      // if(fairness)
-      //   printf("copy : %d\n", now._cnt[now._a_t&1]);
       printf("(A.i, B.i) = (%d, %d)\n", ((P0 *)_A)->i, ((P0 *)_B)->i);
       printf("--------------------------------------------------------------\n");
    }
@@ -6843,10 +6861,13 @@ Up:
     return;
 
 
-   if (trpt->o_pm&128)
+   if (trpt->o_pm&128)  // if all procs blocked, i.e. no proc has enable transition
    { now._cnt[now._a_t&1] = trpt->bup.oval;
     if (DFSdetail)
-      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
+    {
+      printf("Return to last state\n");
+      printf("Move to copy : %d\n", now._cnt[now._a_t&1]);
+    }
     _n = 1; trpt->o_pm &= ~128;
     depth--; trpt--;
     if(DFSdetail)
@@ -6929,7 +6950,10 @@ R999:
     now._cnt[now._a_t&1] += 1;
 
     if (DFSdetail)
-      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
+    {
+      printf("Return to last state\n");
+      printf("Move to copy : %d\n", now._cnt[now._a_t&1]);
+    }
 
 
 
@@ -6959,7 +6983,10 @@ R999:
 
 
   if (DFSdetail)
-      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
+    {
+      printf("Return to last state\n");
+      printf("Move to copy : %d\n", now._cnt[now._a_t&1]);
+    }
 
 
   trpt->o_pm &= ~32;
@@ -6983,9 +7010,8 @@ R999:
   trpt->o_pm |= 128 | ((trpt-1)->o_pm&(2|4));
   trpt->bup.oval = now._cnt[now._a_t&1];
   now._cnt[now._a_t&1] = 1;
-
   if (DFSdetail)
-      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
+      printf("Move to copy : %d\n", now._cnt[now._a_t&1]);
 
   trpt->tau = 0;
 
@@ -6999,12 +7025,15 @@ R999:
 
 Q999: ;
  if (trpt->o_pm&8)
- { now._a_t &= ~2;
-  now._cnt[now._a_t&1] = 0;
+ { now._a_t &= ~2;      // A = 0
+  now._cnt[now._a_t&1] = 0;   // C = 0
   trpt->o_pm &= ~8;
 
   if (DFSdetail)
-      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
+  {
+      printf("Rule 1 Backtracking...\n");
+      printf("Move to copy : %d\n", now._cnt[now._a_t&1]);
+  }
 
 
  }
@@ -7014,7 +7043,10 @@ Q999: ;
   trpt->o_pm &= ~16;
 
   if (DFSdetail)
-      printf("Go to copy : %d\n", now._cnt[now._a_t&1]);
+  {
+      printf("Rule 3 Backtracking...\n");
+      printf("Move to copy : %d\n", now._cnt[now._a_t&1]);
+  }
 
 
  }
@@ -7085,8 +7117,8 @@ Done:
 
 
 
-    if ((now._a_t&2)
-    && (now._cnt[0] == 1))
+    if ((now._a_t&2)    // if A == 1
+    && (now._cnt[0] == 1))     // if C == 1
      checkcycles();
    } else
 
