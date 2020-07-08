@@ -1,0 +1,394 @@
+\documentclass[12pt]{beamer}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+%\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage[labelfont=bf]{caption}
+\usepackage{graphicx}  %package graphic
+\usepackage{siunitx}
+\usepackage{tikz}
+%\usepackage{algorithmicx}
+%\usepackage[noend]{algpseudocode}
+\usetikzlibrary{automata, positioning, arrows, shapes}
+\usetheme{Boadilla}   
+\usepackage{xeCJK}
+%\usepackage{array}
+%\usepackage{tabularx}
+%\usepackage{mathtools}
+\usepackage{listings}
+%\usepackage{textcomp}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{adjustbox}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+
+\setCJKmainfont{微軟正黑體} 
+\sisetup{
+	group-separator={,},
+	table-number-alignment=right
+}
+
+
+\setbeamerfont{title}{size=\Large,series=\bfseries}  % title size
+
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}  % frametitle size, also can size*=<pt>
+
+% Item include picture
+\setbeamertemplate{itemize item}   % First Level item
+{\includegraphics[height=0.33cm]{../Figures/golden-earth-on-white}}
+
+\setbeamertemplate{itemize subitem} % Second level item
+{\includegraphics[height=0.31cm]{../Figures/golden-sun-on-white}}
+
+\setbeamertemplate{itemize subsubitem} % Third Level item
+{\includegraphics[height=0.27cm]{../Figures/golden-paw-on-white}}
+
+\definecolor{darkgold}{rgb}{0.765 0.64 0.0} % for highlighted text in black-and-white slides
+\newcommand{\highlight}[1]{\structure{#1}}
+\newcommand{\highlightb}[1]{\textcolor{blue}{#1}}
+\newcommand{\highlightg}[1]{\textcolor{darkgold}{#1}}
+\newcommand{\highlightr}[1]{\alert{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%\newtheorem{problem}{Problem}
+\mode<presentation>{\newtheorem{algorithm}{Algorithm}}
+\mode<article>{\newenvironment{algorithm}{}{}}
+%\newtheorem{solution}{Solution}
+
+\newcommand{\hide}[1]{}
+%\renewcommand{\highlightb}{\highlightg}
+
+\newlength{\subtextwidth}
+\setlength{\subtextwidth}{11cm}
+
+\newenvironment{cbox}{
+    \begin{center}
+    \begin{tabular}{|l|}
+    \hline
+    \begin{minipage}[t]{\subtextwidth}}
+    {\vspace{.25ex}
+    \end{minipage}
+    \hline
+    \end{tabular}
+    \end{center} }
+
+\lstdefinestyle{mystyle}{
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+    keepspaces=true,
+    upquote=true,
+    showstringspaces=false,
+    commentstyle=\color{olive},
+    keywordstyle=\color{blue},
+    identifierstyle=\color{violet},
+    stringstyle=\color{purple},
+    language=c,
+    directivestyle=\color{teal},
+}
+
+\lstset{style=mystyle,frame=single,}
+\makeatletter
+\lst@CCPutMacro
+    \lst@ProcessOther {"2A}{%
+      \lst@ttfamily 
+         {\raisebox{2pt}{*}}% used with ttfamily
+         \textasteriskcentered}% used with other fonts
+    \@empty\z@\@empty
+\makeatother
+
+
+\mode<presentation>{\title{SPIN's CheckEmpty Procedure\\ Code Tracing}}
+\mode<article>{\title{Algorithms 2019: Analysis of Algorithms}}
+%\subtitle{(Based on [Manber 1989])}
+\author{林宏陽}
+%\institute[IM.NTU]{Department of Information Management\\ National Taiwan University}
+%\date[Algorithms 2019]{\null}
+\mode<presentation>{\date[SVVRL]{\null}}
+\mode<article>{\date{\today}}
+
+\newcommand{\Automaton}{\mathcal{A}}
+\newcommand{\kk}{\mathnormal{k}}
+\newcommand{\ii}{\mathnormal{i}}
+\newcommand{\state}{\mathnormal{s}}
+
+\begin{document}
+\begin{frame}{Definition of weak fairness}
+		\begin{definition}
+			An $\omega$-run $\sigma$ satisfies the \textbf{weak fairness} requirement if it contains infinitely many transitions from every component automaton that is enabled \textcolor{red}{\textit{infinitely long}} in $\sigma$.
+		\end{definition}
+		\begin{definition}
+			An $\omega$-run $\sigma$ satisfies the \textbf{strong fairness} requirement if it contains infinitely many transitions from every component automaton that is enabled \textcolor{red}{\textit{infinitely often}} in $\sigma$.
+		\end{definition}
+		\begin{itemize}
+			\item SPIN only includes support for weak fairness, and not for strong fairness.
+		\end{itemize}
+\end{frame}
+
+\begin{frame}{Choueka's flag construction}
+		\begin{itemize}
+			\item The DFS algorithm explores the global reachability graph for an automata $\Automaton$. $\Automaton$ itself is computed as the product of $\kk$ component automata $\Automaton_{1}, \cdots, \Automaton_{\kk}$.
+			\item Now create $\kk+2$ copies of the global reachability graph.
+			\item We preserve the acceptance labels from all accepting states only in the \textcolor{red}{first} copy($0\text{-}th$ copy) and remove the acceptance labels from all states in the remaining $\kk+1$ copies.
+			\item We change the destination states for all outgoing transitions of accepting states in the $0\text{-}th$ copy of the state space, with copy number one.
+		\end{itemize}
+\end{frame}
+
+\begin{frame}{Choueka's flag construction(cont'd)}
+		\begin{itemize}
+			\item In the $\ii\text{-}th$ copy of the state graph, with $1 \leq \ii \leq \mathnormal{k}$, we change the destination state of each transition that was contributed by component automaton $\Automaton_{\ii}$ (i.e., the $\ii\text{-}th$) \textit{process} to the same state in the $(\ii+1)\text{-}th$ copy of the state graph.
+			\item For the last copy of the state space, numbered $\kk+1$, we change \textcolor{red}{all} transitions such that their destination state is now in the $0\text{-}th$ copy of the state graph.
+			\item A component automaton that has no enabled transitions in a given state need not participate in an infinite run that traverses that state.
+			\item To account for this we can add a null transition from every state $\state$ in the $\ii\text{-}th$ copy of taht state graph to the \textcolor{red}{same} state $\state$ in the $(\ii+1)\text{-}th$ copy whenever automaton component $\ii$ has no enabled transitions in $\state$.
+		\end{itemize}
+\end{frame}
+
+\begin{frame}{Choueka's flag construction(cont'd)}
+	\begin{figure}[ht]
+		\centering
+		\begin{adjustbox}{max width=\textwidth, max totalheight=\textheight}
+		\begin{tikzpicture}[->,>=stealth]
+		\tikzset{
+		arrow/.style = {thick,>=stealth}}
+
+			\draw (0,0) ellipse [x radius=0.6cm, y radius=1.2cm];
+			\node (n0) at (0, -2.2) {copy 0};
+			\draw (4,0) ellipse [x radius=0.6cm, y radius=1.2cm];
+			\node (n0) at (4, -2.2) {copy 1};
+			\draw (8,0) ellipse [x radius=0.6cm, y radius=1.2cm];
+			\node (n0) at (8, -2.2) {copy 2};
+			\draw (15,0) ellipse [x radius=0.6cm, y radius=1.2cm];
+			\node (n0) at (15, -2.2) {copy k+1};
+			\draw (0.2,-0.1) circle [radius=0.15cm];
+			\draw (0.2,-0.1) circle [radius=0.2cm];
+			
+			\path (0.35,0) edge[bend left] node[below]{\_pid = 1..k} (3.7,0);
+			\path (4.35,0) edge[bend left] node[below]{\_pid = 1} (7.7,0);
+			\path (8.35,0) edge[bend left] node[below right]{\_pid = 2} (10.8,0.5);
+			\path (12.2,0.5) edge[bend left] node[below left]{\_pid = k} (14.7,0);
+			
+			\path (15,-1) edge[bend left = 11] node[above right]{\_pid = 1..k} (0,-1);
+			
+			\path [->] (4.1, 1) edge[out=60, in=120,looseness=10] node[above]{\_pid $\neq$ 1} (3.9, 1)  ;
+			\path [->] (8.1, 1) edge[out=60, in=120,looseness=10] node[above]{\_pid $\neq$ 2} (7.9, 1)  ;
+			\node (nd) at (11.5, 0.5) {$\cdots$};
+		\end{tikzpicture}
+		\end{adjustbox}
+		
+		\caption{(k+2) Times Unfolded State Space for Weak Fairness.  Source: redrawn from [The SPIN Model Checker] Figure 8.8 Gerard J. Holzmann}
+		\end{figure}
+		\begin{itemize}
+			\item The algorithm thus modified can enforce weak fairness.
+		\end{itemize}
+		
+\end{frame}
+
+\tikzset{
+%->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+every edge/.style={draw, thick, black},
+node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\begin{frame}{Example}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+		\begin{tikzpicture}
+			\node[state] (s1) {$s_{1}$};
+			\node[state, accepting, below = 2cm of s1] (s2) {$s_{2}$};
+			
+			
+			\draw (s1) edge[bend right = 25] node[left]{$pid=1$} (s2);
+			\draw (s2) edge[bend right = 25] node[right]{$pid=2$} (s1);
+		\end{tikzpicture}
+		\caption{A Two-State Global State Space Example.  Source: redrawn from [The SPIN Model Checker] Figure 8.9 Gerard J. Holzmann}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Example(cont'd)}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+		\begin{tikzpicture}
+			\node[state] (s10) {$s_{1}^{0}$};
+			\node[state, accepting, below = 2cm of s10] (s20) {$s_{2}^{0}$};
+			\node[state, right = 2cm of s10] (s11) {$s_{1}^{1}$};
+			\node[state, dotted, below = 2cm of s11] (s21) {$s_{2}^{1}$};
+			\node[state, dotted, right = 2cm of s11] (s12) {$s_{1}^{2}$};
+			\node[state, below = 2cm of s12] (s22) {$s_{2}^{2}$};
+			\node[state, right = 2cm of s12] (s13) {$s_{1}^{3}$};
+			\node[state, dotted, below = 2cm of s13] (s23) {$s_{2}^{3}$};
+			\coordinate [below = 1cm of s20] (mid) {};
+			
+			\node[draw = none, below = 2cm of s20] (c0) {copy 0};
+			\node[draw = none, below = 2cm of s21] (c1) {copy 1};
+			\node[draw = none, below = 2cm of s22] (c2) {copy 2};
+			\node[draw = none, below = 2cm of s23] (c3) {copy 3};
+			
+			\draw (s10) edge[->, red] node[left]{$1$} (s20);
+			\draw (s20) edge[->, red] node[right]{$2$} (s11);
+			\draw (s21) edge[->] node[right]{$2$} (s11);
+			\draw (s11) edge[->, red] node[right]{$1$} (s22);
+			\draw (s12) edge[->] node[left]{$1$} (s22);
+			\draw (s22) edge[->, red] node[left]{$2$} (s13);
+			\draw (s13) edge[->, red, bend left = 65] node[above]{$1$} (s20);
+			\draw (s23) edge[in=-30, out=-140] node[above]{$2$} (mid);
+			\draw (mid) edge[->, in=-120, out=150] (s10);
+		\end{tikzpicture}
+		\caption{Unfolded State Space for Example [The SPIN Model Checker] Figure 8.10 Gerard J. Holzmann}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Difference in SPIN implementation}
+	\begin{itemize}
+		\item SPIN implementation does not actually store $\kk+2$ full copies of each reachable state. It suffices to store just one copy of each state plus $\kk+2$ bits of overhead.
+		\item The nested DFS for cycles is not initiated from an acceptance state in the $0\text{-}th$ copy, but from the \textcolor{red}{last} copy of the state graph. Note that whenever this last copy is reached, we can be certain of two things:
+		\begin{itemize}
+			\item A reachable accepting state exists.
+			\item A (weakly) fair execution is possible starting from that accepting state.
+		\end{itemize}
+		\item Each state in the last copy of the state graph now serves as the seed state. All transition from the last copy move the system unconditionally back to the $0\text{-}th$ copy of the state graph, and therefore the only way to revisit the seed state is to pass an accepting state and close the cycle with a fair sequence of transitions.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Weak fairness algorithm}
+	\begin{itemize}
+		\item It is a variant of the Choueka's flag algorithm. This algorithm is also implemented in SPIN as an extension of the nest DFS algorithm.
+		\item For the weak fairness (WF) algorithm we need a new extended state space. Its elements are quadruples of the form $(s, A, C, b)$
+		\begin{itemize}
+			\item $s$ is state.
+			\item $A$ is to indicate that we have already passed through an acceptance state in the state space. We need this indicator because we will not always start the search from an acceptance state, but instead in a state when we are sure that all enabled processes have executed a statement, which often means that we have a better chance to close a fair cycle.
+			\item $C$ is the counter that keeps track of the copy of the state space we are passing through.
+			\item $b$ is a bit which discriminates between the first and second DFS.
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Weak fairness algorithm(cont'd)}
+	\begin{itemize}
+		\item In the initial state $A$ and $C$ are 0. The values of $A$ and $C$ are changed according the following three rules that apply both to the first and the second DFS.
+		\begin{itemize}
+			\item Rule 1 : If $A$ is 0 in an acceptance state, then $A$ is set to 1 and $C$ is assigned the value $N+1$, where $N$ is the number of processes.
+				\begin{itemize}
+					\item It is a kind of initialization that indicates that we have passed an acceptance state and cycle check, i.e. a second DFS, is possibly needed.
+				\end{itemize}
+			\item Rule 2 : If $A$ is 1 and $C$ equals the Pid number (increased by two) of the process which is being currently considered, then $C$ is decreased by 1.
+				\begin{itemize}
+					\item This rule is to keep track of the state space copy in which we are working.
+				\end{itemize}
+			\item Rule 3 : If the condition of Rule 1 does not apply and if $C$ is 1, then both $C$ and $A$ are reset to 0.
+				\begin{itemize}
+					\item This rule is a preparation (initialization) for the second DFS.
+				\end{itemize}
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Weak fairness algorithm(cont'd)}
+	\begin{figure}[ht]
+		\centering
+		\begin{tikzpicture}
+		\draw (0,0) ellipse (1.1 and 2.2);
+    		\node[state, initial] (s10) at (0,0.8) {};
+    		\node[state, accepting] (s20) at (0,-0.8) {};
+			
+		\draw (4,0) ellipse (1.1 and 2.2);
+    		\node[state] (s11) at (4,0.8) {};
+    		\node[state, accepting] (s21) at (4,-0.8) {};
+		
+		\draw (8,0) ellipse (1.1 and 2.2);
+    		\node[state] (s12) at (8,0.8) {};
+    		\node[state, accepting] (s22) at (8,-0.8) {};
+		
+		\node (c0) at (0, -4) {copy 0};
+		\node (c1) at (4, -4) {copy 1};
+		\node (c2) at (8, -4) {copy 2..N+1};
+		
+		\draw (s10) edge[->, bend right = 20] (s20);
+		\draw (s20) edge[->, bend right = 20] (s10);
+		\draw (s11) edge[->, bend right = 20] (s21);
+		\draw (s21) edge[->, bend right = 20] (s11);
+		\draw (s12) edge[->, bend right = 20] (s22);
+		\draw (s22) edge[->, bend right = 20] (s12);
+		
+		\draw (s11) edge[->] node[above]{$Rule 3$} (s10);
+		\draw (s22) edge[->] node[above,align=center]{$Rule 2$\\(Pid match)} (s11);
+		\draw (s20.south) edge[->, bend right = 35] node[below]{$Rule 1$} (s22.south);
+		
+		\path [->] (8.1, 1.9) edge[out=60, in=120,looseness=10] node[above,align=center]{$Rule 2$\\(Pid doesn't match)} (7.9, 1.9);
+		\path [->] (3.7, 1.9) edge[out=150, in=30] node[above,align=center]{If acc has been seen \\ then start 2nd DFS} (0.3, 1.9);
+		
+		\end{tikzpicture}
+	\end{figure}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Weak fairness algorithm(1st DFS)}
+
+\begin{algorithmic}
+\Procedure{dfs}{$s, A, C$}
+	\State add $\{s,A,C,0\}$ to Statespace
+	\If {accepting(s)} \Comment{Rule 1}
+		\If {$A == 0$}
+			\State $A \gets 1$
+			\State $C \gets N+1$
+		\EndIf
+	\Else
+		\If {$C == 1$} \Comment{Rule 3}
+			\State $A \gets 0$
+			\State $C \gets 0$
+		\EndIf
+	\EndIf
+	\For {each process $i = N-1$ down to $0$}
+		\If {$A == 1$ and $C == i+2$} \Comment{Rule 2}
+			\State $C \gets C - 1$
+		\EndIf
+		\State $nxt \gets$ all transitions enabled in $s$ with \Call{Pid}{t} $= i$
+		\For {all $t$ in $nxt$}
+			\State $s' =$ successor of $s$ via $t$
+			\If {$\{s,A,C,0\}$ not in Statespace} \Call{dfs}{$s', A, C$}\EndIf
+		\EndFor
+	\EndFor
+	\If {$A == 1$ and $C == 1$}
+		\State $seed \gets \{s,A,C,1\}$
+		\State \Call{ndfs}{$s,A,C$}
+	\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Weak fairness algorithm(2nd DFS)}
+
+\begin{algorithmic}
+\Procedure{ndfs}{$s, A, C$}
+	\State add $\{s,A,C,1\}$ to Statespace
+	\If {accepting(s)} \Comment{Rule 1}
+		\If {$A == 0$}
+			\State $A \gets 1$
+			\State $C \gets N+1$
+		\EndIf
+	\Else
+		\If {$C == 1$} \Comment{Rule 3}
+			\State $A \gets 0$
+			\State $C \gets 0$
+		\EndIf
+	\EndIf
+	\For {each process $i = N-1$ down to $0$}
+		\If {$A == 1$ and $C == i+2$} \Comment{Rule 2}
+			\State $C \gets C - 1$
+		\EndIf
+		\State $nxt \gets$ all transitions enabled in $s$ with \Call{Pid}{t} $= i$
+		\For {all $t$ in $nxt$}
+			\State $s' =$ successor of $s$ via $t$
+			\If {$\{s,A,C,1\}$ not in Statespace} \Call{ndfs}{$s', A, C$}
+			\ElsIf {$\{s',A,C,1\}$ == seed} 
+				\State report cycle
+			\EndIf
+		\EndFor
+	\EndFor
+\EndProcedure
+\end{algorithmic}
+\end{frame}
+
+\end{document}
