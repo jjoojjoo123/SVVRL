@@ -123,6 +123,7 @@
 		\end{definition}
 		\begin{itemize}
 			\item SPIN only includes support for weak fairness, and not for strong fairness.
+			\item SPIN's implementation is based on Choueka's flag construction method
 		\end{itemize}
 \end{frame}
 
@@ -314,10 +315,10 @@ initial text=$ $, % sets the text that appears on the start arrow
 		\draw (s22) edge[->, bend right = 20] (s12);
 		
 		\draw (s11) edge[->] node[above]{$Rule 3$} (s10);
-		\draw (s22) edge[->] node[above,align=center]{$Rule 2$\\(Pid match)} (s11);
+		\draw (s22) edge[->] node[above]{$Rule 2$} (s11);
 		\draw (s20.south) edge[->, bend right = 35] node[below]{$Rule 1$} (s22.south);
 		
-		\path [->] (8.1, 1.9) edge[out=60, in=120,looseness=10] node[above,align=center]{$Rule 2$\\(Pid doesn't match)} (7.9, 1.9);
+		\path [->] (8.1, 1.9) edge[out=60, in=120,looseness=10] node[above]{$Rule 2$} (7.9, 1.9);
 		\path [->] (3.7, 1.9) edge[out=150, in=30] node[above,align=center]{If acc has been seen \\ then start 2nd DFS} (0.3, 1.9);
 		
 		\end{tikzpicture}
@@ -389,6 +390,13 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\EndFor
 \EndProcedure
 \end{algorithmic}
+\end{frame}
+
+\begin{frame}{Reference}
+\begin{itemize}
+	\item The SPIN Model Checker. Gerard J. Holzmann.
+	\item Theoretical and Practical Aspects of SPIN Model Checking. 5th and 6 th International SPIN Workshops.
+\end{itemize}
 \end{frame}
 
 \end{document}
