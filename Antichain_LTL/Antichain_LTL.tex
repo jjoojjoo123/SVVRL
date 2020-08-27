@@ -8,6 +8,8 @@
 \usepackage{graphicx}  %package graphic
 %\usepackage{siunitx}
 \usepackage{tikz}
+\usetikzlibrary{shapes}
+\usepackage{subcaption}
 %\usepackage{algorithmicx}
 %\usepackage[noend]{algpseudocode}
 \usetikzlibrary{automata, positioning, arrows}
@@ -433,17 +435,204 @@ initial text=$ $, % sets the text that appears on the start arrow
     		\end{tikzpicture}
 };
 			\node[state, above = of mid'] (l2') {$q_{3}$};
+			
+			\node[above = of l3'] (mid'') {
+			\begin{tikzpicture}
+      		\node [rotate=90] {$\preceq$};    
+    		\end{tikzpicture}
+};
+			\node[state, above = of mid''] (q2') {$q_{2}$};
 
 			\draw (l1) edge[->] node[above] {$\sigma$} (l2);
 			\draw (l3') edge[->] node[above] {$\sigma$} (l4');
-
+			\draw (q2') edge[->] node[above] {$\sigma$} (l2');
+			
 			\draw (l1) edge[dashed] (mid);
 			\draw (mid) edge[dashed] (l3);
 			\draw (l4') edge[dashed] (mid');
 			\draw (mid') edge[dashed] (l2');
+			\draw (mid'') edge[dashed] (l3');
+			\draw (mid'') edge[dashed] (q2');
+			
 		\end{tikzpicture}
 	\end{adjustbox}
-		\caption{Simulation}
+		\caption{Forward-simulation}
 	\end{figure}
 \end{frame}
+
+\begin{frame}{Simulation(cont'd)}
+	\begin{itemize}
+		\item A \textcolor{red}{backward-simulation} for $\mathcal{A}$ is a forward-simulation for $\mathcal{A}^{-1}$.
+		\item It is not true in general that $\succeq$ is a backward-simulation for $\mathcal{A}$ if $\preceq$ is a forward-simulation for $\mathcal{A}$.
+		\item Consider a state $q_{c}$ that has no predecessor and such that $q_{b} \preceq q_{c}$
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Simulation(cont'd)}
+	\tikzset{
+		%->, % makes the edges directed
+		every cross out node/.append style={-,solid},
+		>=stealth, % makes the arrow heads bold
+		every edge/.style={draw, thick, black},
+		node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+		every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+		initial text=$ $, % sets the text that appears on the start arrow
+		}
+	\begin{figure}
+	\begin{subfigure}{.4\linewidth}
+		\centering % centers the figure
+		\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
+		\begin{tikzpicture}
+			\node[] (mid') {
+			\begin{tikzpicture}
+			  \node [rotate=90] {$\preceq$}; 
+			\end{tikzpicture}
+	};
+			\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
+			\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
+			\node[state, left = 3cm of qb] (qa) {$q_{a}$};
+			\node[draw = none, left = 3cm of qc] (qd) {};
+
+			\draw (qa) edge[->] node[above] {$\sigma$} (qb);
+			\draw (qd) edge[->] node[draw=red, cross out] {} (qc);
+		\end{tikzpicture}
+		\end{adjustbox}
+		\subcaption*{$\mathcal{A}$}
+	\end{subfigure}
+		\begin{subfigure}{.4\linewidth}
+			\centering % centers the figure
+			\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
+			\begin{tikzpicture}
+				\node[] (mid') {
+				\begin{tikzpicture}
+				  \node [rotate=90] {$\succeq$}; 
+				\end{tikzpicture}
+		};
+				\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
+				\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
+				\node[state, left = 3cm of qb] (qa) {$q_{a}$};
+				\node[draw = none, left = 3cm of qc] (qd) {};
+	
+				\draw (qb) edge[->] node[above] {$\sigma$} (qa);
+				\draw (qc) edge[->] node[draw=red, cross out] {} (qd);
+			\end{tikzpicture}
+			\end{adjustbox}
+		\subcaption*{$\mathcal{A}^{-1}$}
+		\end{subfigure}
+	\end{figure}
+
+	\begin{itemize}
+		\item Suppose $\succeq$ is a backward-simulation for an sNBW $\mathcal{A}$. By definition of backward-simulation, $q_{c} \succeq q_{b}$ in $\mathcal{A}$ implies $q_{c} \preceq q_{b}$ in $\mathcal{A}^{-1}$.
+		\item However, $q_{c}$ has no successor in $\mathcal{A}^{-1}$, contradict with the definition of forward-simulation . 
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Simulation(cont'd)}
+	\label{lemma}
+	\begin{itemize}
+		\item The following lemma shows that the language of a sNBW is unchanged if we add a transition from a state $q_{a}$ to $q_{c}$ which is forward-simulated by one of the successors of $q_{a}$.
+		\item By adding in this way all the possible transitions, we
+		obtain a sNBW for which $\succeq$ is a backward-simulation.
+	\end{itemize}
+	\begin{lemma}
+		Let $\mathcal{A}$ be an sNBW with transition relation $\delta_{\mathcal{A}}$ and $\preceq$ be a forward-simulation relation for $\mathcal{A}$. If $(q_{a}, \sigma, q_{b}) \in \delta_{\mathcal{A}}$ and $q_{b} \preceq q_{c}$, then the sNBW $\mathcal{A}'$ that differs from $\mathcal{A}$ only by its transition relation $\delta_{\mathcal{A}'} = \mathcal{A} \cup \{(q_{a}, \sigma, q_{c})\}$ defines the same language as $\mathcal{A}$, that is $\text{L}_\text{b}(\mathcal{A}') = \text{L}_\text{b}(\mathcal{A})$.
+	\end{lemma}
+\end{frame}
+
+
+\begin{frame}{Simulation(cont'd)}
+	\tikzset{
+		%->, % makes the edges directed
+		>=stealth, % makes the arrow heads bold
+		every edge/.style={draw, thick, black},
+		node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+		every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+		initial text=$ $, % sets the text that appears on the start arrow
+		}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+		\centering % centers the figure
+			\begin{tikzpicture}
+				\node[] (mid') {
+				\begin{tikzpicture}
+				  \node [rotate=90] {$\preceq$}; 
+				\end{tikzpicture}
+	};
+				\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
+				\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
+				\node[state, left = 3cm of qb] (qa) {$q_{a}$};
+	
+				\draw (qa) edge[->] node[above] {$\sigma$} (qb);
+				\only<2>{
+					\draw (qa) edge[->, red] node[above] {$\sigma$} (qc);
+				}
+			\end{tikzpicture}
+			\caption{Lemma on slide~\pageref{lemma}}
+		\end{figure}
+		\only<1>{
+			\begin{itemize}
+				\item $(q_{a}, \sigma, q_{b}) \in \delta_{\mathcal{A}}$ and $q_{b} \preceq q_{c}$
+			\end{itemize}
+		}
+		\only<2>{
+			\begin{itemize}
+				\item The new sNBW preserves the same language.
+				\item Furthermore, $\succeq$ is a backward-simulation now.
+			\end{itemize}
+		}
+\end{frame}
+
+\begin{frame}{Simulation(cont'd)}
+	\begin{itemize}
+		\item Given a backward-simulation $\succeq$ for $\text{MH}(\mathcal{A}_{\phi})$, all the sets that are computed to evaluate $\mathcal{R}_{a}$ and $\mathcal{F}'_{\phi}$ are $\succeq$-closed, that is $I^{\text{MH}}$ and $\alpha^{\text{MH}}$ are $\succeq$-closed, and $x \cap y$, $x \cup y$ and $\text{Pre}(x)$ are $\succeq$-closed whenever $x$ and $y$ are $\succeq$-closed.
+		\item Recall
+		
+		$$R_{\alpha} \equiv \alpha^{\text{MH}} \cap \mu x \cdot (\text{Post}(x) \cup I^{\text{MH}})$$
+		$$\mathcal{F}'_{\phi} \equiv \nu y \cdot \mu x \cdot (\text{Post}(x) \cup (\text{Post}(y) \cap R_{\alpha})) $$
+
+		\item The relation $\preceq_{\text{alt}}$ defined by $\langle s, o \rangle \preceq_{\text{alt}} \langle s', o' \rangle$ iff
+		\begin{itemize}
+			\item $s \subseteq s'$
+			\item $o \subseteq o'$
+			\item $o = \emptyset$ iff $o' = \emptyset$
+		\end{itemize}
+		is a forward-simulation for $\text{MH}(\mathcal{A}_{\phi})$.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Simulation(cont'd)}
+	\begin{itemize}
+		\item According to the Lemma on slide~\pageref{lemma}, the relation $\succeq_{\text{alt}}$ (which is $\preceq_{\text{alt}}^{-1}$) is a backward-simulation if we modify the transition relation of $\text{MH}(\mathcal{A}_{\phi})$ as follows : if $\delta^{\text{MH}}(\langle s, o \rangle)$ is a disjunction of formulas of the form $\varphi \land \langle s', o' \rangle$ with $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$, then we disjunctively add all the formulas $\varphi \land \langle s'', o'' \rangle$ to $\delta^{\text{MH}}(\langle s, o \rangle)$ such that $\langle s', o' \rangle \preceq_{\text{alt}} \langle s'', o'' \rangle$.
+		\item We keep only the $\succeq_{\text{alt}}$-minimal elements of $\succeq_{\text{alt}}$-closed sets to evaluate $\mathcal{F}'_{\phi}$.
+		\begin{itemize}
+			\item The intuition is that if there is no accepting run from $\langle s, o \rangle$ then there is no accepting run from any pair $\langle s', o' \rangle \succeq_{\text{alt}} \langle s, o \rangle$.
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Elements of efficient implementation}
+	\begin{itemize}
+		\item Combine BDDs and antichains to compute the $\succeq_{\text{alt}}$-minimal elements of $\text{Post}(\llbracket \cdot \rrbracket_{\succeq_{\text{alt}}})$ efficiently.
+		\item Antichains of pairs $\langle s, o \rangle$ are represented \textit{explicitly} (as a list of pairs of sets
+		of locations) while computation of the successors of a pair $\langle s, o \rangle$ is done \textit{symbolically}.
+		\item Given a BDD $B$ over a set of variables $V$ (seen as a boolean formula over $V$), let $\llbracket B \rrbracket$ be the set of truth assignments over $V$ that satisfy $B$.
+		\item Given a pair $\langle s, o \rangle$, Algorithm 1 computes the set $L_{\text{Post}} = \lfloor \text{Post}(\llbracket \{\langle s, o \rangle\}\rrbracket_{\succeq_{\text{alt}}})\rfloor_{\succeq_{\text{alt}}}$.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\begin{center}
+		\includegraphics[scale=0.5]{Algorithm1}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Semi-symbolic Algorithm for $\text{Post}(\cdot)$}
+	\begin{itemize}
+		\item When computing the successors of a pair $\langle s, o \rangle$, the algorithm uses the intermediate boolean variables $\mathnormal{x}_{1},\cdots , \mathnormal{x}_\mathnormal{n}, \mathnormal{y}_{1},\cdots , \mathnormal{y}_\mathnormal{n}$ and $\mathnormal{y}~'_{1},\cdots , \mathnormal{y}~'_\mathnormal{n}$ to encode respectively the sets $s', o' \setminus  \alpha$ and $o'$ where $\langle s', o' \setminus \alpha \rangle \in \text{Post}(\llbracket \{ \langle s, o \rangle \} \rrbracket_{\succeq_{\text{alt}}})$.
+		\item $\delta(\ell)[\mathnormal{x}_{1} \cdots \mathnormal{x}_\mathnormal{n}]$ denotes the formula
+		$\delta(\ell)$ in which each occurrence of a location $\ell_{\mathnormal{i}}$ is replaced by variable $\mathnormal{x}_{\mathnormal{i}}$ for all $1 \leq \mathnormal{i} \leq \mathnormal{n}$.
+		\item The existential quantification over the set $P$ of propositions ($\exists P$) matches
+		the definition of the $\text{Post}(\cdot)$ operator.
+	\end{itemize}
+\end{frame}
+
 \end{document}
