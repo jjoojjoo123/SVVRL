@@ -460,10 +460,78 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\end{figure}
 \end{frame}
 
+\begin{frame}{Simulation}
+	\begin{itemize}
+		\item Let $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ be a NBW.
+		\item A preorder $\succeq \subseteq \text{Loc} \times \text{Loc}$ is a \textcolor{red}{backward-simulation} for $\mathcal{A}$ if for all $q_{1}, q_{2}, q_{3} \in \text{Loc}$, for all $\sigma \in \Sigma$,
+		\begin{itemize}
+			\item if $q_{1} \succeq q_{2}$ and $q_{3} \xrightarrow{\sigma}_{\delta} q_{2}$ then there exists $q_{4} \in \text{Loc}$ such that $q_{4} \xrightarrow{\sigma}_{\delta} q_{1}$ and $q_{4} \succeq q_{3}$, and
+			\item if $q_{1} \succeq q_{2}$ and $q_{2} \in I$ then $q_{1} \in I$.
+		\end{itemize}
+	\end{itemize}
+
+\tikzset{
+%->, % makes the edges directed
+>=stealth, % makes the arrow heads bold
+every edge/.style={draw, thick, black},
+node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+initial text=$ $, % sets the text that appears on the start arrow
+}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+	\centering % centers the figure
+	\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
+		\begin{tikzpicture}
+			\node[] (then) {then};
+			\node[state, above left = of then] (l2) {$q_{1}$};
+			\node[below = of l2] (mid) {
+			\begin{tikzpicture}
+      		\node [rotate=90] {$\preceq$};    
+    		\end{tikzpicture}
+};
+			\node[state, below = of mid] (l3) {$q_{2}$};
+			\node[state, left = of l3] (l1) {$q_{3}$};
+			\node[above left = 1.5cm and 1cm of l1] (if) {If};
+			
+			\node[state, below right = of then] (l3') {$q_{3}$};
+			\node[state, right = of l3'] (l4') {$q_{2}$};
+			\node[above = of l4'] (mid') {
+			\begin{tikzpicture}
+      		\node [rotate=90] {$\preceq$};    
+    		\end{tikzpicture}
+};
+			\node[state, above = of mid'] (l2') {$q_{1}$};
+			
+			\node[above = of l3'] (mid'') {
+			\begin{tikzpicture}
+      		\node [rotate=90] {$\preceq$};    
+    		\end{tikzpicture}
+};
+			\node[state, above = of mid''] (q2') {$q_{4}$};
+
+			\draw (l1) edge[->] node[above] {$\sigma$} (l3);
+			\draw (l3') edge[->] node[above] {$\sigma$} (l4');
+			\draw (q2') edge[->] node[above] {$\sigma$} (l2');
+			
+			\draw (l2) edge[dashed] (mid);
+			\draw (mid) edge[dashed] (l3);
+			\draw (l4') edge[dashed] (mid');
+			\draw (mid') edge[dashed] (l2');
+			\draw (mid'') edge[dashed] (l3');
+			\draw (mid'') edge[dashed] (q2');
+			
+		\end{tikzpicture}
+	\end{adjustbox}
+		\caption{Backward-simulation}
+	\end{figure}
+\end{frame}
+
 \begin{frame}{Simulation(cont'd)}
 	\begin{itemize}
 		\item A \textcolor{red}{backward-simulation} for $\mathcal{A}$ is a forward-simulation for $\mathcal{A}^{-1}$.
 		\item It is not true in general that $\succeq$ is a backward-simulation for $\mathcal{A}$ if $\preceq$ is a forward-simulation for $\mathcal{A}$.
+		\item It is not true in general that $\preceq$ is a forward-simulation for $\mathcal{A}^{-1}$ if $\preceq$ is a forward-simulation for $\mathcal{A}$.
+		\item It is not true in general that $\succeq$ is a backward-simulation for $\mathcal{A}$ if $\succeq$ is a backward-simulation for $\mathcal{A}^{-1}$.
 		\item Consider a state $q_{c}$ that has no predecessor and such that $q_{b} \preceq q_{c}$
 	\end{itemize}
 \end{frame}
@@ -492,7 +560,9 @@ initial text=$ $, % sets the text that appears on the start arrow
 			\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
 			\node[state, left = 3cm of qb] (qa) {$q_{a}$};
 			\node[draw = none, left = 3cm of qc] (qd) {};
-
+			
+			\draw (qc) edge[dashed] node {} (mid');
+			\draw (qb) edge[dashed] node {} (mid');
 			\draw (qa) edge[->] node[above] {$\sigma$} (qb);
 			\draw (qd) edge[->] node[draw=red, cross out] {} (qc);
 		\end{tikzpicture}
@@ -512,7 +582,9 @@ initial text=$ $, % sets the text that appears on the start arrow
 				\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
 				\node[state, left = 3cm of qb] (qa) {$q_{a}$};
 				\node[draw = none, left = 3cm of qc] (qd) {};
-	
+				
+				\draw (qb) edge[dashed] node {} (mid');
+				\draw (qc) edge[dashed] node {} (mid');
 				\draw (qb) edge[->] node[above] {$\sigma$} (qa);
 				\draw (qc) edge[->] node[draw=red, cross out] {} (qd);
 			\end{tikzpicture}
@@ -562,6 +634,8 @@ initial text=$ $, % sets the text that appears on the start arrow
 				\node[state, left = 3cm of qb] (qa) {$q_{a}$};
 	
 				\draw (qa) edge[->] node[above] {$\sigma$} (qb);
+				\draw (qb) edge[dashed] node {} (mid');
+				\draw (qc) edge[dashed] node {} (mid');
 				\only<2>{
 					\draw (qa) edge[->, red] node[above] {$\sigma$} (qc);
 				}
@@ -583,7 +657,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 \begin{frame}{Simulation(cont'd)}
 	\begin{itemize}
-		\item Given a backward-simulation $\succeq$ for $\text{MH}(\mathcal{A}_{\phi})$, all the sets that are computed to evaluate $\mathcal{R}_{a}$ and $\mathcal{F}'_{\phi}$ are $\succeq$-closed, that is $I^{\text{MH}}$ and $\alpha^{\text{MH}}$ are $\succeq$-closed, and $x \cap y$, $x \cup y$ and $\text{Pre}(x)$ are $\succeq$-closed whenever $x$ and $y$ are $\succeq$-closed.
+		\item Given a backward-simulation $\succeq$ for $\text{MH}(\mathcal{A}_{\phi})$, all the sets that are computed to evaluate $\mathcal{R}_{\alpha}$ and $\mathcal{F}'_{\phi}$ are $\succeq$-closed, that is $I^{\text{MH}}$ and $\alpha^{\text{MH}}$ are $\succeq$-closed, and $x \cap y$, $x \cup y$ and $\text{Pre}(x)$ are $\succeq$-closed whenever $x$ and $y$ are $\succeq$-closed.
 		\item Recall
 		
 		$$R_{\alpha} \equiv \alpha^{\text{MH}} \cap \mu x \cdot (\text{Post}(x) \cup I^{\text{MH}})$$
