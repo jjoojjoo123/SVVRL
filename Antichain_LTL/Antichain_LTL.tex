@@ -396,7 +396,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 \begin{frame}{Simulation}
 	\begin{itemize}
-		\item Let $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ be a NBW.
+		\item Let $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ be an NBW.
 		\item A preorder $\preceq \subseteq \text{Loc} \times \text{Loc}$ is a \textcolor{red}{forward-simulation} for $\mathcal{A}$ if for all $q_{1}, q_{2}, q_{3} \in \text{Loc}$, for all $\sigma \in \Sigma$,
 		\begin{itemize}
 			\item if $q_{1} \preceq q_{2}$ and $q_{2} \xrightarrow{\sigma}_{\delta} q_{3}$ then there exists $q_{4} \in \text{Loc}$ such that $q_{1} \xrightarrow{\sigma}_{\delta} q_{4}$ and $q_{4} \preceq q_{3}$, and
@@ -463,7 +463,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 \begin{frame}{Simulation}
 	\begin{itemize}
 		\item A \textcolor{red}{backward-simulation} for $\mathcal{A}$ is a forward-simulation for $\mathcal{A}^{-1}$.
-		\item Let $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ be a NBW.
+		\item Recall $\mathcal{A}^{-1} = \langle \text{Loc}, I, \Sigma, \delta^{-1}, \alpha \rangle$ where $\delta^{-1} = \{(\ell, \sigma, \ell') \mid (\ell', \sigma, \ell) \in \delta\}$.
 		\item A preorder $\succeq \subseteq \text{Loc} \times \text{Loc}$ is a \textcolor{red}{backward-simulation} for $\mathcal{A}$ if for all $q_{1}, q_{2}, q_{3} \in \text{Loc}$, for all $\sigma \in \Sigma$,
 		\begin{itemize}
 			\item if $q_{1} \succeq q_{2}$ and $q_{3} \xrightarrow{\sigma}_{\delta} q_{2}$ then there exists $q_{4} \in \text{Loc}$ such that $q_{4} \xrightarrow{\sigma}_{\delta} q_{1}$ and $q_{4} \succeq q_{3}$, and
@@ -709,5 +709,14 @@ initial text=$ $, % sets the text that appears on the start arrow
 		the definition of the $\text{Post}(\cdot)$ operator.
 	\end{itemize}
 \end{frame}
+
+% \begin{frame}{LTL Model-Checking}
+% 	\begin{itemize}
+% 		\item Given a Kripke structure $\mathcal{K} = \langle Q, q_{\iota}, \rightarrow_{\mathcal{K}}, \mathcal{L} \rangle$ and and an LTL formula $\phi$, the model-checking problem for $\mathcal{K}$ and $\phi$ reduces to the emptiness of $\text{L}(\mathcal{K}) \cap \text{L}_\text{b}(\mathcal{A}_{\neg \phi})$ (where $\mathcal{A}_{\neg \phi} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ is the sABW for $\neg \phi$) which can be checked by computing the following fixpoint formulas over the lattice of subsets of $Q \times 2^{\text{Loc}} \times 2^{\text{Loc}}$ :
+		
+% 		$$\mathcal{R}_{\alpha}^{\mathcal{K}} \equiv \alpha' \cap \mu x \cdot (\text{Post}_{\text{MC}}(x) \cup I~')$$
+% 		$$\mathcal{F}_{\phi}^{\mathcal{K}} \equiv \nu y \cdot \mu x \cdot (\text{Post}_{\text{MC}}(x) \cup (\text{Post}_{\text{MC}}(y) \cap \mathcal{R}_{\alpha}^{\mathcal{K}}))$$
+% 	\end{itemize}
+% \end{frame}
 
 \end{document}
