@@ -462,6 +462,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 \begin{frame}{Simulation}
 	\begin{itemize}
+		\item A \textcolor{red}{backward-simulation} for $\mathcal{A}$ is a forward-simulation for $\mathcal{A}^{-1}$.
 		\item Let $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ be a NBW.
 		\item A preorder $\succeq \subseteq \text{Loc} \times \text{Loc}$ is a \textcolor{red}{backward-simulation} for $\mathcal{A}$ if for all $q_{1}, q_{2}, q_{3} \in \text{Loc}$, for all $\sigma \in \Sigma$,
 		\begin{itemize}
@@ -657,11 +658,11 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 \begin{frame}{Simulation(cont'd)}
 	\begin{itemize}
-		\item Given a backward-simulation $\succeq$ for $\text{MH}(\mathcal{A}_{\phi})$, all the sets that are computed to evaluate $\mathcal{R}_{\alpha}$ and $\mathcal{F}'_{\phi}$ are $\succeq$-closed, that is $I^{\text{MH}}$ and $\alpha^{\text{MH}}$ are $\succeq$-closed, and $x \cap y$, $x \cup y$ and $\text{Pre}(x)$ are $\succeq$-closed whenever $x$ and $y$ are $\succeq$-closed.
+		\item Given a backward-simulation $\succeq$ for $\text{MH}(\mathcal{A}_{\phi})$, all the sets that are computed to evaluate $\mathcal{R}_{\alpha}$ and $\mathcal{F}'_{\phi}$ are $\succeq$-closed, that is $I^{\text{MH}}$ and $\alpha^{\text{MH}}$ are $\succeq$-closed, and $x \cap y$, $x \cup y$ and $\text{\textcolor{red}{Post}}(x)$ are $\succeq$-closed whenever $x$ and $y$ are $\succeq$-closed.
 		\item Recall
 		
-		$$R_{\alpha} \equiv \alpha^{\text{MH}} \cap \mu x \cdot (\text{Post}(x) \cup I^{\text{MH}})$$
-		$$\mathcal{F}'_{\phi} \equiv \nu y \cdot \mu x \cdot (\text{Post}(x) \cup (\text{Post}(y) \cap R_{\alpha})) $$
+		$$\mathcal{R}_{\alpha} \equiv \alpha^{\text{MH}} \cap \mu x \cdot (\text{Post}(x) \cup I^{\text{MH}})$$
+		$$\mathcal{F}'_{\phi} \equiv \nu y \cdot \mu x \cdot (\text{Post}(x) \cup (\text{Post}(y) \cap \mathcal{R}_{\alpha})) $$
 
 		\item The relation $\preceq_{\text{alt}}$ defined by $\langle s, o \rangle \preceq_{\text{alt}} \langle s', o' \rangle$ iff
 		\begin{itemize}
