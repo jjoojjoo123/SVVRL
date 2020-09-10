@@ -233,7 +233,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 			\item $I$ is a disjunction of locations.
 			\item for all $\ell \in \text{Loc}$, $\delta(\ell)$ is a disjunction of $\varphi \land \ell'$ where $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$ and $ \ell' \in \text{Loc}$.
 		\end{itemize}
-		\item Define the reverse automaton of $\mathcal{A}$ as $\mathcal{A}^{-1} = \langle \text{Loc}, I, \Sigma, \delta^{-1}, \alpha \rangle$ where $\delta^{-1} = \{(\ell, \sigma, \ell') \mid (\ell', \sigma, \ell) \in \delta\}$.
+		\item Define the reverse automaton of $\mathcal{A}$ as $\mathcal{A}^{-1} = \langle \text{Loc}, \alpha, \Sigma, \delta^{-1}, I \rangle$ where $\delta^{-1} = \{(\ell, \sigma, \ell') \mid (\ell', \sigma, \ell) \in \delta\}$.
 	\end{itemize}
 \end{frame}
 
@@ -385,7 +385,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 		\item Let $\preceq \subseteq Q \times Q$ be a preorder.
 		\item $q_{1} \prec q_{2}$ iff $q_{1} \preceq q_{2}$ and $q_{2} \npreceq q_{1}$
 		\item A set $R \subseteq Q$ is \textcolor{red}{$\preceq$-closed} iff for all $q_{1}, q_{2} \in Q$, if $q_{1} \preceq q_{2}$ and $q_{2} \in R$ then $q_{1} \in R$.
-		\item The \textcolor{red}{$\preceq$-closure} of $R$, is the set $\llbracket R \rrbracket = \{q \in Q \mid \exists q' \in R : q \preceq q'\}$.
+		\item The \textcolor{red}{$\preceq$-closure} of $R$, is the set $\llbracket R \rrbracket_{\preceq} = \{q \in Q \mid \exists q' \in R : q \preceq q'\}$.
 		\item Let $\lceil R \rceil_{\preceq} = \{q \in R \mid \nexists q' \in R : q \prec q'\}$ be the set of \textcolor{red}{$\preceq$-maximal elements} of $R$.
 		\item Let $\lfloor R \rfloor_{\succeq} = \{q \in R \mid \nexists q' \in R : q \succ q'\}$ be the set of \textcolor{red}{$\succeq$-minimal elements} of $R$.
 		\item For all $\preceq$-closed sets $R \subseteq Q$, $R = \llbracket \lceil R \rceil_{\preceq} \rrbracket_{\preceq}$.
@@ -463,7 +463,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 \begin{frame}{Simulation}
 	\begin{itemize}
 		\item A \textcolor{red}{backward-simulation} for $\mathcal{A}$ is a forward-simulation for $\mathcal{A}^{-1}$.
-		\item Recall $\mathcal{A}^{-1} = \langle \text{Loc}, I, \Sigma, \delta^{-1}, \alpha \rangle$ where $\delta^{-1} = \{(\ell, \sigma, \ell') \mid (\ell', \sigma, \ell) \in \delta\}$.
+		\item Recall $\mathcal{A}^{-1} = \langle \text{Loc}, \alpha, \Sigma, \delta^{-1}, I \rangle$ where $\delta^{-1} = \{(\ell, \sigma, \ell') \mid (\ell', \sigma, \ell) \in \delta\}$.
 		\item A preorder $\succeq \subseteq \text{Loc} \times \text{Loc}$ is a \textcolor{red}{backward-simulation} for $\mathcal{A}$ if for all $q_{1}, q_{2}, q_{3} \in \text{Loc}$, for all $\sigma \in \Sigma$,
 		\begin{itemize}
 			\item if $q_{1} \succeq q_{2}$ and $q_{3} \xrightarrow{\sigma}_{\delta} q_{2}$ then there exists $q_{4} \in \text{Loc}$ such that $q_{4} \xrightarrow{\sigma}_{\delta} q_{1}$ and $q_{4} \succeq q_{3}$, and
@@ -695,6 +695,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 \end{frame}
 
 \begin{frame}
+	\label{Algorithm1}
 	\begin{center}
 		\includegraphics[scale=0.5]{Algorithm1}
 	\end{center}
@@ -707,16 +708,72 @@ initial text=$ $, % sets the text that appears on the start arrow
 		$\delta(\ell)$ in which each occurrence of a location $\ell_{\mathnormal{i}}$ is replaced by variable $\mathnormal{x}_{\mathnormal{i}}$ for all $1 \leq \mathnormal{i} \leq \mathnormal{n}$.
 		\item The existential quantification over the set $P$ of propositions ($\exists P$) matches
 		the definition of the $\text{Post}(\cdot)$ operator.
+		\item Recall $\text{Post}(L) = \{q \in Q \mid \exists \sigma \in \Sigma \cdot \exists q' \in L : \sigma \cup \{q\} \models \delta^{\text{MH}}(q')\}$.
 	\end{itemize}
 \end{frame}
 
-% \begin{frame}{LTL Model-Checking}
-% 	\begin{itemize}
-% 		\item Given a Kripke structure $\mathcal{K} = \langle Q, q_{\iota}, \rightarrow_{\mathcal{K}}, \mathcal{L} \rangle$ and and an LTL formula $\phi$, the model-checking problem for $\mathcal{K}$ and $\phi$ reduces to the emptiness of $\text{L}(\mathcal{K}) \cap \text{L}_\text{b}(\mathcal{A}_{\neg \phi})$ (where $\mathcal{A}_{\neg \phi} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ is the sABW for $\neg \phi$) which can be checked by computing the following fixpoint formulas over the lattice of subsets of $Q \times 2^{\text{Loc}} \times 2^{\text{Loc}}$ :
+\begin{frame}{LTL Model-Checking}
+	\begin{itemize}
+		\item Given a Kripke structure $\mathcal{K} = \langle Q, q_{\iota}, \rightarrow_{\mathcal{K}}, \mathcal{L} \rangle$ and and an LTL formula $\phi$, the model-checking problem for $\mathcal{K}$ and $\phi$ reduces to the emptiness of $\text{L}(\mathcal{K}) \cap \text{L}_\text{b}(\mathcal{A}_{\neg \phi})$ (where $\mathcal{A}_{\neg \phi} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ is the sABW for $\neg \phi$) which can be checked by computing the following fixpoint formulas over the lattice of subsets of $Q \times 2^{\text{Loc}} \times 2^{\text{Loc}}$ :
 		
-% 		$$\mathcal{R}_{\alpha}^{\mathcal{K}} \equiv \alpha' \cap \mu x \cdot (\text{Post}_{\text{MC}}(x) \cup I~')$$
-% 		$$\mathcal{F}_{\phi}^{\mathcal{K}} \equiv \nu y \cdot \mu x \cdot (\text{Post}_{\text{MC}}(x) \cup (\text{Post}_{\text{MC}}(y) \cap \mathcal{R}_{\alpha}^{\mathcal{K}}))$$
-% 	\end{itemize}
-% \end{frame}
+		$$\mathcal{R}_{\alpha}^{\mathcal{K}} \equiv \alpha' \cap \mu \mathnormal{x} \cdot (\text{Post}_{\text{MC}}(\mathnormal{x}) \cup I~')$$
+		$$\mathcal{F}_{\phi}^{\mathcal{K}} \equiv \nu \mathnormal{y} \cdot \mu \mathnormal{x} \cdot (\text{Post}_{\text{MC}}(\mathnormal{x}) \cup (\text{Post}_{\text{MC}}(\mathnormal{y}) \cap \mathcal{R}_{\alpha}^{\mathcal{K}}))$$
+
+		\begin{itemize}
+			\item $\text{Post}_{\text{MC}}(L) = \{(q', \langle s', o' \rangle) \mid \exists (q, \langle s, o \rangle) \in L : q \rightarrow_{\mathcal{K}} q' \land \mathcal{L}(q) \cup \{\langle s', o' \rangle\} \models \delta^{\text{MH}}(\langle s, o \rangle)\}$
+			\item $I~' = \{q_{\iota}\} \times I^{\text{MH}}$
+			\item $\alpha' = Q \times \alpha^{\text{MH}}$
+		\end{itemize}
+		\item $\mathcal{F}_{\phi}^{\mathcal{K}} = \emptyset$ iff $\text{L}(\mathcal{K}) \cap \text{L}_{\text{b}}(\mathcal{A}_{\neg \phi}) = \emptyset$ iff $\mathcal{K} \models \phi$.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{LTL Model-Checking (cont'd)}
+	\begin{itemize}
+		\item There exists a partial order $\succeq_{\text{MC}}$ for which all the sets that are computed to evaluate $\mathcal{F}_{\phi}^{\mathcal{K}}$ are $\succeq_{\text{MC}}$-closed.
+		\item The relation $\succeq_{\text{MC}}$ is defined by $(q, \langle s, o \rangle) \succeq_{\text{MC}} (q', \langle s', o' \rangle)$ iff $q = q'$ and $\langle s, o \rangle \succeq_{\text{alt}} \langle s', o' \rangle$.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{LTL Model-Checking (cont'd)}
+	\begin{itemize}
+		\item Use a semi-symbolic forward algorithm for model-checking.
+		\item Assume
+		a symbolic representation of $\mathcal{K}$ where each state $q \in Q$ is a valuation for a finite set
+		of boolean variables $V = \{\mathnormal{z}_{1}, \cdots , \mathnormal{z}_{\mathnormal{m}}\}$ such that $P \subseteq V$.
+		\item The labeling function $\mathcal{L}$ is defined as the projection of $2^{V}$ to $2^{P}$ in the natural way.
+		\item The transition relation is given
+		by a BDD $T(V, V~')$ over $V \cup V~'$ where the set $V~' = \{\mathnormal{z}' \mid \mathnormal{z} \in V\}$ of primed variables
+		is used to define the value of the variables after the transition.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{LTL Model-Checking (cont'd)}
+	\begin{itemize}
+		\item To efficiently compute $\mathcal{F}_{\phi}^{\mathcal{K}}$, we need a compact representation of $succeq_{\text{MC}}$-antichains. Consider a semisymbolic representation of antichains, as a set of pairs $(B, \langle s, o \rangle)$ where $B$ is a BDD over $V$.
+		\begin{itemize}
+			\item A pair $(B, \langle s, o \rangle)$ represents the set $\llbracket (B, \langle s, o \rangle) \rrbracket = \{(q, \langle s, o \rangle) \mid q \in \llbracket B \rrbracket\}$.
+		\end{itemize}
+		\item Let $L = \{(q_{1}, \langle s_{1}, o_{1} \rangle), (q_{2}, \langle s_{2}, o_{2} \rangle), \cdots \}$ be an $\succeq_{\text{MC}}$-antichain.
+		\item Let $S_{L} = \{\langle s, o \rangle \mid \exists (q, \langle s, p \rangle) \in L\}$.
+		\item Define $R(L) = \{(B, \langle s, o \rangle) \mid \langle s, o \rangle \in S_{L} \land \llbracket B \rrbracket = \{q \mid (q, \langle s, o \rangle) \in L \} \}$.
+	\end{itemize}
+	\begin{lemma}
+		If $L$ is an $\succeq_{\text{MC}}$-antichain for all $(B_{1}, \langle s_{1}, o_{1} \rangle), (B_{2}, \langle s_{2}, o_{2} \rangle) \in R(L)$, if $\langle s_{1}, o_{1} \rangle \succ_{\text{alt}} \langle s_{2}, o_{2} \rangle$, then $\llbracket B_{1} \rrbracket \cap \llbracket B_{2} \rrbracket = \emptyset$.
+	\end{lemma}
+\end{frame}
+
+\begin{frame}{LTL Model-Checking (cont'd)}
+	\begin{itemize}
+		\item We say that $R(L)$ is a \textit{semi-symbolic} and \textit{canonical} representation of $\llbracket L \rrbracket_{\succeq_{\text{MC}}}$.
+		\item The algorithm
+		to compute $\text{Post}_{\text{MC}}(\cdot)$ follows the lines of Algorithm 1 on slide~\pageref{Algorithm1}, using $2n$ boolean variables
+		to encode a pair $\langle s, o \rangle$.
+		\item The existential quantification over $V$ is performed after synchronization over propositions $P$ with the Kripke structure.
+		\item Let $B_{L}(\mathnormal{x}, \mathnormal{y}, V)$ be the
+		BDD that encodes with variables $\mathnormal{x}, \mathnormal{y}$ the successors of $\langle s, o \rangle$ over a symbolic label encoded by variables $V$.
+		\item We compute the BDD $C_{L}(\mathnormal{x}, \mathnormal{y}, V~') = \exists V : B(V) \land T(V, V~') \land B_{L}(\mathnormal{x}, \mathnormal{y}, V)$ and then we construct the encoding $R(\cdot)$ of its minimal elements.
+	\end{itemize}
+\end{frame}
 
 \end{document}
