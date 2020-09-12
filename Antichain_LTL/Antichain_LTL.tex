@@ -703,7 +703,22 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 \begin{frame}{Semi-symbolic Algorithm for $\text{Post}(\cdot)$}
 	\begin{itemize}
-		\item When computing the successors of a pair $\langle s, o \rangle$, the algorithm uses the intermediate boolean variables $\mathnormal{x}_{1},\cdots , \mathnormal{x}_\mathnormal{n}, \mathnormal{y}_{1},\cdots , \mathnormal{y}_\mathnormal{n}$ and $\mathnormal{y}~'_{1},\cdots , \mathnormal{y}~'_\mathnormal{n}$ to encode respectively the sets $s', o' \setminus  \alpha$ and $o'$ where $\langle s', o' \setminus \alpha \rangle \in \text{Post}(\llbracket \{ \langle s, o \rangle \} \rrbracket_{\succeq_{\text{alt}}})$.
+		\item When computing the successors of a pair $\langle s, o \rangle$, the algorithm uses the intermediate boolean variables to encode respectively the sets 
+			\begin{center}
+				\begin{tabular}{ ||c|c|| } 
+					\hline
+					boolean variables & set \\
+					\hline \hline
+					$\mathnormal{x}_{1},\dots , \mathnormal{x}_\mathnormal{n}$ & $s'$ \\
+					\hline 
+					$\mathnormal{y}_{1},\dots , \mathnormal{y}_\mathnormal{n}$ & $o' \setminus \alpha$ \\ 
+					\hline
+					$\mathnormal{y}~'_{1},\dots , \mathnormal{y}~'_\mathnormal{n}$ & $o'$ \\ 
+					\hline
+				\end{tabular}
+			\end{center}
+		where $\langle s', o' \setminus \alpha \rangle \in \text{Post}(\llbracket \{ \langle s, o \rangle \} \rrbracket_{\succeq_{\text{alt}}})$.
+	
 		\item $\delta(\ell)[\mathnormal{x}_{1} \cdots \mathnormal{x}_\mathnormal{n}]$ denotes the formula
 		$\delta(\ell)$ in which each occurrence of a location $\ell_{\mathnormal{i}}$ is replaced by variable $\mathnormal{x}_{\mathnormal{i}}$ for all $1 \leq \mathnormal{i} \leq \mathnormal{n}$.
 		\item The existential quantification over the set $P$ of propositions ($\exists P$) matches
