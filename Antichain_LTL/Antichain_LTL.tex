@@ -663,7 +663,60 @@ initial text=$ $, % sets the text that appears on the start arrow
 		
 		$$\mathcal{R}_{\alpha} \equiv \alpha^{\text{MH}} \cap \mu x \cdot (\text{Post}(x) \cup I^{\text{MH}})$$
 		$$\mathcal{F}'_{\phi} \equiv \nu y \cdot \mu x \cdot (\text{Post}(x) \cup (\text{Post}(y) \cap \mathcal{R}_{\alpha})) $$
+	\end{itemize}
+\end{frame}
 
+\begin{frame}{Simulation(cont'd)}
+	\tikzset{
+		%->, % makes the edges directed
+		every cross out node/.append style={-,solid},
+		>=stealth, % makes the arrow heads bold
+		every edge/.style={draw, thick, black},
+		node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+		every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+		initial text=$ $, % sets the text that appears on the start arrow
+		}
+	\begin{figure}[ht]
+		\centering
+		\begin{tikzpicture}
+			\draw[thick] (2.5,0) parabola (2.5+1.5,4) ;
+			\draw[thick] (2.5,0) parabola (2.5-1.5,4) ;
+
+			\draw[thick] (-2.5,0) parabola (-2.5+1.5,4) ;
+			\draw[thick] (-2.5,0) parabola (-2.5-1.5,4) ;
+
+			\node (Postx) at (2.5, 5) {Post($\mathnormal{x}$)} ;
+			\node (x) at (-2.5, 5) {$\mathnormal{x}$} ;
+
+			\node[state] (q1) at (2.5, 1.5) {$\mathnormal{q}_{1}$};
+			\node[] (mid) at (2.5, 2.5) {
+				\begin{tikzpicture}
+				  \node [rotate=90] {$\preceq$}; 
+				\end{tikzpicture}
+			};
+			\node[state] (q2) at (2.5, 3.5) {$\mathnormal{q}_{2}$};
+			\node[state] (q3) at (-2.5, 1.5) {$\mathnormal{q}_{3}$};
+
+			\draw (q3) edge[->] node[above] {$\sigma$} (q1);
+
+			\only<2>{
+				\node[state, fill=red!10] (q4) at (-2.5, 3.5) {$\textcolor{red}{\mathnormal{q}_{4}}$};
+				\node[] (mid) at (-2.5, 2.5) {
+					\begin{tikzpicture}
+				  		\node [rotate=90] {$\textcolor{red}{\preceq}$}; 
+					\end{tikzpicture}
+				};
+
+				\draw (q4) edge[->, red] node[above] {$\textcolor{red}{\sigma}$} (q2);
+			}
+		  \end{tikzpicture}
+		  \caption{$\text{Post}(\mathnormal{x})$ is $\succeq$-closed whenever $\mathnormal{x}$ is $\succeq$-closed.}
+	\end{figure}
+	
+\end{frame}
+
+\begin{frame}{Simulation(cont'd)}
+	\begin{itemize}
 		\item The relation $\preceq_{\text{alt}}$ defined by $\langle s, o \rangle \preceq_{\text{alt}} \langle s', o' \rangle$ iff
 		\begin{itemize}
 			\item $s \subseteq s'$
@@ -671,11 +724,6 @@ initial text=$ $, % sets the text that appears on the start arrow
 			\item $o = \emptyset$ iff $o' = \emptyset$
 		\end{itemize}
 		is a forward-simulation for $\text{MH}(\mathcal{A}_{\phi})$.
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Simulation(cont'd)}
-	\begin{itemize}
 		\item According to the Lemma on slide~\pageref{lemma}, the relation $\succeq_{\text{alt}}$ (which is $\preceq_{\text{alt}}^{-1}$) is a backward-simulation if we modify the transition relation of $\text{MH}(\mathcal{A}_{\phi})$ as follows : if $\delta^{\text{MH}}(\langle s, o \rangle)$ is a disjunction of formulas of the form $\varphi \land \langle s', o' \rangle$ with $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$, then we disjunctively add all the formulas $\varphi \land \langle s'', o'' \rangle$ to $\delta^{\text{MH}}(\langle s, o \rangle)$ such that $\langle s', o' \rangle \preceq_{\text{alt}} \langle s'', o'' \rangle$.
 		\item We keep only the $\succeq_{\text{alt}}$-minimal elements of $\succeq_{\text{alt}}$-closed sets to evaluate $\mathcal{F}'_{\phi}$.
 		\begin{itemize}
