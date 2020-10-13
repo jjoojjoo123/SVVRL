@@ -732,6 +732,48 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\end{itemize}
 \end{frame}
 
+\begin{frame}{Simulation(cont'd)}
+	\tikzset{
+		%->, % makes the edges directed
+		>=stealth, % makes the arrow heads bold
+		every edge/.style={draw, thick, black},
+		node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+		every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+		initial text=$ $, % sets the text that appears on the start arrow
+		}
+	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
+		\centering % centers the figure
+			\begin{tikzpicture}
+				\node[] (mid') {
+				\begin{tikzpicture}
+				  \node [rotate=90] {$\preceq_{\text{alt}}$}; 
+				\end{tikzpicture}
+	};
+				\node[state, above = 0.5cm of mid'] (qc) {$\langle \textnormal{s}'', \textnormal{o}'' \rangle$};
+				\node[state, below = 0.5cm of mid'] (qb) {$\langle \textnormal{s}', \textnormal{o}' \rangle$};
+				\node[state, left = 3cm of qb] (qa) {$\langle \textnormal{s}, \textnormal{o} \rangle$};
+	
+				\draw (qa) edge[->] node[above] {$\sigma \models \varphi$} (qb);
+				\draw (qb) edge[dashed] node {} (mid');
+				\draw (qc) edge[dashed] node {} (mid');
+				\only<2>{
+					\draw (qa) edge[->, red] node[above left] {$\sigma \models \varphi$} (qc);
+				}
+			\end{tikzpicture}
+		\end{figure}
+		\only<1>{
+			\begin{itemize}
+				\item $\delta^{\text{MH}}(\langle s, o \rangle) = \varphi \land \langle s', o' \rangle$ and $\langle s', o' \rangle \preceq_{\text{alt}} \langle s'', o'' \rangle$
+			\end{itemize}
+		}
+		\only<2>{
+			\begin{itemize}
+				\item $\delta^{\text{MH}}(\langle s, o \rangle) = (\varphi \land \langle s', o' \rangle) \textcolor{red}{\lor (\varphi \land \langle s'', o'' \rangle)}$, the new sNBW preserves the same language.
+				\item Furthermore, $\succeq_{\text{alt}}$ is a backward-simulation now.
+			\end{itemize}
+		}
+\end{frame}
+
 \begin{frame}{Elements of efficient implementation}
 	\begin{itemize}
 		\item Combine BDDs and antichains to compute the $\succeq_{\text{alt}}$-minimal elements of $\text{Post}(\llbracket \cdot \rrbracket_{\succeq_{\text{alt}}})$ efficiently.
