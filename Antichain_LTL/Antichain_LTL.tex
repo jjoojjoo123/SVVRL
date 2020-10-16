@@ -784,30 +784,79 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\end{itemize}
 \end{frame}
 
-\begin{frame}
-	\label{Algorithm1}
+\begin{frame}{Semi-symbolic Algorithm for Post($\cdot$)}
+	\label{Algorithm1_part1}
 	\begin{center}
-		\includegraphics[scale=0.5]{Algorithm1}
+		\includegraphics[scale=0.5]{Algorithm1_part1}
 	\end{center}
+	\begin{minipage}{.5\textwidth}
+		\begin{itemize}
+			\item The algorithm uses the intermediate boolean variables to encode respectively the sets 
+		\end{itemize}
+	\end{minipage}%
+	\begin{minipage}{.5\textwidth}
+		\small
+		\centering
+		\begin{tabular}{ ||c|c|| } 
+			\hline
+			boolean variables & set \\
+			\hline \hline
+			$\mathnormal{x}_{1},\dots , \mathnormal{x}_\mathnormal{n}$ & $s'$ \\
+			\hline 
+			$\mathnormal{y}_{1},\dots , \mathnormal{y}_\mathnormal{n}$ & $o' \setminus \alpha$ \\ 
+			\hline
+			$\mathnormal{y}~'_{1},\dots , \mathnormal{y}~'_\mathnormal{n}$ & $o'$ \\ 
+			\hline
+		\end{tabular}
+	\end{minipage}
+\end{frame}
+
+\begin{frame}{Semi-symbolic Algorithm for Post($\cdot$)}
+	\label{Algorithm1_part2}
+	\begin{center}
+		\includegraphics[scale=0.5]{Algorithm1_part2}
+	\end{center}
+	\begin{minipage}{.5\textwidth}
+		\begin{itemize}
+			\item Using a BDD $\omega (\mathnormal{x}, \mathnormal{y}, \mathnormal{x}', \mathnormal{y}')$ that encodes the relation $\prec_{\text{alt}}$ (we have $\langle s', o' \rangle \prec_{\text{alt}} \langle s, o \rangle$ in $\omega$ where $s, o, s', o'$ encoded respectively as the table) 
+		\end{itemize}
+	\end{minipage}%
+	\begin{minipage}{.5\textwidth}
+		\small
+		\centering
+		\begin{tabular}{ ||c|c|| } 
+			\hline
+			boolean variables & set \\
+			\hline \hline
+			$\mathnormal{x}$ & $s$ \\
+			\hline 
+			$\mathnormal{y}$ & $o$ \\
+			\hline
+			$\mathnormal{x}~'$ & $s'$ \\
+			\hline
+			$\mathnormal{y}~'$ & $o'$ \\ 
+			\hline
+		\end{tabular}
+	\end{minipage}
 \end{frame}
 
 \begin{frame}{Semi-symbolic Algorithm for $\text{Post}(\cdot)$}
 	\begin{itemize}
-		\item When computing the successors of a pair $\langle s, o \rangle$, the algorithm uses the intermediate boolean variables to encode respectively the sets 
-			\begin{center}
-				\begin{tabular}{ ||c|c|| } 
-					\hline
-					boolean variables & set \\
-					\hline \hline
-					$\mathnormal{x}_{1},\dots , \mathnormal{x}_\mathnormal{n}$ & $s'$ \\
-					\hline 
-					$\mathnormal{y}_{1},\dots , \mathnormal{y}_\mathnormal{n}$ & $o' \setminus \alpha$ \\ 
-					\hline
-					$\mathnormal{y}~'_{1},\dots , \mathnormal{y}~'_\mathnormal{n}$ & $o'$ \\ 
-					\hline
-				\end{tabular}
-			\end{center}
-		where $\langle s', o' \setminus \alpha \rangle \in \text{Post}(\llbracket \{ \langle s, o \rangle \} \rrbracket_{\succeq_{\text{alt}}})$.
+		% \item When computing the successors of a pair $\langle s, o \rangle$, the algorithm uses the intermediate boolean variables to encode respectively the sets 
+		% 	\begin{center}
+		% 		\begin{tabular}{ ||c|c|| } 
+		% 			\hline
+		% 			boolean variables & set \\
+		% 			\hline \hline
+		% 			$\mathnormal{x}_{1},\dots , \mathnormal{x}_\mathnormal{n}$ & $s'$ \\
+		% 			\hline 
+		% 			$\mathnormal{y}_{1},\dots , \mathnormal{y}_\mathnormal{n}$ & $o' \setminus \alpha$ \\ 
+		% 			\hline
+		% 			$\mathnormal{y}~'_{1},\dots , \mathnormal{y}~'_\mathnormal{n}$ & $o'$ \\ 
+		% 			\hline
+		% 		\end{tabular}
+		% 	\end{center}
+		% where $\langle s', o' \setminus \alpha \rangle \in \text{Post}(\llbracket \{ \langle s, o \rangle \} \rrbracket_{\succeq_{\text{alt}}})$.
 	
 		\item $\delta(\ell)[\mathnormal{x}_{1} \cdots \mathnormal{x}_\mathnormal{n}]$ denotes the formula
 		$\delta(\ell)$ in which each occurrence of a location $\ell_{\mathnormal{i}}$ is replaced by variable $\mathnormal{x}_{\mathnormal{i}}$ for all $1 \leq \mathnormal{i} \leq \mathnormal{n}$.
@@ -859,7 +908,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 		\begin{itemize}
 			\item A pair $(B, \langle s, o \rangle)$ represents the set $\llbracket (B, \langle s, o \rangle) \rrbracket = \{(q, \langle s, o \rangle) \mid q \in \llbracket B \rrbracket\}$.
 		\end{itemize}
-		\item Let $L = \{(q_{1}, \langle s_{1}, o_{1} \rangle), (q_{2}, \langle s_{2}, o_{2} \rangle), \cdots \}$ be an $\succeq_{\text{MC}}$-antichain.
+		\item Let $L = \{(q_{1}, \langle s_{1},  o_{1} \rangle), (q_{2}, \langle s_{2}, o_{2} \rangle), \cdots \}$ be an $\succeq_{\text{MC}}$-antichain.
 		\item Let $S_{L} = \{\langle s, o \rangle \mid \exists (q, \langle s, p \rangle) \in L\}$.
 		\item Define $R(L) = \{(B, \langle s, o \rangle) \mid \langle s, o \rangle \in S_{L} \land \llbracket B \rrbracket = \{q \mid (q, \langle s, o \rangle) \in L \} \}$.
 	\end{itemize}
@@ -872,7 +921,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\begin{itemize}
 		\item We say that $R(L)$ is a \textit{semi-symbolic} and \textit{canonical} representation of $\llbracket L \rrbracket_{\succeq_{\text{MC}}}$.
 		\item The algorithm
-		to compute $\text{Post}_{\text{MC}}(\cdot)$ follows the lines of Algorithm 1 on slide~\pageref{Algorithm1}, using $2n$ boolean variables
+		to compute $\text{Post}_{\text{MC}}(\cdot)$ follows the lines of Algorithm 1 on slide~\pageref{Algorithm1_part1} and~\pageref{Algorithm1_part2}, using $2n$ boolean variables
 		to encode a pair $\langle s, o \rangle$.
 		\item The existential quantification over $V$ is performed after synchronization over propositions $P$ with the Kripke structure.
 		\item Let $B_{L}(\mathnormal{x}, \mathnormal{y}, V)$ be the
