@@ -101,7 +101,7 @@ $P$ is a tuple $\mathcal{K} = \langle Q, q_{\iota}, \rightarrow_{\mathcal{K}}, \
 			\item $\mathcal{L} : Q \to 2^{P}$ is a labeling function
 		\end{itemize}
 		\item A run of $\mathcal{K}$ is an infinite sequence $\rho = q_{0}q_{1}\cdots$ such that $q_{0} = q_{\iota}$ and for all $i \geq 0$, $(q_{i}, q_{i+1}) \in \rightarrow_{\mathcal{K}}$
-		\item Let $\mathcal{L}(\rho) = \mathcal{L}(q_{0})\mathcal{L}(q_{1})\cdots$ and define the language of K as $\text{L}(\mathcal{K}) =
+		\item Let $\mathcal{L}(\rho) = \mathcal{L}(q_{0})\mathcal{L}(q_{1})\cdots$ and define the language of $\mathcal{K}$ as $\text{L}(\mathcal{K}) =
 \{\mathcal{L}(\rho) \mid \rho \text{ is a run of } \mathcal{K}\}$
 	\end{itemize}
 \end{frame}
@@ -228,7 +228,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 \begin{frame}{sNBW}
 	\begin{itemize}
-		\item A nondeterministic Büchi automaton is an sABW $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ such that
+		\item A nondeterministic Büchi automaton (sNBW) is an sABW $\mathcal{A} = \langle \text{Loc}, I, \Sigma, \delta, \alpha \rangle$ such that
 		\begin{itemize}
 			\item $I$ is a disjunction of locations.
 			\item for all $\ell \in \text{Loc}$, $\delta(\ell)$ is a disjunction of $\varphi \land \ell'$ where $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$ and $ \ell' \in \text{Loc}$.
@@ -293,7 +293,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\begin{adjustbox}{max width=.95\textwidth, max totalheight=.95\textheight}
 		\begin{tikzpicture}
 			\node[state] (a) {$\langle \{\ell_{2}, \ell_{4}\}, \{\ell_{2}\}\rangle$};
-			\node[state, initial, accepting, left = of a] (1) {$\langle \{\ell_{2}, \ell_{4}\}, \emptyset$};
+			\node[state, initial, accepting, left = of a] (1) {$\langle \{\ell_{2}, \ell_{4}\}, \emptyset \rangle$};
 			\node[state, above right = and 4.5cm of a] (b) {$\langle \{\ell_{2}, \ell_{3},\ell_{4}\}, \{\ell_{2}\}\rangle$};
 			\node[state, above left = of b] (2) {$\langle \{\ell_{2}, \ell_{3}, \ell_{4}\}, \{\ell_{2}, \ell_{3}\}\rangle$};
 			\node[state, above right = of b] (3) {$\langle \{\ell_{2}, \ell_{3}, \ell_{4}\}, \{\ell_{3}\}\rangle$};
@@ -510,7 +510,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 					every state/.style={thick, fill=red!50, scale = 0.6}
 				}
 			}
-			\only<2-5>{
+			\only<2-5, 6-9>{
 				\node[state, accepting] (t3) at (-2.8, 3.2) {t3};
 				\node[state, accepting] (t5) at (3.6, 2) {t5};
 				\node[state, accepting] (b2) at (-2, -2) {b2};
@@ -518,21 +518,21 @@ initial text=$ $, % sets the text that appears on the start arrow
 				\node[state, accepting] (last) at (5, 0) {};
 			}
 
-			\only<3-5>{
+			\only<3-5, 7-9>{
 				\node[state] (t1) at (-3.6, 2) {t1};
 				\node[state] (t6) at (2.8, 3.2) {t6};
 				\node[state] (b3) at (-2.8, -3.2) {b3};
 				\node[state] (b4) at (2, -2) {b4};
 			}
 
-			\only<4-5>{
+			\only<4-5, 8-9>{
 				\node[state] (t2) at (-2, 2) {t2};
 				\node[state] (b1) at (-3.6, -2) {b1};
 				\node[state] (t4) at (2, 2) {t4};
 				\node[state] (b5) at (3.6, -2) {b5};
 			}
 
-			\only<5>{
+			\only<5, 9>{
 				\node[state] (b6) at (2.8, -3.2) {b6};
 			}
 
@@ -543,6 +543,9 @@ initial text=$ $, % sets the text that appears on the start arrow
 \end{frame}
 
 \begin{frame}{Proof}
+	\begin{theorem}
+		$\text{L}_{\text{b}}(\mathcal{A}_{\phi}) = \emptyset ~ iff ~ \mathcal{F}'_{\phi} = \emptyset$.
+	\end{theorem}
 	\begin{itemize}
 		\item Define $\Delta^{\text{MH}} : Q \times \Sigma^{+}$ the extension of the transition relation $\delta^{\text{MH}}$(recursively)
 		\begin{itemize}
@@ -669,7 +672,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 }
 	\begin{figure}[ht] % ’ht’ tells LaTeX to place the figure ’here’ or at the top of the page
 	\centering % centers the figure
-	\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
+	\begin{adjustbox}{max width=0.8\textwidth, max totalheight=\textheight}
 		\begin{tikzpicture}
 			\node[] (then) {then};
 			\node[state, above left = of then] (l2) {$q_{1}$};
@@ -715,82 +718,83 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\end{figure}
 \end{frame}
 
-\begin{frame}{Simulation(cont'd)}
-	\begin{itemize}
-		\item A \textcolor{red}{backward-simulation} for $\mathcal{A}$ is a forward-simulation for $\mathcal{A}^{-1}$.
-		\item It is not true in general that $\succeq$ is a backward-simulation for $\mathcal{A}$ if $\preceq$ is a forward-simulation for $\mathcal{A}$.
-		\item It is not true in general that $\preceq$ is a forward-simulation for $\mathcal{A}^{-1}$ if $\preceq$ is a forward-simulation for $\mathcal{A}$.
-		\item It is not true in general that $\succeq$ is a backward-simulation for $\mathcal{A}$ if $\succeq$ is a backward-simulation for $\mathcal{A}^{-1}$.
-		\item Consider a state $q_{c}$ that has no predecessor and such that $q_{b} \preceq q_{c}$
-	\end{itemize}
-\end{frame}
+% \begin{frame}{Simulation(cont'd)}
+% 	\begin{itemize}
+% 		\item A \textcolor{red}{backward-simulation} for $\mathcal{A}$ is a forward-simulation for $\mathcal{A}^{-1}$.
+% 		\item It is not true in general that $\succeq$ is a backward-simulation for $\mathcal{A}$ if $\preceq$ is a forward-simulation for $\mathcal{A}$.
+% 		\item It is not true in general that $\preceq$ is a forward-simulation for $\mathcal{A}^{-1}$ if $\preceq$ is a forward-simulation for $\mathcal{A}$.
+% 		\item It is not true in general that $\succeq$ is a backward-simulation for $\mathcal{A}$ if $\succeq$ is a backward-simulation for $\mathcal{A}^{-1}$.
+% 		\item Consider a state $q_{c}$ that has no predecessor and such that $q_{b} \preceq q_{c}$
+% 	\end{itemize}
+% \end{frame}
 
-\begin{frame}{Simulation(cont'd)}
-	\tikzset{
-		%->, % makes the edges directed
-		every cross out node/.append style={-,solid},
-		>=stealth, % makes the arrow heads bold
-		every edge/.style={draw, thick, black},
-		node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
-		every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
-		initial text=$ $, % sets the text that appears on the start arrow
-		}
-	\begin{figure}
-	\begin{subfigure}{.4\linewidth}
-		\centering % centers the figure
-		\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
-		\begin{tikzpicture}
-			\node[] (mid') {
-			\begin{tikzpicture}
-			  \node [rotate=90] {$\preceq$}; 
-			\end{tikzpicture}
-	};
-			\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
-			\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
-			\node[state, left = 3cm of qb] (qa) {$q_{a}$};
-			\node[draw = none, left = 3cm of qc] (qd) {};
+% \begin{frame}{Simulation(cont'd)}
+% 	\tikzset{
+% 		%->, % makes the edges directed
+% 		every cross out node/.append style={-,solid},
+% 		>=stealth, % makes the arrow heads bold
+% 		every edge/.style={draw, thick, black},
+% 		node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+% 		every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+% 		initial text=$ $, % sets the text that appears on the start arrow
+% 		}
+% 	\begin{figure}
+% 	\begin{subfigure}{.4\linewidth}
+% 		\centering % centers the figure
+% 		\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
+% 		\begin{tikzpicture}
+% 			\node[] (mid') {
+% 			\begin{tikzpicture}
+% 			  \node [rotate=90] {$\preceq$}; 
+% 			\end{tikzpicture}
+% 	};
+% 			\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
+% 			\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
+% 			\node[state, left = 3cm of qb] (qa) {$q_{a}$};
+% 			\node[draw = none, left = 3cm of qc] (qd) {};
 			
-			\draw (qc) edge[dashed] node {} (mid');
-			\draw (qb) edge[dashed] node {} (mid');
-			\draw (qa) edge[->] node[above] {$\sigma$} (qb);
-			\draw (qd) edge[->] node[draw=red, cross out] {} (qc);
-		\end{tikzpicture}
-		\end{adjustbox}
-		\subcaption*{$\mathcal{A}$}
-	\end{subfigure}
-		\begin{subfigure}{.4\linewidth}
-			\centering % centers the figure
-			\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
-			\begin{tikzpicture}
-				\node[] (mid') {
-				\begin{tikzpicture}
-				  \node [rotate=90] {$\succeq$}; 
-				\end{tikzpicture}
-		};
-				\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
-				\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
-				\node[state, left = 3cm of qb] (qa) {$q_{a}$};
-				\node[draw = none, left = 3cm of qc] (qd) {};
+% 			\draw (qc) edge[dashed] node {} (mid');
+% 			\draw (qb) edge[dashed] node {} (mid');
+% 			\draw (qa) edge[->] node[above] {$\sigma$} (qb);
+% 			\draw (qd) edge[->] node[draw=red, cross out] {} (qc);
+% 		\end{tikzpicture}
+% 		\end{adjustbox}
+% 		\subcaption*{$\mathcal{A}$}
+% 	\end{subfigure}
+% 		\begin{subfigure}{.4\linewidth}
+% 			\centering % centers the figure
+% 			\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
+% 			\begin{tikzpicture}
+% 				\node[] (mid') {
+% 				\begin{tikzpicture}
+% 				  \node [rotate=90] {$\succeq$}; 
+% 				\end{tikzpicture}
+% 		};
+% 				\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
+% 				\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
+% 				\node[state, left = 3cm of qb] (qa) {$q_{a}$};
+% 				\node[draw = none, left = 3cm of qc] (qd) {};
 				
-				\draw (qb) edge[dashed] node {} (mid');
-				\draw (qc) edge[dashed] node {} (mid');
-				\draw (qb) edge[->] node[above] {$\sigma$} (qa);
-				\draw (qc) edge[->] node[draw=red, cross out] {} (qd);
-			\end{tikzpicture}
-			\end{adjustbox}
-		\subcaption*{$\mathcal{A}^{-1}$}
-		\end{subfigure}
-	\end{figure}
+% 				\draw (qb) edge[dashed] node {} (mid');
+% 				\draw (qc) edge[dashed] node {} (mid');
+% 				\draw (qb) edge[->] node[above] {$\sigma$} (qa);
+% 				\draw (qc) edge[->] node[draw=red, cross out] {} (qd);
+% 			\end{tikzpicture}
+% 			\end{adjustbox}
+% 		\subcaption*{$\mathcal{A}^{-1}$}
+% 		\end{subfigure}
+% 	\end{figure}
 
-	\begin{itemize}
-		\item Suppose $\succeq$ is a backward-simulation for an sNBW $\mathcal{A}$. By definition of backward-simulation, $q_{c} \succeq q_{b}$ in $\mathcal{A}$ implies $q_{c} \preceq q_{b}$ in $\mathcal{A}^{-1}$.
-		\item However, $q_{c}$ has no successor in $\mathcal{A}^{-1}$, contradict with the definition of forward-simulation . 
-	\end{itemize}
-\end{frame}
+% 	\begin{itemize}
+% 		\item Suppose $\succeq$ is a backward-simulation for an sNBW $\mathcal{A}$. By definition of backward-simulation, $q_{c} \succeq q_{b}$ in $\mathcal{A}$ implies $q_{c} \preceq q_{b}$ in $\mathcal{A}^{-1}$.
+% 		\item However, $q_{c}$ has no successor in $\mathcal{A}^{-1}$, contradict with the definition of forward-simulation . 
+% 	\end{itemize}
+% \end{frame}
 
 \begin{frame}{Simulation(cont'd)}
 	\label{lemma}
 	\begin{itemize}
+		\item It is not true in general that $\succeq$ is a backward-simulation for $\mathcal{A}$ if $\preceq$ is a forward-simulation for $\mathcal{A}$.
 		\item The following lemma shows that the language of a sNBW is unchanged if we add a transition from a state $q_{a}$ to $q_{c}$ which is forward-simulated by one of the successors of $q_{a}$.
 		\item By adding in this way all the possible transitions, we
 		obtain a sNBW for which $\succeq$ is a backward-simulation.
@@ -1092,12 +1096,12 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 \begin{frame}{LTL Model-Checking (cont'd)}
 	\begin{itemize}
-		\item To efficiently compute $\mathcal{F}_{\phi}^{\mathcal{K}}$, we need a compact representation of $succeq_{\text{MC}}$-antichains. Consider a semisymbolic representation of antichains, as a set of pairs $(B, \langle s, o \rangle)$ where $B$ is a BDD over $V$.
+		\item To efficiently compute $\mathcal{F}_{\phi}^{\mathcal{K}}$, we need a compact representation of $\succeq_{\text{MC}}$-antichains. Consider a semi-symbolic representation of antichains, as a set of pairs $(B, \langle s, o \rangle)$ where $B$ is a BDD over $V$.
 		\begin{itemize}
 			\item A pair $(B, \langle s, o \rangle)$ represents the set $\llbracket (B, \langle s, o \rangle) \rrbracket = \{(q, \langle s, o \rangle) \mid q \in \llbracket B \rrbracket\}$.
 		\end{itemize}
 		\item Let $L = \{(q_{1}, \langle s_{1},  o_{1} \rangle), (q_{2}, \langle s_{2}, o_{2} \rangle), \cdots \}$ be an $\succeq_{\text{MC}}$-antichain.
-		\item Let $S_{L} = \{\langle s, o \rangle \mid \exists (q, \langle s, p \rangle) \in L\}$.
+		\item Let $S_{L} = \{\langle s, o \rangle \mid \exists (q, \langle s, o \rangle) \in L\}$.
 		\item Define $R(L) = \{(B, \langle s, o \rangle) \mid \langle s, o \rangle \in S_{L} \land \llbracket B \rrbracket = \{q \mid (q, \langle s, o \rangle) \in L \} \}$.
 	\end{itemize}
 	\begin{lemma}
