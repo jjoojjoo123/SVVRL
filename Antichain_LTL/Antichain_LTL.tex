@@ -996,7 +996,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 					\draw (qa) edge[->, red] node[above] {$\sigma$} (qc);
 				}
 			\end{tikzpicture}
-			\caption{Lemma on slide~\pageref{lemma}}
+			%\caption{Lemma on slide~\pageref{lemma}}
 		\end{figure}
 		\only<1>{
 			\begin{itemize}
@@ -1079,7 +1079,7 @@ initial text=$ $, % sets the text that appears on the start arrow
 			\item $o = \emptyset$ iff $o' = \emptyset$
 		\end{itemize}
 		is a forward-simulation for $\text{MH}(\mathcal{A}_{\phi})$.
-		\item According to the Lemma on slide~\pageref{lemma}, the relation $\succeq_{\text{alt}}$ (which is $\preceq_{\text{alt}}^{-1}$) is a backward-simulation if we modify the transition relation of $\text{MH}(\mathcal{A}_{\phi})$ as follows : if $\delta^{\text{MH}}(\langle s, o \rangle)$ is a disjunction of formulas of the form $\varphi \land \langle s', o' \rangle$ with $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$, then we disjunctively add all the formulas $\varphi \land \langle s'', o'' \rangle$ to $\delta^{\text{MH}}(\langle s, o \rangle)$ such that $\langle s', o' \rangle \preceq_{\text{alt}} \langle s'', o'' \rangle$.
+		\item According to the Lemma before, the relation $\succeq_{\text{alt}}$ (which is $\preceq_{\text{alt}}^{-1}$) is a backward-simulation if we modify the transition relation of $\text{MH}(\mathcal{A}_{\phi})$ as follows : if $\delta^{\text{MH}}(\langle s, o \rangle)$ is a disjunction of formulas of the form $\varphi \land \langle s', o' \rangle$ with $\varphi \in \mathcal{B}^{+}(\text{Lit}(P))$, then we disjunctively add all the formulas $\varphi \land \langle s'', o'' \rangle$ to $\delta^{\text{MH}}(\langle s, o \rangle)$ such that $\langle s', o' \rangle \preceq_{\text{alt}} \langle s'', o'' \rangle$.
 		\item We keep only the $\succeq_{\text{alt}}$-minimal elements of $\succeq_{\text{alt}}$-closed sets to evaluate $\mathcal{F}'_{\phi}$.
 		\begin{itemize}
 			\item The intuition is that if there is no accepting run from $\langle s, o \rangle$ then there is no accepting run from any pair $\langle s', o' \rangle \succeq_{\text{alt}} \langle s, o \rangle$.
