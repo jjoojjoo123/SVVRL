@@ -73,8 +73,8 @@
 		\item An LTL formula $\phi$ defines a set of words $\llbracket \phi \rrbracket = \{\mathnormal{w} \in \Sigma^{\omega} \mid \mathnormal{w} \models \phi\}$.
 		\item The satisfiability problem asks, given an LTL formula $\phi$, if $\llbracket \phi \rrbracket$ is empty.
 		\item The model-checking problem asks, given an omega-regular language $\mathcal{L}$(e.g., the set
-of all computations of a reactive system) and a LTL formula $\phi$, if $\mathcal{L} \subseteq \llbracket \phi \rrbracket$
-		\item Given a LTL formula $\phi$, we can construct a NBW $\mathcal{A}_{\phi}$ such that $\text{L}_{\text{b}}(\mathcal{A}_{\phi}) = \llbracket \phi \rrbracket$
+of all computations of a reactive system) and an LTL formula $\phi$, if $\mathcal{L} \subseteq \llbracket \phi \rrbracket$
+		\item Given an LTL formula $\phi$, we can construct an NBW $\mathcal{A}_{\phi}$ such that $\text{L}_{\text{b}}(\mathcal{A}_{\phi}) = \llbracket \phi \rrbracket$
 		\item This reduces the satisfiability and model-checking problems to automata-theoretic questions.
 	\end{itemize}
 \end{frame}
@@ -400,32 +400,57 @@ initial text=$ $, % sets the text that appears on the start arrow
 					every state/.style={thick, fill=red!50, scale = 0.6}
 				}
 			}
-			\only<2-5>{
+			\only<2-3>{
+				\node[state, initial] (ini) at (-5, 0) {};
+				\node[state, accepting] (last) at (5, 0) {};
+
+				\node[state] (t2) at (-2, 2) {t2};
+				\node[state] (t1) at (-3.6, 2) {t1};
+				\node[state, accepting] (t3) at (-2.8, 3.2) {t3};
+
+				\node[state] (t4) at (2, 2) {t4};
+				\node[state, accepting] (t5) at (3.6, 2) {t5};
+				\node[state] (t6) at (2.8, 3.2) {t6};
+
+				\node[state, accepting] (b2) at (-2, -2) {b2};
+				\node[state] (b1) at (-3.6, -2) {b1};
+				\node[state] (b3) at (-2.8, -3.2) {b3};
+
+				\node[state] (b4) at (2, -2) {b4};
+				\node[state] (b5) at (3.6, -2) {b5};
+				\node[state] (b6) at (2.8, -3.2) {b6};
+
+				\node[state, accepting] (b7) at (0, -2.5) {b7};
+			}
+			\only<3>{
+				\node[state, accepting, fill=gray!10] (last) at (5, 0) {};
+			}
+			\only<4-7>{
 				\node[state, accepting] (t3) at (-2.8, 3.2) {t3};
 				\node[state, accepting] (t5) at (3.6, 2) {t5};
 				\node[state, accepting] (b2) at (-2, -2) {b2};
 				\node[state, accepting] (b7) at (0, -2.5) {b7};
 			}
 
-			\only<3-5,7-8>{
+			\only<5-7,9-10>{
 				\node[state] (b1) at (-3.6, -2) {b1};
 				\node[state] (t2) at (-2, 2) {t2};
 				\node[state] (t4) at (2, 2) {t4};
 			}
 
-			\only<4-5,8>{
+			\only<6-7,10>{
 				\node[state, initial] (ini) at (-5, 0) {};
 				\node[state] (t1) at (-3.6, 2) {t1};
 				\node[state] (t6) at (2.8, 3.2) {t6};
 				\node[state] (b3) at (-2.8, -3.2) {b3};
 			}
 
-			\only<5->{
+			\only<7->{
 				\node[state, accepting, fill=gray!10] (last) at (5, 0) {};
 				\node[state, accepting, fill=gray!10] (b7) at (0, -2.5) {b7};
 			}
 
-			\only<6->{
+			\only<8->{
 				\node[state, accepting] (t3) at (-2.8, 3.2) {t3};
 				\node[state, accepting] (t5) at (3.6, 2) {t5};
 				\node[state, accepting] (b2) at (-2, -2) {b2};
@@ -507,10 +532,35 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 			\only<2->{
 				\tikzset{
-					every state/.style={thick, fill=red!50, scale = 0.6}
+					every state/.style={thick, fill=yellow!50, scale = 0.6}
 				}
 			}
-			\only<2-5, 6-9>{
+			\only<2-3>{
+				\node[state, initial] (ini) at (-5, 0) {};
+				\node[state, accepting] (last) at (5, 0) {};
+
+				\node[state] (t2) at (-2, 2) {t2};
+				\node[state] (t1) at (-3.6, 2) {t1};
+				\node[state, accepting] (t3) at (-2.8, 3.2) {t3};
+
+				\node[state] (t4) at (2, 2) {t4};
+				\node[state, accepting] (t5) at (3.6, 2) {t5};
+				\node[state] (t6) at (2.8, 3.2) {t6};
+
+				\node[state, accepting] (b2) at (-2, -2) {b2};
+				\node[state] (b1) at (-3.6, -2) {b1};
+				\node[state] (b3) at (-2.8, -3.2) {b3};
+
+				\node[state] (b4) at (2, -2) {b4};
+				\node[state] (b5) at (3.6, -2) {b5};
+				\node[state] (b6) at (2.8, -3.2) {b6};
+
+				\node[state, accepting] (b7) at (0, -2.5) {b7};
+			}
+			\only<3>{
+				\node[state, initial, fill = gray!10] (ini) at (-5, 0) {};
+			}
+			\only<4-7>{
 				\node[state, accepting] (t3) at (-2.8, 3.2) {t3};
 				\node[state, accepting] (t5) at (3.6, 2) {t5};
 				\node[state, accepting] (b2) at (-2, -2) {b2};
@@ -518,23 +568,136 @@ initial text=$ $, % sets the text that appears on the start arrow
 				\node[state, accepting] (last) at (5, 0) {};
 			}
 
-			\only<3-5, 7-9>{
+			\only<5-7>{
 				\node[state] (t1) at (-3.6, 2) {t1};
 				\node[state] (t6) at (2.8, 3.2) {t6};
 				\node[state] (b3) at (-2.8, -3.2) {b3};
 				\node[state] (b4) at (2, -2) {b4};
 			}
 
-			\only<4-5, 8-9>{
+			\only<6-7>{
 				\node[state] (t2) at (-2, 2) {t2};
 				\node[state] (b1) at (-3.6, -2) {b1};
 				\node[state] (t4) at (2, 2) {t4};
 				\node[state] (b5) at (3.6, -2) {b5};
 			}
 
-			\only<5, 9>{
+			\only<7>{
 				\node[state] (b6) at (2.8, -3.2) {b6};
 			}
+
+
+		  \end{tikzpicture}
+		  \caption{Illustration of $\mathcal{F}'_{\phi} \equiv \nu \mathnormal{y} \cdot \mu \mathnormal{x} \cdot (\text{Post}(\mathnormal{x}) \cup (\text{Post}(\mathnormal{y}) \cap R_{\alpha}))$}
+	\end{figure}
+\end{frame}
+
+
+\begin{frame}{Illustration of $\mathcal{F}'_{\phi}$ (another example)}
+	\tikzset{
+		%->, % makes the edges directed
+		every cross out node/.append style={-,solid},
+		>=stealth, % makes the arrow heads bold
+		every edge/.style={draw, thick, black},
+		node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+		every state/.style={thick, fill=gray!10, scale = 0.6}, % sets the properties for each ’state’ node
+		initial text=$ $, % sets the text that appears on the start arrow
+		}
+	\begin{figure}[ht]
+		\centering
+		\begin{tikzpicture}
+			\node[state, initial] (ini) at (-5, 0) {};
+			\node[state, accepting] (last) at (5, 0) {};
+
+			\node[state] (t2) at (-2, 2) {t2};
+			\node[state] (t1) at (-3.6, 2) {t1};
+			\node[state] (t3) at (-2.8, 3.2) {t3};
+
+			\node[state] (t4) at (2, 2) {t4};
+			\node[state] (t5) at (3.6, 2) {t5};
+			\node[state] (t6) at (2.8, 3.2) {t6};
+
+			\node[state] (b2) at (-2, -2) {b2};
+			\node[state] (b1) at (-3.6, -2) {b1};
+			\node[state] (b3) at (-2.8, -3.2) {b3};
+
+			\node[state] (b4) at (2, -2) {b4};
+			\node[state] (b5) at (3.6, -2) {b5};
+			\node[state] (b6) at (2.8, -3.2) {b6};
+
+			\node[state, accepting] (b7) at (0, -2.5) {b7};
+
+			\draw (ini) edge[->, bend left = 20] (t1);
+			\draw (t1) edge[->, bend right = 20] (t2);
+			\draw (t2) edge[->, bend right = 20] (t3);
+			\draw (t3) edge[->, bend right = 20] (t1);
+			\draw (t2) edge[->, bend left = 20] (t4);
+			\draw (t4) edge[->, bend right = 20] (t5);
+			\draw (t5) edge[->, bend right = 20] (t6);
+			\draw (t6) edge[->, bend right = 20] (t4);
+			\draw (t5) edge[->, bend left = 20] (last);
+
+			\draw (ini) edge[->, bend right = 20] (b1);
+			\draw (b1) edge[->, bend left = 20] (b2);
+			\draw (b2) edge[->, bend left = 20] (b3);
+			\draw (b3) edge[->, bend left = 20] (b1);
+			\draw (b2) edge[->, bend right = 20] (b7);
+			\draw (b7) edge[->, bend right = 20] (b4);
+			\draw (b4) edge[->, bend left = 20] (b5);
+			\draw (b5) edge[->, bend left = 20] (b6);
+			\draw (b6) edge[->, bend left = 20] (b4);
+			\draw (b5) edge[->, bend right = 20] (last);
+
+			\only<2->{
+				\tikzset{
+					every state/.style={thick, fill=blue!50, scale = 0.6}
+				}
+			}
+			\only<2-3>{
+				\node[state, initial] (ini) at (-5, 0) {};
+				\node[state, accepting] (last) at (5, 0) {};
+
+				\node[state] (t2) at (-2, 2) {t2};
+				\node[state] (t1) at (-3.6, 2) {t1};
+				\node[state] (t3) at (-2.8, 3.2) {t3};
+
+				\node[state] (t4) at (2, 2) {t4};
+				\node[state] (t5) at (3.6, 2) {t5};
+				\node[state] (t6) at (2.8, 3.2) {t6};
+
+				\node[state] (b2) at (-2, -2) {b2};
+				\node[state] (b1) at (-3.6, -2) {b1};
+				\node[state] (b3) at (-2.8, -3.2) {b3};
+
+				\node[state] (b4) at (2, -2) {b4};
+				\node[state] (b5) at (3.6, -2) {b5};
+				\node[state] (b6) at (2.8, -3.2) {b6};
+
+				\node[state, accepting] (b7) at (0, -2.5) {b7};
+			}
+			\only<3>{
+				\node[state, initial, fill = gray!10] (ini) at (-5, 0) {};
+			}
+			\only<4-7>{
+				\node[state, accepting] (b7) at (0, -2.5) {b7};
+			}
+
+			\only<4-9>{
+				\node[state, accepting] (last) at (5, 0) {};
+			}
+
+			\only<5-8>{
+				\node[state] (b4) at (2, -2) {b4};
+			}
+
+			\only<6-8>{
+				\node[state] (b5) at (3.6, -2) {b5};
+			}
+
+			\only<7-8>{
+				\node[state] (b6) at (2.8, -3.2) {b6};
+			}
+			\only<10>{}
 
 
 		  \end{tikzpicture}
