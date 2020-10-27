@@ -218,12 +218,22 @@ initial text=$ $, % sets the text that appears on the start arrow
 
 \begin{frame}{example}
 	\ABWExample{0.45}
-	\begin{itemize}
-		\item $\ell_{4}$ and $\ell_{3}$ check that $\phi_{1} \equiv \Box\Diamond p$ holds.
-		\item $\ell_{2}$ and $\ell_{1}$ check that $\phi_{2} \equiv \Diamond(\neg p \land \Box\neg r)$ holds.
-		\item $\delta(\ell_{4}) = (p \land \ell_{4}) \lor (\text{true} \land \ell_{3} \land \ell_{4})$
-		\item $\delta(\ell_{3}) = (\text{true}\land \ell_{3})\lor (p \land \text{true})$
-	\end{itemize}
+	\only<1>{
+		\begin{align*}
+			\varphi &\equiv \neg(\Box\Diamond p \to \Box(\neg p \to \Diamond r))\\
+					&\equiv \Box\Diamond p \land \neg\Box(\neg p \to \Diamond r)\\
+					&\equiv \Box\Diamond p \land \Diamond\neg(p \lor \Diamond r)\\
+					&\equiv \Box\Diamond p \land \Diamond(\neg p \land \Box\neg r)
+		\end{align*}
+	}
+	\only<2>{
+		\begin{itemize}
+			\item $\ell_{4}$ and $\ell_{3}$ check that $\phi_{1} \equiv \Box\Diamond p$ holds.
+			\item $\ell_{2}$ and $\ell_{1}$ check that $\phi_{2} \equiv \Diamond(\neg p \land \Box\neg r)$ holds.
+			\item $\delta(\ell_{4}) = (p \land \ell_{4}) \lor (\text{true} \land \ell_{3} \land \ell_{4})$
+			\item $\delta(\ell_{3}) = (\text{true}\land \ell_{3})\lor (p \land \text{true})$
+		\end{itemize}
+	}
 \end{frame}
 
 \begin{frame}{sNBW}
