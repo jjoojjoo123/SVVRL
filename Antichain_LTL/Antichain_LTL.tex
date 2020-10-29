@@ -72,8 +72,7 @@
 		\item A model for an LTL formula over a set $P$ of propositions is an infinite word $\mathnormal{w}$ over the alphabet $\Sigma = 2^{P}$.
 		\item An LTL formula $\phi$ defines a set of words $\llbracket \phi \rrbracket = \{\mathnormal{w} \in \Sigma^{\omega} \mid \mathnormal{w} \models \phi\}$.
 		\item The satisfiability problem asks, given an LTL formula $\phi$, if $\llbracket \phi \rrbracket$ is empty.
-		\item The model-checking problem asks, given an omega-regular language $\mathcal{L}$(e.g., the set
-of all computations of a reactive system) and an LTL formula $\phi$, if $\mathcal{L} \subseteq \llbracket \phi \rrbracket$
+		\item The model-checking problem asks, given an omega-regular language $\mathcal{L}$(e.g., the set of all computations of a reactive system) and an LTL formula $\phi$, if $\mathcal{L} \subseteq \llbracket \phi \rrbracket$
 		\item Given an LTL formula $\phi$, we can construct an NBW $\mathcal{A}_{\phi}$ such that $\text{L}_{\text{b}}(\mathcal{A}_{\phi}) = \llbracket \phi \rrbracket$
 		\item This reduces the satisfiability and model-checking problems to automata-theoretic questions.
 	\end{itemize}
@@ -901,73 +900,79 @@ initial text=$ $, % sets the text that appears on the start arrow
 % 	\end{itemize}
 % \end{frame}
 
-% \begin{frame}{Simulation(cont'd)}
-% 	\tikzset{
-% 		%->, % makes the edges directed
-% 		every cross out node/.append style={-,solid},
-% 		>=stealth, % makes the arrow heads bold
-% 		every edge/.style={draw, thick, black},
-% 		node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
-% 		every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
-% 		initial text=$ $, % sets the text that appears on the start arrow
-% 		}
-% 	\begin{figure}
-% 	\begin{subfigure}{.4\linewidth}
-% 		\centering % centers the figure
-% 		\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
-% 		\begin{tikzpicture}
-% 			\node[] (mid') {
-% 			\begin{tikzpicture}
-% 			  \node [rotate=90] {$\preceq$}; 
-% 			\end{tikzpicture}
-% 	};
-% 			\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
-% 			\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
-% 			\node[state, left = 3cm of qb] (qa) {$q_{a}$};
-% 			\node[draw = none, left = 3cm of qc] (qd) {};
+\begin{frame}{Simulation(cont'd)}
+	\begin{itemize}
+		\item It is not true in general that $\succeq$ is a backward-simulation for $\mathcal{A}$ if $\preceq$ is a forward-simulation for $\mathcal{A}$.
+	\end{itemize}
+	\tikzset{
+		%->, % makes the edges directed
+		every cross out node/.append style={-,solid},
+		>=stealth, % makes the arrow heads bold
+		every edge/.style={draw, thick, black},
+		node distance=0.8cm and 2.3cm, % specifies the minimum distance between two nodes. Change if necessary.
+		every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+		initial text=$ $, % sets the text that appears on the start arrow
+		}
+	\begin{figure}
+	%\begin{subfigure}{.4\linewidth}
+		\centering % centers the figure
+		%\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
+		\begin{tikzpicture}
+			\node[] (mid') {
+			\begin{tikzpicture}
+			  \node [rotate=90] {$\preceq$}; 
+			\end{tikzpicture}
+	};
+			\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
+			\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
+			\node[state, left = 3cm of qb] (qa) {$q_{a}$};
+			\node[draw = none, left = 3cm of qc] (qd) {};
 			
-% 			\draw (qc) edge[dashed] node {} (mid');
-% 			\draw (qb) edge[dashed] node {} (mid');
-% 			\draw (qa) edge[->] node[above] {$\sigma$} (qb);
-% 			\draw (qd) edge[->] node[draw=red, cross out] {} (qc);
-% 		\end{tikzpicture}
-% 		\end{adjustbox}
-% 		\subcaption*{$\mathcal{A}$}
-% 	\end{subfigure}
-% 		\begin{subfigure}{.4\linewidth}
-% 			\centering % centers the figure
-% 			\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
-% 			\begin{tikzpicture}
-% 				\node[] (mid') {
-% 				\begin{tikzpicture}
-% 				  \node [rotate=90] {$\succeq$}; 
-% 				\end{tikzpicture}
-% 		};
-% 				\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
-% 				\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
-% 				\node[state, left = 3cm of qb] (qa) {$q_{a}$};
-% 				\node[draw = none, left = 3cm of qc] (qd) {};
+			\draw (qc) edge[dashed] node {} (mid');
+			\draw (qb) edge[dashed] node {} (mid');
+			\draw (qa) edge[->] node[above] {$\sigma$} (qb);
+			\draw (qd) edge[->] node[draw=red, cross out] {} (qc);
+		\end{tikzpicture}
+		%\end{adjustbox}
+	%\end{subfigure}
+		% \begin{subfigure}{.4\linewidth}
+		% 	\centering % centers the figure
+		% 	\begin{adjustbox}{max width=0.9\textwidth, max totalheight=\textheight}
+		% 	\begin{tikzpicture}
+		% 		\node[] (mid') {
+		% 		\begin{tikzpicture}
+		% 		  \node [rotate=90] {$\succeq$}; 
+		% 		\end{tikzpicture}
+		% };
+		% 		\node[state, above = 0.5cm of mid'] (qc) {$q_{c}$};
+		% 		\node[state, below = 0.5cm of mid'] (qb) {$q_{b}$};
+		% 		\node[state, left = 3cm of qb] (qa) {$q_{a}$};
+		% 		\node[draw = none, left = 3cm of qc] (qd) {};
 				
-% 				\draw (qb) edge[dashed] node {} (mid');
-% 				\draw (qc) edge[dashed] node {} (mid');
-% 				\draw (qb) edge[->] node[above] {$\sigma$} (qa);
-% 				\draw (qc) edge[->] node[draw=red, cross out] {} (qd);
-% 			\end{tikzpicture}
-% 			\end{adjustbox}
-% 		\subcaption*{$\mathcal{A}^{-1}$}
-% 		\end{subfigure}
-% 	\end{figure}
+		% 		\draw (qb) edge[dashed] node {} (mid');
+		% 		\draw (qc) edge[dashed] node {} (mid');
+		% 		\draw (qb) edge[->] node[above] {$\sigma$} (qa);
+		% 		\draw (qc) edge[->] node[draw=red, cross out] {} (qd);
+		% 	\end{tikzpicture}
+		% 	\end{adjustbox}
+		% \subcaption*{$\mathcal{A}^{-1}$}
+		% \end{subfigure}
+		\caption{$q_{b} \preceq q_{c}$ in $\mathcal{A}$ and $q_{c}$ has no predecessor}
+	\end{figure}
 
-% 	\begin{itemize}
-% 		\item Suppose $\succeq$ is a backward-simulation for an sNBW $\mathcal{A}$. By definition of backward-simulation, $q_{c} \succeq q_{b}$ in $\mathcal{A}$ implies $q_{c} \preceq q_{b}$ in $\mathcal{A}^{-1}$.
-% 		\item However, $q_{c}$ has no successor in $\mathcal{A}^{-1}$, contradict with the definition of forward-simulation . 
-% 	\end{itemize}
-% \end{frame}
+	
+	\begin{itemize}
+		\item If $q_{c} \succeq q_{b}$ is true, it contradicts the definition of backward-simulation.
+		% 	\item Suppose $\succeq$ is a backward-simulation for an sNBW $\mathcal{A}$. By definition of backward-simulation, $q_{c} \succeq q_{b}$ in $\mathcal{A}$ implies $q_{c} \preceq q_{b}$ in $\mathcal{A}^{-1}$.
+		% 	\item However, $q_{c}$ has no successor in $\mathcal{A}^{-1}$, contradict with the definition of forward-simulation 
+	\end{itemize}
+	
+	
+\end{frame}
 
 \begin{frame}{Simulation(cont'd)}
 	\label{lemma}
 	\begin{itemize}
-		\item It is not true in general that $\succeq$ is a backward-simulation for $\mathcal{A}$ if $\preceq$ is a forward-simulation for $\mathcal{A}$.
 		\item The following lemma shows that the language of a sNBW is unchanged if we add a transition from a state $q_{a}$ to $q_{c}$ which is forward-simulated by one of the successors of $q_{a}$.
 		\item By adding in this way all the possible transitions, we
 		obtain a sNBW for which $\succeq$ is a backward-simulation.
@@ -1061,7 +1066,9 @@ initial text=$ $, % sets the text that appears on the start arrow
 			};
 			\node[state] (q2) at (2.5, 3.5) {$\mathnormal{q}_{2}$};
 			\node[state] (q3) at (-2.5, 1.5) {$\mathnormal{q}_{3}$};
-
+			\only<1>{
+				\node[fill = white, right = 0.2cm of q2, minimum size=2cm] (?) {$\subseteq \text{Post}(\mathnormal{x})$?};
+			}
 			\draw (q3) edge[->] node[above] {$\sigma$} (q1);
 
 			\only<2>{
@@ -1154,12 +1161,12 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\begin{center}
 		\includegraphics[scale=0.5]{Algorithm1_part1}
 	\end{center}
-	\begin{minipage}{.5\textwidth}
+	\begin{minipage}{.6\textwidth}
 		\begin{itemize}
 			\item The algorithm uses the intermediate boolean variables to encode respectively the sets 
 		\end{itemize}
 	\end{minipage}%
-	\begin{minipage}{.5\textwidth}
+	\begin{minipage}{.4\textwidth}
 		\small
 		\centering
 		\begin{tabular}{ ||c|c|| } 
@@ -1181,12 +1188,18 @@ initial text=$ $, % sets the text that appears on the start arrow
 	\begin{center}
 		\includegraphics[scale=0.5]{Algorithm1_part2}
 	\end{center}
-	\begin{minipage}{.5\textwidth}
+	\begin{minipage}{.6\textwidth}
 		\begin{itemize}
-			\item Using a BDD $\omega (\mathnormal{x}, \mathnormal{y}, \mathnormal{x}', \mathnormal{y}')$ that encodes the relation $\prec_{\text{alt}}$ (we have $\langle s', o' \rangle \prec_{\text{alt}} \langle s, o \rangle$ in $\omega$ where $s, o, s', o'$ encoded respectively as the table) 
+			\item Using a BDD $\omega (\mathnormal{x}, \mathnormal{y}, \mathnormal{x}', \mathnormal{y}')$ that encodes the relation $\prec_{\text{alt}}$ (we have $\langle s', o' \rangle \prec_{\text{alt}} \langle s, o \rangle$ in $\omega$ where $s, o, s', o'$ encoded respectively as the table)
+			\item Recall $\langle s, o \rangle \preceq_{\text{alt}} \langle s', o' \rangle$ iff
+			\begin{itemize}
+				\item $s \subseteq s'$
+				\item $o \subseteq o'$
+				\item $o = \emptyset$ iff $o' = \emptyset$
+			\end{itemize}
 		\end{itemize}
 	\end{minipage}%
-	\begin{minipage}{.5\textwidth}
+	\begin{minipage}{.4\textwidth}
 		\small
 		\centering
 		\begin{tabular}{ ||c|c|| } 
