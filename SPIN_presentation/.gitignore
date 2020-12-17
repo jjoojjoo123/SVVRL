@@ -1,3 +1,5 @@
-*.pdf
-*.synctex.gz
-*.out
+*
+
+!*.pml
+!*.c
+!*.tex

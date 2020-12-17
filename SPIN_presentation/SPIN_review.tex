@@ -1,0 +1,498 @@
+\documentclass[12pt]{beamer}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+%\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage[labelfont=bf]{caption}
+\usepackage{graphicx}  %package graphic
+\usepackage{siunitx}
+\usepackage{tikz}
+%\usepackage{algorithmicx}
+%\usepackage[noend]{algpseudocode}
+\usetikzlibrary{automata, positioning, arrows}
+\usetheme{Boadilla}   
+\usepackage{xeCJK}
+%\usepackage{array}
+%\usepackage{tabularx}
+%\usepackage{mathtools}
+\usepackage{listings}
+%\usepackage{textcomp}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{adjustbox}
+
+\setCJKmainfont{微軟正黑體} 
+\sisetup{
+    group-separator={,},
+    table-number-alignment=right
+}
+
+
+\setbeamerfont{title}{size=\Large,series=\bfseries}  % title size
+
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}  % frametitle size, also can size*=<pt>
+
+\definecolor{themeColor}{rgb}{0.06, 0.3, 0.57}
+\usecolortheme[named=themeColor]{structure}
+
+\defbeamertemplate*{footline}{Dan P theme}
+{
+  \leavevmode%
+  \hbox{%
+  %\begin{beamercolorbox}[wd=.2\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    %\usebeamerfont{author in head/foot}\insertshortauthor\expandafter\beamer@ifempty\expandafter{\beamer@shortinstitute}{}{~~(\insertshortinstitute)}
+  %\end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.7\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.3\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+\insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+\makeatother
+
+% Item include picture
+\setbeamertemplate{itemize item}   % First Level item
+{\includegraphics[height=0.33cm]{../Figures/golden-earth-on-white}}
+
+\setbeamertemplate{itemize subitem} % Second level item
+{\includegraphics[height=0.31cm]{../Figures/golden-sun-on-white}}
+
+\setbeamertemplate{itemize subsubitem} % Third Level item
+{\includegraphics[height=0.27cm]{../Figures/golden-paw-on-white}}
+
+\definecolor{darkgold}{rgb}{0.765 0.64 0.0} % for highlighted text in black-and-white slides
+\newcommand{\highlight}[1]{\structure{#1}}
+\newcommand{\highlightb}[1]{\textcolor{blue}{#1}}
+\newcommand{\highlightg}[1]{\textcolor{darkgold}{#1}}
+\newcommand{\highlightr}[1]{\alert{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%\newtheorem{problem}{Problem}
+\mode<presentation>{\newtheorem{algorithm}{Algorithm}}
+\mode<article>{\newenvironment{algorithm}{}{}}
+%\newtheorem{solution}{Solution}
+
+\newcommand{\hide}[1]{}
+%\renewcommand{\highlightb}{\highlightg}
+
+\newlength{\subtextwidth}
+\setlength{\subtextwidth}{11cm}
+
+\newenvironment{cbox}{
+    \begin{center}
+    \begin{tabular}{|l|}
+    \hline
+    \begin{minipage}[t]{\subtextwidth}}
+    {\vspace{.25ex}
+    \end{minipage}
+    \hline
+    \end{tabular}
+    \end{center} }
+
+\lstdefinestyle{mystyle}{
+    basicstyle=\setmonofont{Consolas},
+    columns=fullflexible,
+    keepspaces=true,
+    upquote=true,
+    showstringspaces=false,
+    commentstyle=\color{gray},
+    keywordstyle=\color{teal},
+    identifierstyle=\color{black},
+    stringstyle=\color{brown},
+    language=c
+}
+
+\lstset{style=mystyle,frame=single,}
+\makeatletter
+\lst@CCPutMacro
+    \lst@ProcessOther {"2A}{%
+    %   \lst@ttfamily 
+         {\raisebox{1.5pt}{*}}% used with ttfamily
+        %   \textasteriskcentered
+          }% used with other fonts
+    \@empty\z@\@empty
+\makeatother
+
+\newcommand{\mathdef}[1]{\relax\ifmmode #1\else $#1$\fi}
+\newcommand{\true}{\mathdef{\mathit{true}}}
+\newcommand{\false}{\mathdef{\mathit{false}}}
+\renewcommand{\implies}{\mathdef{\rightarrow}}
+\newcommand{\ifonlyif}{\mathdef{\leftrightarrow}}
+\newcommand{\entails}{\mathdef{\vdash}}
+\newcommand{\PROPS}{\mathdef{\mathit{PROPS}}}
+\newcommand{\BOOL}{\mathdef{\mathit{BOOL}}}
+
+\mode<presentation>{\title{\textsc{Spin}'s CheckEmpty Procedure\\ Code Tracing}}
+\mode<article>{\title{Algorithms 2019: Analysis of Algorithms}}
+%\subtitle{(Based on [Manber 1989])}
+\author{林宏陽}
+%\institute[IM.NTU]{Department of Information Management\\ National Taiwan University}
+%\date[Algorithms 2019]{\null}
+\mode<presentation>{\date[SVVRL]{\null}}
+\mode<article>{\date{\today}}
+
+\begin{document}
+\begin{frame}
+\maketitle
+\end{frame}
+
+
+
+\begin{frame}{\textsc{Spin}'s structure}
+\fontsize{6pt}{7.2}\selectfont
+    \begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+        \tikzset{every node/.style={draw, rectangle, align=center, minimum height=0.8cm, minimum width=1.6cm, inner sep=2pt},
+        arrow/.style = {thick,>=stealth}}
+
+            \node(n1) {X\textsc{Spin}\\Front-End\\(Tcl/Tk Code)};
+            \node[below = of n1](n2) {PROMELA\\Parser};
+            \node[right = of n2](n3) {LTL Parser\\and Translator};
+            \node[below = of n2](n4) {2.\\Interactive\\Simulation};
+            \node[left = of n4](n5) {1.\\Syntax Error\\Reports};
+            \node[right = of n4](n6) {3.\\Verifier\\Generator};
+            \node[below = of n6](n7) {Optimized\\Model Checker\\(ANSI C Code)};
+            \node[below = of n7](n8) {Excutable\\On-The-Fly\\Verifier};
+            \node[draw = none, left = 0cm of n8](n9) {Counter-\\Examples};
+        
+            \draw[arrow,<->] (n1) -- (n2);
+            \draw[arrow,<->] (n2) -- (n3);
+            \draw[arrow,->] (n2) -- (n4);
+            \draw[arrow,->] (n2) -- (n5);
+            \draw[arrow,->] (n2) -- (n6);
+            \draw[arrow,->] (n6) -- (n7);
+            \draw[arrow,->] (n7) -- (n8);
+            \draw[arrow,->] (n8) -| (n4);
+        \end{tikzpicture}
+        %\caption{The structure of \textsc{Spin} simulation and verification. Source: redrawn from [The \textsc{Spin} Model Checker Figure 11.1 Gerard J. Holzmann]}
+        \end{figure}
+\end{frame}
+
+\begin{frame}{\textsc{Spin}'s source files}
+    \begin{itemize}
+        \item \code{main.c} : main file
+        \item \code{spinlex.c} : PROMELA parser
+        \item \code{tl\_buchi.c, tl\_cache.c, tl\_lex.c, tl\_main.c, tl\_mem.c, tl\_parse.c, tl\_rewrt.c, tl\_trans.c} : LTL2BA
+        \item from \code{pangen1.c} to \code{pangen7.c} : verifier code generator
+        \item other files : other routines in \textsc{Spin}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Getting the code}
+    \begin{itemize}
+        \item Download \textsc{Spin} from the github and set it up.
+        \item Suppose there is a system described in PROMELA named \code{example.pml}.
+        \item \code{\$ spin -a peterson.pml   \hspace{1cm}\#generate c-verifier}
+        \item \code{\$ cc -DNOREDUCE -o pan pan.c} \\ \code{\#compile the c-verifier to an excutable file}
+        \item Option \code{-DNOREDUCE} : disables the partial order reduction algorithm.
+        \item Use this option just for the easy code tracing purpose.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{While pan.c is unreadable...}
+
+\begin{lstlisting}[basicstyle=\footnotesize]
+/*
+ * new_state() is the main DFS search routine in the verifier
+ * it has a lot of code ifdef-ed together to support
+ * different search modes, which makes it quite unreadable.
+ * if you are studying the code, use the C preprocessor
+ * to generate a specific version from the pan.c source,
+ * e.g. by saying:
+ * gcc -E -DNOREDUCE -DBITSTATE pan.c > ppan.c
+ * and then study the resulting file, instead of this version
+ */\end{lstlisting}
+     \begin{itemize}
+         \item \code{\$ gcc -E -DNOREDUCE -DBITSTATE pan.c > ppan.c}
+     \end{itemize}
+\end{frame}
+
+\begin{frame}{Other files}
+    \begin{itemize}
+        \item \code{pan.t} : \textcolor{red}{t}ransition table and state table optimization
+        \item \code{pan.m} : forward \textcolor{red}{m}ove
+        \item \code{pan.b} : \textcolor{red}{b}ackward move
+        \item \code{pan.h} : header file
+        \item \code{pan.p} : BFS algorithm
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Draw automata}
+    \begin{itemize}
+        \item \code{./pan -D > digraph}
+        \item \code{python3 render.py digraph}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Pseudo code (main)}
+\begin{lstlisting}[basicstyle=\normalsize]
+int main()
+{
+    8334        initialize trail
+    8339        run()
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Definition of Trail}
+\begin{lstlisting}[basicstyle=\normalsize]
+struct Trail {
+  int   st;  /* current state */
+  int   o_tt;
+  
+  uchar pr;  /* process id */
+  uchar tau;  /* 8 bit-flags */
+  uchar o_pm;  /* 8 more bit-flags */
+  
+  /* ... */
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Meaning of bit-flags}
+\begin{lstlisting}[basicstyle=\footnotesize]
+#if 0
+   Meaning of bit-flags on tau and o_pm:
+   tau&1   -> timeout enabled
+   tau&2   -> request to enable timeout 1 level up (in claim)
+   tau&4   -> current transition is a  claim move
+   tau&8   -> current transition is an atomic move
+   tau&16  -> last move was truncated on stack
+   tau&32  -> current transition is a preselected move
+   tau&64  -> at least one next state is not on the stack
+   tau&128 -> current transition is a stutter move
+   o_pm&1  -> the current pid moved -- implements else
+   o_pm&2  -> this is an acceptance state
+   o_pm&4  -> this is a  progress state
+   o_pm&8  -> fairness alg rule 1 undo mark
+   o_pm&16  -> fairness alg rule 3 undo mark
+   o_pm&32 -> fairness alg rule 2 undo mark
+   o_pm&64 -> the current proc applied rule2
+   o_pm&128 -> a fairness, dummy move - all procs blocked
+#endif
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Pseudo code (run)}
+\begin{lstlisting}[basicstyle=\normalsize]
+void run(void)
+{
+    5369        set transition table
+    5421        Optimize state tables
+    5452        initialize stack
+    5466        add claim process  
+        // allocate memory space and initialize _pid, initial state
+    5474        add program processes   
+    5485        do_the_search()
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Set transition table}
+\begin{lstlisting}[basicstyle=\scriptsize]
+void settable(void)
+{   Trans *T;
+    Trans *settr(int, int, int, int, int, char *, int, int, int);
+    trans = (Trans ***) emalloc(4*sizeof(Trans **));
+    trans[2] = (Trans **) emalloc(9*sizeof(Trans *));
+    trans[2][5] = settr(22,0,4,1,0,".(goto)", 0, 2, 0);    /* 2號process的5號state */
+    T = trans[2][4] = settr(21,0,0,0,0,"DO", 0, 2, 0);
+        T->nxt = settr(21,0,3,0,0,"DO", 0, 2, 0);
+    T = trans[ 2][3] = settr(20,2,0,0,0,"ATOMIC", 1, 2, 0);
+    T->nxt = settr(20,2,1,0,0,"ATOMIC", 1, 2, 0);
+    trans[2][1] = settr(18,0,4,3,3,"(((P0._p==crit)&&(P1._p==crit)))", 1, 2, 0);
+    reached2[2] = 1;
+    trans[2][2] = settr(0,0,0,0,0,"assert(!(((P0._p==crit)&&(P1._p==crit))))",0,0,0);
+    trans[2][6] = settr(23,0,7,1,0,"break", 0, 2, 0);
+    trans[2][7] = settr(24,0,8,1,0,"(1)", 0, 2, 0);
+    trans[2][8] = settr(25,0,0,4,4,"-end-", 0, 3500, 0);
+    /* ... */
+}
+\end{lstlisting}
+\end{frame}
+    
+\begin{frame}[fragile]{settr()}
+\begin{lstlisting}[basicstyle=\footnotesize]
+Trans *
+settr( int t_id, int a, int b, int c, int d,
+ char *t, int g, int tpe0, int tpe1)
+{   Trans *tmp = (Trans *) emalloc(sizeof(Trans));    
+    tmp->atom = a&(6|32);   /* if &2 = atomic trans; if &8 local */
+    if (!g) tmp->atom |= 8;
+    tmp->st = b;            /* the nextstate */
+    tmp->tpe[0] = tpe0;     /* class of operation (for reduction) */
+    tmp->tpe[1] = tpe1;     /* class of operation (for reduction) */
+    tmp->tp = t;            /* src txt of statement */
+    tmp->t_id = t_id;       /* transition id, unique within proc */
+    tmp->forw = c;          /* index forward transition */
+    tmp->back = d;          /* index return  transition */
+    return tmp;
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Optimize state tables}
+\begin{lstlisting}[basicstyle=\footnotesize]
+    retrans(0, 10, 1, src_ln0, reached0, loopstate0);
+    /*  The Spin Model Checker p.538
+       The state tables are optimized in three seperate steps by the verifier
+       before the verification process begins. The original and intermediate versions
+       of the tables can be generated by using the -d argument two, three, or four
+       times in a row (e.g., by typing the command pan -d -d -d) */
+    retrans(1, 10, 1, src_ln1, reached1, loopstate1);
+    retrans(2, 9, 4, src_ln2, reached2, loopstate2);
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Pseudo code (do$\_$the$\_$search)}
+\begin{lstlisting}[basicstyle=\normalsize]
+void do_the_search(void)
+{
+    6353        set current transition to claim move 
+                /* the claim moves first */
+    6391        new_state()
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Pseudo code (newstate 1)}
+\begin{lstlisting}[basicstyle=\scriptsize]
+void new_state(void)
+{
+    6730        Down:
+    6734            if depth >= maxdepth
+    6754                goto Up
+    6756        AllOver:
+    6766            if in 2nd DFS
+    6768                if(memory block matches 2nd DFS root)
+                          {
+    6780                    depthfound := A_depth
+    6794                    goto Up
+                          }
+    6830            if in 2nd DFS
+    6834                if state match on 1st dfs stack
+                          {
+    6859        same_case:  depthfound := Lstate->D;
+    6863                    printf("acceptance cycle\n")
+    6870                    goto Up
+                          }
+    6900            stack.push()
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Pseudo code (newstate 2)}
+\begin{lstlisting}[basicstyle=\tiny]
+    6920        Stutter:
+    6921            if current transition is a claim move
+    6935                goto Veri0
+    6969            for all processes p
+                      {
+    6971        Veri0:
+    7006                for all transitions t
+                          {
+    7015                    if not do_transit(t, p) /* do_transit(t, p) return 0 if without executable clauses */
+    7016                        continue
+    7023                    depth++; trpt++
+    7028                    moved down              // set trpt attributes
+    7037                    for all processes including claim q
+    7038                        if q is in accepting state
+    7039                            set current state to acceptance state
+    7050                    if t is an atomic move
+                              {
+    7051                        set current transition to atomic move
+    7054                        if last transition is a claim move
+    7055                            set current transition to claim move
+    7056                        else
+    7057                            set current transition to program move
+                              }
+    7058                    else
+                              {
+    7059                        if last transition is a claim move
+    7060                            set current transition to program move
+    7061                        else
+    7062                            set current transition to claim move
+                              }
+    7078                    goto Down   /* pseudo-recursion */ 
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Pseudo code (newstate 3)}
+\begin{lstlisting}[basicstyle=\tiny]
+    7079        Up:
+    7081                    if in 2nd DFS && depth <= A_depth
+    7082                        return
+    7101~7189               undo move       //set last modified variable to oval (old value)
+    7101~7189               goto R999
+    7191        R999:
+    7193                    depth--; trpt--
+    7204                  }
+    7229                if in claim automaton
+    7230                    break
+    7234              }
+    7332        Done:
+    7333            if current transition is not an atomic move
+    7352                stack.pop()
+    7359,7364     if current transition is a claim move && in 1st DFS
+    7378                if this is an acceptance state
+    7379                    checkcycles()   // prepare for 2nd DFS
+    7383            if depth > 0
+    7390                goto Up 
+}
+
+void checkcycles(void)
+{
+    8960~8973   store old state
+    8974        A_depth := depthfound := depth
+    8978        new_state()     /* start 2nd DFS */
+    8980~8990   recover old state
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{do$\_$transit}
+\begin{lstlisting}[basicstyle=\scriptsize]
+unsigned char
+do_transit(Trans *t, short II)
+{ unsigned char _m = 0;
+int tt = (int) ((P0 *)_this)->_p;
+switch (t->forw) {
+default: Uerror("bad forward move");
+case 0:  /* if without executable clauses */
+    return 0;
+case 1: /* generic 'goto' or 'skip' */
+    _m = 3; goto P999; /* ... */
+/* PROC P1 */
+case 5: // STATE 1 - peterson.pml:27 - [flag1 = 1] (0:0:1 - 1)
+    reached[1][1] = 1;
+    (trpt+1)->bup.oval = ((int)now.flag1);
+    now.flag1 = 1;
+    _m = 3; goto P999;
+case 6: // STATE 2 - peterson.pml:28 - [turn = 1] (0:0:1 - 1)
+    reached[1][2] = 1;
+    (trpt+1)->bup.oval = ((int)now.turn);
+    now.turn = 1;
+    _m = 3; goto P999; /* ... */
+P999: return _m;
+}
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}{Reference}
+\begin{itemize}
+    \item The \textsc{Spin} Model Checker. Gerard J. Holzmann.
+    \item LTL2BA : fast translation from LTL formulae to Büchi automata. Software written by Denis
+Oddoux (v1.0) and modified by Paul Gastin (v1.2).\\
+        \code{http://www.lsv.fr/∼gastin/ltl2ba/}
+    \item \textsc{Spin} website\\
+        \code{http://spinroot.com/spin/whatispin.html
+}
+\end{itemize}
+\end{frame}
+
+\end{document}
