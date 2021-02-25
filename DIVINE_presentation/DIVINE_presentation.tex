@@ -443,6 +443,52 @@ void start( int thread_count ) override
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}[fragile]{ss/search.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+struct DFSItem
+{
+    enum Type { Pre, Post } type;
+    State state;
+    Label label;
+    DFSItem( Type t, State s, Label l = Label() )
+        : type( t ), state( s ), label( l ) {}
+};
+\end{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+Worker DFS()
+{
+    auto builder = _builder;
+    auto listener = _listener;
+    return [=]() mutable
+    {
+        auto _reg = _register( builder, listener );
+        std::stack< DFSItem > stack;
+        builder.initials( 
+            [&]( auto st ){ stack.emplace( DFSItem::Pre, st ); });
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{ss/search.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+        while ( !stack.empty() && !_terminate->load() ){
+            auto top = stack.top(); stack.pop();
+            if ( top.type == DFSItem::Post )
+                listener.closed( top.state );
+            else _state( listener, top.state, true,
+                [&]( bool )
+                {
+                    stack.emplace( DFSItem::Post, top.state );
+                    _succs( listener, builder, top.state,
+                        [&]( auto s, auto l, bool )
+                        { stack.emplace( DFSItem::Pre, s, l ); }
+                        );
+                } );
+        }
+    };
+}
+\end{lstlisting}
+\end{frame}
+
 \begin{frame}{Reference}
 \begin{itemize}
     \item DIVINE website\\
