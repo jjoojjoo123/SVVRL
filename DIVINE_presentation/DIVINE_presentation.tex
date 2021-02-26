@@ -355,7 +355,7 @@ std::shared_ptr< BitCode > BitCode::with_options
         /* ... */
         cc_driver.build( cc::parseOpts( opts.ccopts ) );
         // Compile all the files and link them together
-        , including necessary libraries
+        // , including necessary libraries
     }();
     bc->set_options( opts );
     return bc;
@@ -402,22 +402,22 @@ void verify::safety()
 
 \begin{frame}[fragile]{mc/safety.hpp}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-template< typename Next, typename Builder > struct Safety : Job
-void start( int threads ) override {
-    using Search = decltype( make_search() );
-    _search.reset( new Search( std::move( make_search() ) ) );
-    Search *search = dynamic_cast< Search * >( _search.get() );
-    stats = [=](){
-        int64_t st = _ex._d.total_states->load();
-        int64_t mip = _ex._d.total_instructions->load();
-        search->ws_each( [&]( auto &bld, auto & ){
-            st += bld._d.local_states;
-            mip += bld._d.local_instructions;
-        } );
-        return std::make_pair( st, mip );
-    };
-    queuesize = [=]() { return search->qsize(); };
-    search->start( threads );
+template< typename Next, typename Builder > struct Safety : Job{
+    void start( int threads ) override {
+        using Search = decltype( make_search() );
+        _search.reset( new Search( std::move( make_search() ) ) );
+        Search *search = dynamic_cast< Search * >( _search.get() );
+        stats = [=](){
+            int64_t st = _ex._d.total_states->load();
+            int64_t mip = _ex._d.total_instructions->load();
+            search->ws_each( [&]( auto &bld, auto & ){
+                st += bld._d.local_states;
+                mip += bld._d.local_instructions;
+            } );
+            return std::make_pair( st, mip );};
+        queuesize = [=]() { return search->qsize(); };
+        search->start( threads );
+    }
 }
 \end{lstlisting}
 Note : \code{bld} for builder
@@ -426,19 +426,21 @@ Note : \code{bld} for builder
 \begin{frame}[fragile]{ss/search.hpp}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 template< typename B, typename L > struct Search : Job
-void start( int thread_count ) override
- {
-    _thread_count = thread_count;
-    Worker blueprint;
-
-    switch ( _order )
+{
+    void start( int thread_count ) override
     {
-        case Order::PseudoBFS: blueprint = pseudoBFS(); break;
-        case Order::DFS: blueprint = DFS(); break;
-    }
+        _thread_count = thread_count;
+        Worker blueprint;
 
-    for ( int i = 0; i < _thread_count; ++i )
-        _threads.emplace_back( std::async( blueprint ) );
+        switch ( _order )
+        {
+            case Order::PseudoBFS: blueprint = pseudoBFS(); break;
+            case Order::DFS: blueprint = DFS(); break;
+        }
+
+        for ( int i = 0; i < _thread_count; ++i )
+            _threads.emplace_back( std::async( blueprint ) );
+    }
 }
 \end{lstlisting}
 \end{frame}
