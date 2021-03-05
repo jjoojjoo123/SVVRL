@@ -365,7 +365,7 @@ std::shared_ptr< BitCode > BitCode::with_options
 
 \againframe{parser.hpp}
 
-\begin{frame}[fragile]{ui/verify.cpp}
+\begin{frame}[fragile, label=safety_liveness]{ui/verify.cpp}
 \begin{lstlisting}[basicstyle=\normalsize\ttfamily]
 void verify::run()
 {
@@ -423,7 +423,7 @@ template< typename Next, typename Builder > struct Safety : Job{
 Note : \code{bld} for builder
 \end{frame}
 
-\begin{frame}[fragile]{ss/search.hpp}
+\begin{frame}[fragile]{ss/search.hpp (for safety properties)}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 template< typename B, typename L > struct Search : Job
 {
@@ -445,7 +445,7 @@ template< typename B, typename L > struct Search : Job
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{ss/search.hpp}
+\begin{frame}[fragile]{ss/search.hpp (for safety properties)}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
 struct DFSItem
 {
@@ -470,7 +470,7 @@ Worker DFS()
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{ss/search.hpp}
+\begin{frame}[fragile]{ss/search.hpp (for safety properties)}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
         while ( !stack.empty() && !_terminate->load() ){
             auto top = stack.top(); stack.pop();
@@ -491,10 +491,126 @@ Worker DFS()
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}{LTL verification is not avalible in current version}
+    DIVINE 3.90
+    \begin{itemize}
+        \item Substantial rewrite with focus on software verification.
+        \item $\cdots$
+    \end{itemize}
+    LIMITATIONS: This is a beta version. Additionally, verification of \textbf{LTL (liveness) properties} and distributed verification are \textbf{not currently available} and are planned for a later version in the 4.x series. Only C and C++ models are supported at this time: DVE, DESS, CESMI, UPPAAL and other input formalisms are not supported, but may become available in later versions.
+\end{frame}
+
+\begin{frame}{The meaning of "symbolic" in DIVINE}
+SymDIVINE is motivated as an extension of our purely explicit model
+checker DIVINE that is capable of handling full parallel C/C++ programs without inputs. To properly handle programs with inputs, SymDIVINE relies on Control-Explicit Data-Symbolic approach.
+
+\vspace{2cm}
+
+Note : SymDIVINE functionality was integrated into DIVINE.
+\end{frame}
+
+\begin{frame}{The meaning of "symbolic" in DIVINE (cont'd)}
+The code represents a simple LLVM program, where \code{a} is initialized with a non-deterministic 32-bit integer, then it is checked whether it is greater or equal to 65535. The result of the check is stored to \code{b} and used for branching.\\
+\vspace{1.5cm}
+\code{\%a = call i32 \@\_\_VERIFIER\_nondet\_int()}\\
+\code{\%b = icmp sge i32 \%a, 65535}\\
+\code{br i1 \%b, label \%5, label \%6}
+\end{frame}
+
+\captionsetup[figure]{font=scriptsize ,labelfont=scriptsize}
+\begin{frame}{The meaning of "symbolic" in DIVINE (cont'd)}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.3]{symDIVINE.png}
+        \caption{The figure compares state exploration in the explicit approach of DIVINE and in the control-explicit data-symbolic approach of SymDIVINE on LLVM program example. From init state DIVINE explores states for every possible value of a ($2^{32}$ values), hence exponentially expands state space. In contrast SymDIVINE approach of symbolic representation generates only two different states. One where the condition on branching ($a \geq 65535$) is satisfied and the other one where the condition is violated.}
+    \end{figure}    
+\end{frame}
+
+\begin{frame}{The meaning of "symbolic" in DIVINE (cont'd)}
+    \begin{itemize}
+        \item While a purely explicit-state model checker has to produce a new state for each and every possible input value, in SymDIVINE a set of states that differ only in data values is represented with a single data structure, the so called \textbf{multi-state}.
+        \item In the current version of SymDIVINE, only quantified bit-vector SMT formulae are supported to represent symbolic data.
+        \item SymDIVINE employs an SMT solver and quantified formulae to check the satisfiability of a path condition and to decide the equality of two multi-states.
+    \end{itemize}
+\end{frame}
+
+\againframe{safety_liveness}
+
+\begin{frame}[fragile]{mc/verify.cpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void verify::liveness()
+{
+    auto liveness = mc::make_job< mc::Liveness >( bitcode(),
+    ss::passive_listen() );
+
+    _log->start();
+    liveness->start( 1, [&]( bool last )
+            {
+                _log->progress( liveness->stats(),
+                                liveness->queuesize(), last );
+            } );
+    liveness->wait();
+    report_options();
+    _log->info( "property type: liveness\n", true );
+    print_ce( *liveness );
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{mc/liveness.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+template< typename Next, typename Builder_ = ExplicitBuilder >
+struct Liveness : Job
+{
+    void start( int threads ) override
+    {
+        auto *search = new NestedDFS( _ex );
+        _search.reset( search );
+        stats = [=] { return std::pair( _ex._d.total_states->load()
+            , _ex._d.total_instructions->load() ); };
+        queuesize = [=] { return search->outer_stack.size() 
+            + search->inner_stack.size(); };
+
+        /* ... ( definition of function _get_trace ) */ 
+        _error_found = [=]() { return 
+            search->counterexample.goal.has_value(); };
+
+        search->start( threads );
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{mc/liveness.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+template< typename Builder >
+struct NestedDFS : ss::Job
+{
+    std::future< void > _thread;
+    void start( int thread_count ) override {
+        if ( thread_count != 1 )
+            throw new std::runtime_error( 
+                "Nested DFS only supports one thread." );
+        _thread = std::async( [&]{ run(); } );
+    }
+    void run() {
+        _builder.initials( 
+            [found = false, this] ( State state ) mutable
+            {
+                if ( !found )
+                    found = outer( state );
+            } );
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+
 \begin{frame}{Reference}
 \begin{itemize}
     \item DIVINE website\\
         \code{https://divine.fi.muni.cz/}
+    \item Jan Mrázek, Petr Bauch, Henrich Lauko, Jiří Barnat: SymDIVINE: Tool for Control-Explicit Data-Symbolic State Space Exploration. In Model Checking Software: 23rd International Symposium, SPIN, Springer International Publishing, 2016.
 \end{itemize}
 \end{frame}
 
