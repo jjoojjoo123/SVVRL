@@ -24,6 +24,7 @@
 \usepackage{dirtree}
 \usepackage{hyperref}
 \usepackage{inconsolata}
+\usepackage{textcomp}
 
 \setCJKmainfont{微軟正黑體} 
 \sisetup{
@@ -322,6 +323,126 @@
 	\end{itemize}
 \end{frame}
 
+% ===================== Chapter 8 begin ==================== 
+
+\begin{frame}{B\"uchi Program and B\"uchi Program Product}
+  	\begin{itemize}
+		\item B\"uchi program is a program which is extended by a fairness constraint.
+		\item We show that the problem whether a program satisfies an LTL property can be reduced to the problem whether a B\"uchi program has a fair program execution.
+		\item Definition (B\"uchi program)
+		\begin{itemize}
+			\item A B\"uchi program $B$ = ($Stmt$, $Loc$, $\delta$, $l_{0}$, $Loc_{fair}$) is a program P = ($Loc$, $\delta$, $l_{0}$) whose set of statements is $Stmt$, with a distinguished subset of locations $Loc_{fair}$ $\subseteq$ $Loc$.
+			\item We call the locations $Loc_{fair}$ the fair locations of $B$.
+		\end{itemize}
+  	\end{itemize}
+\end{frame}
+
+\captionsetup[figure]{font=scriptsize ,labelfont=scriptsize}
+\begin{frame}{B\"uchi Program and B\"uchi Program Product}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.35]{program_and_spec.png}
+        \caption{Program P is shown in (a) as Boogie code and in (b) as control flow graph. The B\"uchi automaton $A_{\neg\varphi}$ that represents the negation of the LTL property $\varphi$ = (x > 0 $\rightarrow$ $\Diamond$(y = 0)) is shown in (c).}
+    \end{figure}    
+\end{frame}
+
+\captionsetup[figure]{font=scriptsize ,labelfont=scriptsize}
+\begin{frame}{B\"uchi Program and B\"uchi Program Product}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.35]{Buchiprogram.png}
+        \caption{The B\"uchi program B constructed from the program $P$ and the B\"uchi automaton representing $\neg\varphi$. Each edge is labeled with the statements $s_{1}$ $s_{2}$, where $s_{1}$ comes from $P$ and $s_{2}$ comes from $\neg\varphi$. The fair locations are $l_{0}q_{1}$, $l_{1}q_{1}$, $l_{2}q_{1}$ and $l_{3}q_{1}$, i.e., all locations that contain the B\"uchi automaton’s accepting state $q_{1}$.}
+    \end{figure}    
+\end{frame}
+
+
+\begin{frame}{B\"uchi Program and B\"uchi Program Product}
+  	\begin{itemize}
+		\item Definition (Fair trace)
+		\begin{itemize}
+			\item A trace $s_{0}s_{1}s_{2}\cdots$ of a B\"uchi program $B$ is a fair trace if
+			\begin{itemize}
+				\item there exists a sequence of locations $l_{0}l_{1}\cdots$ such that $l_{0} \xrightarrow{s_{0}} l_{1} \xrightarrow{s_{1}} l_{2} \xrightarrow{s_{2}} \cdots$ is a path in $B$, i.e., ($l_{i},s_{i}, l_{i+1}) \in \delta$ for i = 0, 1, $\cdots$, and
+				\item the sequence $l_{0}l_{1}\cdots$ contains infinitely many fair locations.
+			\end{itemize}
+		\end{itemize}
+		\item We use $T_{fair}(B)$ to denote the set of fair traces of $B$.
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}{B\"uchi Program and B\"uchi Program Product}
+  	\begin{itemize}
+		\item If we consider the B\"uchi program $B$ = ($Stmt$, $Loc$, $\delta$, $l_{0}$, $Loc_{fair}$) as a B\"uchi automaton where
+		\begin{itemize}
+			\item the alphabet is the set of program statements $Stmt$
+			\item the set of states is the set of program locations $Loc$
+			\item the transition relation is the labeled edge relation $\delta$ 
+			\item the initial state is the initial location $l_{0}$
+			\item the set of accepting states is the set of fair locations $Loc_{fair}$
+		\end{itemize}
+		\item The language of this B\"uchi automaton is exactly the set of fair traces of the B\"uchi program.	
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}{B\"uchi Program and B\"uchi Program Product}
+  	\begin{itemize}
+		\item Definition (Fair program execution)
+		\begin{itemize}
+			\item A program execution $\pi$ of a B\"uchi program $B$ is a fair program execution of $B$ if $\pi$ is the program execution of some fair trace of $B$. 
+			\item We use $\prod_{fair}(B)$ to denote the set of all fair program execution of $B$.
+		\end{itemize}
+		\item We note that traces that are fair and feasible have at least one fair program execution.
+		\item For a letter a $\in$ 2 AP, we will use \textbf{assume a} to denote the assume statement whose expression evaluates to true for each state $\sigma$ that satisfies a. 
+		\item Hence \textbf{assume a} has the following successor relation:\\ \{($\sigma$, $\sigma$\textquotesingle) $\mid$ $\sigma$ $\models$ p for each p $\in$ a\}
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}{B\"uchi Program and B\"uchi Program Product}
+  	\begin{itemize}
+		\item Definition (B\"uchi program product)
+		\begin{itemize}
+			\item Let $P$ = ($Loc$, $l_{0}$, $\delta_{P}$) be a program over the set of statements $Stmt$
+			\item AP is a set of atomic propositions over the program’s variables $Var$.
+			\item Let A = ($\Sigma$, $Q$, $q_{0}$, $\rightarrow$, $F$) be a B\"uchi automaton whose alphabet is $\Sigma$ = $2^{AP}$.
+			\item The B\"uchi program product P $\otimes$ A is a B\"uchi program $B$ = ($Stmt_{B}$, $Loc_{B}$, $l_{{0}_{B}}$, $\delta_{B}$, $Loc_{{F}_{B}}$) such that the set of statements consists of all sequential compositions of two statements where the first element is a statement of $P$ and the second element is a statement that assumes that a subset of atomic propositions is satisfied, i.e.,\\
+			$Stmt_{B}$ = \{s; \textbf{assume a} $\mid$ s $\in$ $Stmt$, a $\in$ $2^{AP}$\}
+
+		\end{itemize}
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}{B\"uchi Program and B\"uchi Program Product}
+  	\begin{itemize}
+		\item Definition (B\"uchi program product)
+		\begin{itemize}
+			\item the set of locations is the Cartesian product of program locations and B\"uchi automaton states, i.e.,\\
+			$Loc_{B}$ = \{($l$, $q$) $\mid$ $l$ $\in$ $Loc$ and $q$ $\in$ Q\}
+			\item the initial location is the pair consisting of the program’s initial location and the B\"uchi automaton’s initial state, i.e.,\\
+			$l_{{0}_{B}}$ = ($l_{0}$, $q_{0}$)
+			\item the labeled edge relation is a product of the program’s edge relation and the transition relation of the B\"uchi automaton such that an edge is labeled by the statement that is a sequential composition of the program’s edge label and an assume statement obtained from the transition’s letter, formally defined as follows:\\
+			 $\delta_{B}$ = \{(($l$, $q$),s; \textbf{assume a},($l$′, $q$′)) $\mid$ ($l$,s, $l$′) $\in$ $\delta_{P}$ and ($q$, a, $q$′) $\in$ $\rightarrow$\}
+		\end{itemize}
+  	\end{itemize}
+\end{frame}
+
+\begin{frame}{B\"uchi Program and B\"uchi Program Product}
+  	\begin{itemize}
+		\item Definition (B\"uchi program product)
+		\begin{itemize}
+			\item the set of fair locations contains all pairs where the second component is an accepting state of the B\"uchi automaton, i.e., \\ $Loc_{{F}_{B}}$ = {($l$, $q$) $\mid$ $l$ $\in$ $Loc$ and $q$ $\in$ $F$}.
+		\end{itemize}
+		\item The following theorem shows how we can use the B\"uchi program product to check if a program satisfies an LTL property.
+		\begin{theorem}
+			The program $P$ satisfies the LTL property $\varphi$ if and only if the Büchi program product $B$ = $P$ $\otimes$ A$\neg\varphi$  does not have a trace that is fair and feasible, i.e.,\\
+			$P$ $\models$ $\varphi$ iff $T_{fair}$(B) $\cap$ $T_{feas}(B)$ = $\emptyset$
+		\end{theorem}
+		\item We conclude that the intersection $T_{fair}$(B) $\cap$ $T_{feas}(B)$ is empty if and only if each program execution of $P$ satisfies the LTL property $\varphi$.
+  	\end{itemize}
+\end{frame}
+
+
+% ===================== Chapter 8 end ====================
+
 \begin{frame}{Reference}
 	\begin{itemize}
 		\item Ultimate website\\
@@ -330,6 +451,7 @@
 		\url{https://freidok.uni-freiburg.de/data/11159}
 	\end{itemize}
 \end{frame}
+
 
 
 \end{document}
