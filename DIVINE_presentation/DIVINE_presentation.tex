@@ -1,0 +1,618 @@
+\documentclass[12pt]{beamer}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+%\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage[labelfont=bf]{caption}
+\usepackage{graphicx}  %package graphic
+\usepackage{siunitx}
+\usepackage{tikz}
+%\usepackage{algorithmicx}
+%\usepackage[noend]{algpseudocode}
+\usetikzlibrary{automata, positioning, arrows}
+\usetheme{Boadilla}   
+\usepackage{xeCJK}
+%\usepackage{array}
+%\usepackage{tabularx}
+%\usepackage{mathtools}
+\usepackage{listings}
+%\usepackage{textcomp}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{adjustbox}
+\usepackage{dirtree}
+
+\setCJKmainfont{微軟正黑體} 
+\sisetup{
+    group-separator={,},
+    table-number-alignment=right
+}
+
+
+\setbeamerfont{title}{size=\Large,series=\bfseries}  % title size
+
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}  % frametitle size, also can size*=<pt>
+
+\definecolor{themeColor}{rgb}{0.06, 0.3, 0.57}
+\usecolortheme[named=themeColor]{structure}
+
+\defbeamertemplate*{footline}{Dan P theme}
+{
+  \leavevmode%
+  \hbox{%
+  %\begin{beamercolorbox}[wd=.2\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    %\usebeamerfont{author in head/foot}\insertshortauthor\expandafter\beamer@ifempty\expandafter{\beamer@shortinstitute}{}{~~(\insertshortinstitute)}
+  %\end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.7\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.3\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+\insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+\makeatother
+
+% Item include picture
+\setbeamertemplate{itemize item}   % First Level item
+{\includegraphics[height=0.33cm]{../Figures/golden-earth-on-white}}
+
+\setbeamertemplate{itemize subitem} % Second level item
+{\includegraphics[height=0.31cm]{../Figures/golden-sun-on-white}}
+
+\setbeamertemplate{itemize subsubitem} % Third Level item
+{\includegraphics[height=0.27cm]{../Figures/golden-paw-on-white}}
+
+\definecolor{darkgold}{rgb}{0.765 0.64 0.0} % for highlighted text in black-and-white slides
+\newcommand{\highlight}[1]{\structure{#1}}
+\newcommand{\highlightb}[1]{\textcolor{blue}{#1}}
+\newcommand{\highlightg}[1]{\textcolor{darkgold}{#1}}
+\newcommand{\highlightr}[1]{\alert{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%\newtheorem{problem}{Problem}
+\mode<presentation>{\newtheorem{algorithm}{Algorithm}}
+\mode<article>{\newenvironment{algorithm}{}{}}
+%\newtheorem{solution}{Solution}
+
+\newcommand{\hide}[1]{}
+%\renewcommand{\highlightb}{\highlightg}
+
+\newlength{\subtextwidth}
+\setlength{\subtextwidth}{11cm}
+
+\newenvironment{cbox}{
+    \begin{center}
+    \begin{tabular}{|l|}
+    \hline
+    \begin{minipage}[t]{\subtextwidth}}
+    {\vspace{.25ex}
+    \end{minipage}
+    \hline
+    \end{tabular}
+    \end{center} }
+
+\lstdefinestyle{mystyle}{
+    basicstyle=\setmonofont{Consolas},
+    columns=fullflexible,
+    keepspaces=true,
+    upquote=true,
+    showstringspaces=false,
+    commentstyle=\color{gray},
+    keywordstyle=\color{teal},
+    identifierstyle=\color{black},
+    stringstyle=\color{brown},
+    language=C++
+}
+
+\lstset{style=mystyle,frame=single,}
+\makeatletter
+\lst@CCPutMacro
+    \lst@ProcessOther {"2A}{%
+    %   \lst@ttfamily 
+         {\raisebox{1.5pt}{*}}% used with ttfamily
+        %   \textasteriskcentered
+          }% used with other fonts
+    \@empty\z@\@empty
+\makeatother
+
+\newcommand{\mathdef}[1]{\relax\ifmmode #1\else $#1$\fi}
+\newcommand{\true}{\mathdef{\mathit{true}}}
+\newcommand{\false}{\mathdef{\mathit{false}}}
+\renewcommand{\implies}{\mathdef{\rightarrow}}
+\newcommand{\ifonlyif}{\mathdef{\leftrightarrow}}
+\newcommand{\entails}{\mathdef{\vdash}}
+\newcommand{\PROPS}{\mathdef{\mathit{PROPS}}}
+\newcommand{\BOOL}{\mathdef{\mathit{BOOL}}}
+\newcommand{\Note}[1]{\textsl{\small(#1)}}
+
+\mode<presentation>{\title{DIVINE Code Tracing}}
+\mode<article>{\title{Algorithms 2019: Analysis of Algorithms}}
+%\subtitle{(Based on [Manber 1989])}
+\author{林宏陽}
+%\institute[IM.NTU]{Department of Information Management\\ National Taiwan University}
+%\date[Algorithms 2019]{\null}
+\mode<presentation>{\date[SVVRL]{\null}}
+\mode<article>{\date{\today}}
+
+\begin{document}
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{frame}{DIVINE's source file structure}
+    \dirtree{%
+        .1 divine-4.4.2.
+        .2 bricks	\Note{the bricks C++ library used for threading, command line parsing and a couple of other utilities}.
+        .2 clang.
+        .2 compiler-rt.
+        .2 cryptoms.
+        .2 dios.
+        .2 divine	\Note{contains sources and headers of the verification \& state space generation framework and actual model checking algorithms}.
+        .2 doc		\Note{out-of-date}.
+        .2 \dots.
+    }
+\end{frame}
+
+\begin{frame}{DIVINE's source file structure (cont'd)}
+    \dirtree{%
+        .1 .
+        .2 external		\Note{the external code used in DIVINE such as the libc++ library, the murphi compiler for divine, or the parallel allocators}.
+        .2 lart.
+        .2 lld.
+        .2 llvm.
+        .2 minisat.
+        .2 releng.
+        .2 stp.
+        .2 test.
+        .2 tools	\Note{is for binaries}.
+        .3 \dots.
+        .3 divine.cpp	\Note{the main user-level entry point of the tool}.
+        .3 \dots.
+    }
+\end{frame}
+
+\begin{frame}{DIVINE's source file structure (cont'd)}
+    \dirtree{%
+        .1 divine-4.4.2.
+        .2 divine.
+        .3 cc	\Note{C/C++ compiler}.
+        .3 dbg	\Note{Debug}.
+        .3 ltl.
+        .3 mc	\Note{Model Checking}.
+        .3 mem.
+        .3 ra.
+        .3 rt	\Note{Runtime}.
+        .3 sim	\Note{Simulation}.
+        .3 smt	\Note{SMT solver}.
+        .3 ss	\Note{State Space}.
+        .3 ui	\Note{User Interface}.
+        .3 vm.
+    }
+\end{frame}
+
+
+\begin{frame}[fragile]{tools/divine.cpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+#include <divine/ui/cli.hpp>
+
+int main( int argc, const char **argv )
+{
+    if ( argc > 1 && ( !strcmp( argv[ 1 ], "--help" ) 
+    || !strcmp( argv[ 1 ], "--version" ) ) )
+            argv[ 1 ] += 2;
+
+    auto ui = divine::ui::make_cli( argc, argv )->resolve();
+    divine::ui::setup_death( ui );
+    return ui->main();
+}
+\end{lstlisting}
+Note : \code{cli} for Command Line Interface.
+\end{frame}
+
+\begin{frame}[fragile, label=parser.hpp]{ui/parser.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+struct CLI : Interface
+{
+    /* ... */
+    virtual int main() override try
+    {
+        auto cmd = parse();
+        cmd.match( [&]( brq::cmd_help &help ) { help.run();},
+                   [&]( command &c )
+                   {
+                       c.setup();
+                       c.run();
+                       c.cleanup();
+                   } );
+        return 0;
+    }
+    /* ... */
+};
+\end{lstlisting}
+Note : \code{cmd} for command, \code{brq} for brick.
+\end{frame}
+
+\begin{frame}[fragile]{ui/cli.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+namespace divine::ui
+{
+    struct command : brq::cmd_base {/* ... */};
+    struct with_bc : command {/* ... */};
+    struct version : command {/* ... */};
+    struct ltlc : command {/* ... */};
+    struct with_report : with_bc
+    {
+        /* ... */
+        void setup_report_file();
+        void cleanup() override;
+        void options( brq::cmd_options &c ) override {/* ... */}
+    };
+    /* ... */
+}
+\end{lstlisting}
+Note : \code{bc} for bit code.
+\end{frame}
+
+\begin{frame}[fragile]{ui/cli.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+namespace divine::ui {
+    struct verify : with_report
+    {
+        /* ... */
+        void setup() override;
+        void run() override;
+        void safety();
+        void liveness();
+        void print_ce( mc::Job &job );
+        std::string_view help() override {/* ... */}
+        void options( brq::cmd_options &c ) override {
+            with_report::options( c );
+            c.section( "Verification Options" );
+            c.opt( "--threads", _threads )
+            << "number of worker threads to use";
+            /* ... */
+        }
+    };
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{ui/cli.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+namespace divine::ui {
+    struct check : verify
+    {
+        void setup() override;
+        std::string_view help() override {/* ... */}
+    };
+    struct exec : with_report {/* ... */};
+    struct sim : with_bc {/* ... */};
+    struct draw : with_bc {/* ... */};
+    struct refine : with_bc {/* ... */};
+    struct cc : command {/* ... */};
+    struct info : exec {/* ... */};
+}
+\end{lstlisting}
+\end{frame}
+
+\againframe{parser.hpp}
+
+\begin{frame}[fragile]{ui/verify.cpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void verify::setup()
+{
+    if ( _log == nullsink() )
+    {
+        std::vector< SinkPtr > log;
+        if ( _interactive )
+            log.push_back( make_interactive() );
+        if ( _report != arg::report::none )
+            log.push_back( make_yaml( std::cout
+            , _report == arg::report::yaml_long ) );
+        /* ... */
+    }
+    if ( _bc_opts.dios_config.empty() && _liveness )
+        _bc_opts.dios_config = "fair";
+    with_bc::setup();
+    if ( _bc_opts.symbolic )
+        bitcode()->solver( _solver );
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{ui/cli.cpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void with_bc::setup()
+{
+    using bstr = std::vector< uint8_t >;
+    process_options();
+    int i = 0;
+    std::set< std::string > vfsCaptured;
+    size_t limit = _vfs_limit.size;
+    /* ... */
+    _bc = mc::BitCode::with_options( _bc_opts, _cc_driver );
+}
+\end{lstlisting}
+Note : \code{vfs} for Virtual File System
+\end{frame}
+
+\begin{frame}[fragile]{mc/bitcode.cpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+std::shared_ptr< BitCode > BitCode::with_options
+( const BCOptions &opts, rt::DiosCC &cc_driver )
+{
+    auto magic_buf = 
+    cc_driver.compiler.getFileBuffer( opts.input_file.name, 18 );
+    auto magic_data = magic_buf ?
+        std::string( magic_buf->getBuffer() )
+        : brq::read_file( opts.input_file.name, 18 );
+    auto magic = llvm::identify_magic( magic_data );
+    
+    auto bc = [&]{
+        /* ... */
+        cc_driver.build( cc::parseOpts( opts.ccopts ) );
+        // Compile all the files and link them together
+        // , including necessary libraries
+    }();
+    bc->set_options( opts );
+    return bc;
+}
+\end{lstlisting}
+\end{frame}
+
+\againframe{parser.hpp}
+
+\begin{frame}[fragile, label=safety_liveness]{ui/verify.cpp}
+\begin{lstlisting}[basicstyle=\normalsize\ttfamily]
+void verify::run()
+{
+    if ( _liveness )
+        liveness();
+    else
+        safety();
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{ui/verify.cpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void verify::safety()
+{
+    auto safety = mc::make_job< mc::Safety >( bitcode()
+    , ss::passive_listen() );
+    /* ... */
+    safety->start( _threads, [&]( bool last ){
+        /* ... */
+        if ( last || ( ++ps_ctr == 2 * _poolstat_period ) )
+            ps_ctr = 0, _log->memory( safety->poolstats()
+            , safety->hashstats(), last );
+        if ( !last )
+            sysinfo.updateAndCheckTimeLimit( _max_time );
+        } );
+    safety->wait();
+    report_options();
+    /* ... */
+    print_ce( *safety );
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{mc/safety.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+template< typename Next, typename Builder > struct Safety : Job{
+    void start( int threads ) override {
+        using Search = decltype( make_search() );
+        _search.reset( new Search( std::move( make_search() ) ) );
+        Search *search = dynamic_cast< Search * >( _search.get() );
+        stats = [=](){
+            int64_t st = _ex._d.total_states->load();
+            int64_t mip = _ex._d.total_instructions->load();
+            search->ws_each( [&]( auto &bld, auto & ){
+                st += bld._d.local_states;
+                mip += bld._d.local_instructions;
+            } );
+            return std::make_pair( st, mip );};
+        queuesize = [=]() { return search->qsize(); };
+        search->start( threads );
+    }
+}
+\end{lstlisting}
+Note : \code{bld} for builder
+\end{frame}
+
+\begin{frame}[fragile]{ss/search.hpp (for safety properties)}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+template< typename B, typename L > struct Search : Job
+{
+    void start( int thread_count ) override
+    {
+        _thread_count = thread_count;
+        Worker blueprint;
+
+        switch ( _order )
+        {
+            case Order::PseudoBFS: blueprint = pseudoBFS(); break;
+            case Order::DFS: blueprint = DFS(); break;
+        }
+
+        for ( int i = 0; i < _thread_count; ++i )
+            _threads.emplace_back( std::async( blueprint ) );
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{ss/search.hpp (for safety properties)}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+struct DFSItem
+{
+    enum Type { Pre, Post } type;
+    State state;
+    Label label;
+    DFSItem( Type t, State s, Label l = Label() )
+        : type( t ), state( s ), label( l ) {}
+};
+\end{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+Worker DFS()
+{
+    auto builder = _builder;
+    auto listener = _listener;
+    return [=]() mutable
+    {
+        auto _reg = _register( builder, listener );
+        std::stack< DFSItem > stack;
+        builder.initials( 
+            [&]( auto st ){ stack.emplace( DFSItem::Pre, st ); });
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{ss/search.hpp (for safety properties)}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+        while ( !stack.empty() && !_terminate->load() ){
+            auto top = stack.top(); stack.pop();
+            if ( top.type == DFSItem::Post )
+                listener.closed( top.state );
+            else _state( listener, top.state, true,
+                [&]( bool )
+                {
+                    stack.emplace( DFSItem::Post, top.state );
+                    _succs( listener, builder, top.state,
+                        [&]( auto s, auto l, bool )
+                        { stack.emplace( DFSItem::Pre, s, l ); }
+                        );
+                } );
+        }
+    };
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{LTL verification is not avalible in current version}
+    DIVINE 3.90
+    \begin{itemize}
+        \item Substantial rewrite with focus on software verification.
+        \item $\cdots$
+    \end{itemize}
+    LIMITATIONS: This is a beta version. Additionally, verification of \textbf{LTL (liveness) properties} and distributed verification are \textbf{not currently available} and are planned for a later version in the 4.x series. Only C and C++ models are supported at this time: DVE, DESS, CESMI, UPPAAL and other input formalisms are not supported, but may become available in later versions.
+\end{frame}
+
+\begin{frame}{The meaning of "symbolic" in DIVINE}
+SymDIVINE is motivated as an extension of our purely explicit model
+checker DIVINE that is capable of handling full parallel C/C++ programs without inputs. To properly handle programs with inputs, SymDIVINE relies on Control-Explicit Data-Symbolic approach.
+
+\vspace{2cm}
+
+Note : SymDIVINE functionality was integrated into DIVINE.
+\end{frame}
+
+\begin{frame}{The meaning of "symbolic" in DIVINE (cont'd)}
+The code represents a simple LLVM program, where \code{a} is initialized with a non-deterministic 32-bit integer, then it is checked whether it is greater or equal to 65535. The result of the check is stored to \code{b} and used for branching.\\
+\vspace{1.5cm}
+\code{\%a = call i32 \@\_\_VERIFIER\_nondet\_int()}\\
+\code{\%b = icmp sge i32 \%a, 65535}\\
+\code{br i1 \%b, label \%5, label \%6}
+\end{frame}
+
+\captionsetup[figure]{font=scriptsize ,labelfont=scriptsize}
+\begin{frame}{The meaning of "symbolic" in DIVINE (cont'd)}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.3]{symDIVINE.png}
+        \caption{The figure compares state exploration in the explicit approach of DIVINE and in the control-explicit data-symbolic approach of SymDIVINE on LLVM program example. From init state DIVINE explores states for every possible value of a ($2^{32}$ values), hence exponentially expands state space. In contrast SymDIVINE approach of symbolic representation generates only two different states. One where the condition on branching ($a \geq 65535$) is satisfied and the other one where the condition is violated.}
+    \end{figure}    
+\end{frame}
+
+\begin{frame}{The meaning of "symbolic" in DIVINE (cont'd)}
+    \begin{itemize}
+        \item While a purely explicit-state model checker has to produce a new state for each and every possible input value, in SymDIVINE a set of states that differ only in data values is represented with a single data structure, the so called \textbf{multi-state}.
+        \item In the current version of SymDIVINE, only quantified bit-vector SMT formulae are supported to represent symbolic data.
+        \item SymDIVINE employs an SMT solver and quantified formulae to check the satisfiability of a path condition and to decide the equality of two multi-states.
+    \end{itemize}
+\end{frame}
+
+\againframe{safety_liveness}
+
+\begin{frame}[fragile]{mc/verify.cpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+void verify::liveness()
+{
+    auto liveness = mc::make_job< mc::Liveness >( bitcode(),
+    ss::passive_listen() );
+
+    _log->start();
+    liveness->start( 1, [&]( bool last )
+            {
+                _log->progress( liveness->stats(),
+                                liveness->queuesize(), last );
+            } );
+    liveness->wait();
+    report_options();
+    _log->info( "property type: liveness\n", true );
+    print_ce( *liveness );
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{mc/liveness.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+template< typename Next, typename Builder_ = ExplicitBuilder >
+struct Liveness : Job
+{
+    void start( int threads ) override
+    {
+        auto *search = new NestedDFS( _ex );
+        _search.reset( search );
+        stats = [=] { return std::pair( _ex._d.total_states->load()
+            , _ex._d.total_instructions->load() ); };
+        queuesize = [=] { return search->outer_stack.size() 
+            + search->inner_stack.size(); };
+
+        /* ... ( definition of function _get_trace ) */ 
+        _error_found = [=]() { return 
+            search->counterexample.goal.has_value(); };
+
+        search->start( threads );
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{mc/liveness.hpp}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+template< typename Builder >
+struct NestedDFS : ss::Job
+{
+    std::future< void > _thread;
+    void start( int thread_count ) override {
+        if ( thread_count != 1 )
+            throw new std::runtime_error( 
+                "Nested DFS only supports one thread." );
+        _thread = std::async( [&]{ run(); } );
+    }
+    void run() {
+        _builder.initials( 
+            [found = false, this] ( State state ) mutable
+            {
+                if ( !found )
+                    found = outer( state );
+            } );
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}{Reference}
+\begin{itemize}
+    \item DIVINE website\\
+        \code{https://divine.fi.muni.cz/}
+    \item Jan Mrázek, Petr Bauch, Henrich Lauko, Jiří Barnat: SymDIVINE: Tool for Control-Explicit Data-Symbolic State Space Exploration. In Model Checking Software: 23rd International Symposium, SPIN, Springer International Publishing, 2016.
+\end{itemize}
+\end{frame}
+
+
+\end{document}
